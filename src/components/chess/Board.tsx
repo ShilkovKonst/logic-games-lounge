@@ -4,12 +4,26 @@ import { Piece } from "@/lib/chess-engine/types";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
+import { useContext, useEffect } from "react";
+import { ChessContext } from "@/context/chessContext";
 
 type BoardProps = {
   pieces: Piece[] | null;
 };
 
 const Board: React.FC<BoardProps> = ({ pieces }) => {
+  const context = useContext(ChessContext);
+  if (!context) throw new Error("Piece must be used within ChessProvider");
+
+  const {
+    selectedPiece,
+    setSelectedPiece,
+    moveSet,
+    setMoveSet,
+    piecesState,
+    setPiecesState,
+  } = context;
+
   const boardPieces = pieces ?? populateBoard();
 
   const board: (Piece | null)[][] = Array.from({ length: 8 }, (_, row) =>
@@ -20,6 +34,12 @@ const Board: React.FC<BoardProps> = ({ pieces }) => {
         null
     )
   );
+
+  useEffect(() => {
+    setPiecesState(pieces ?? populateBoard());
+    console.log(selectedPiece?.cell);
+    console.log(moveSet);
+  }, [moveSet, pieces, selectedPiece, setPiecesState]);
 
   return (
     <div className="border-4 border-amber-950">

@@ -12,8 +12,7 @@ export type PieceType =
   | "knight"
   | "bishop"
   | "queen"
-  | "king"
-  | "none";
+  | "king";
 
 export type BoardMatrix = (Piece | null)[][]; // [row][col]
 
