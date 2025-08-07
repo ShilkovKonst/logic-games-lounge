@@ -12,7 +12,7 @@ export default async function Home() {
       <main className="flex flex-col items-center sm:items-start">
         <ChessProvider>
           <Board
-            pieces={pieces}
+            pcs={pieces}
             curTurn={currentTurn}
             pState={playerState}
           />

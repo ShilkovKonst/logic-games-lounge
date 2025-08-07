@@ -46,18 +46,10 @@ export const dragStart: HandleDragStartType = (
 
   let offsetX: number = 0;
   let offsetY: number = 0;
-  if (e.type === "mousedown") {
-    const mouseE = e as ReactMouseEvent;
-    offsetX = mouseE.clientX - target.getBoundingClientRect().left;
-    offsetY = mouseE.clientY - target.getBoundingClientRect().top;
-  }
-  if (e.type === "touchstart") {
-    const touchE = e as ReactTouchEvent;
-    offsetX =
-      touchE.changedTouches[0].clientX - target.getBoundingClientRect().left;
-    offsetY =
-      touchE.changedTouches[0].clientY - target.getBoundingClientRect().top;
-  }
+
+  const rect = target.getBoundingClientRect();
+  offsetX = rect.width / 2;
+  offsetY = rect.height / 2;
 
   if (e.type === "mousedown") {
     const mouseE = e as ReactMouseEvent;

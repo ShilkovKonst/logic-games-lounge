@@ -85,12 +85,11 @@ const Piece: React.FC<PieceProps> = ({ piece }) => {
                   );
               },
             })}
-        className={`relative ${
-          isCurrentPlayer &&
-          (isSelected ? "animate-scale-pulse cursor-grabbing" : "cursor-grab")
+        className={`relative scale-100 ${
+          isCurrentPlayer && (isSelected ? "cursor-grabbing" : "cursor-grab")
         } ${
-          isCurrentPlayer && "hover:scale-110 scale-100"
-        } bg-transparent transform ease-in-out duration-300 ${
+          isCurrentPlayer && "hover:scale-110"
+        } bg-transparent transform ease-in-out duration-150 ${
           playerState.color === "white" ? "rotate-0" : "rotate-180"
         }`}
       >

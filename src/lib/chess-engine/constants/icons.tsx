@@ -14,9 +14,7 @@ export type TargetIconProps = {
 export const PieceIcon: React.FC<IconProps> = ({ color, isTaken, type }) => {
   return (
     <svg
-      className={`${
-        isTaken ? " w-9 h-9 " : " w-10 h-10 md:w-14 md:h-14 lg:w-18 lg:h-18 "
-      }`}
+      className={`${isTaken ? " w-8 h-8 " : " w-10 h-10 md:w-12 md:h-12"}`}
       width="800px"
       height="800px"
       viewBox="0 0 512 512"

@@ -22,7 +22,7 @@ const ColCount: React.FC<IncrementProps> = ({ increment }) => {
             key={i}
             className={`${
               (i + increment) % 2 === 0 ? "bg-amber-600" : "bg-amber-100"
-            } h-12 w-12 text-xl md:h-16 md:w-16 md:text-2xl lg:h-20 lg:w-20 lg:text-3xl ${
+            } h-12 w-12 text-xl md:h-14 md:w-14 md:text-2xl font-semibold ${
               playerState.color === "white" ? "rotate-0" : "rotate-180"
             }`}
           >

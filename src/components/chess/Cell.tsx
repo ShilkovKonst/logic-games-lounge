@@ -29,7 +29,7 @@ const Cell: React.FC<CellProps> = ({ row, col, piece }) => {
       id={`${row}-${col}`}
       className={`relative ${
         !!move && "dropzone"
-      } flex justify-center items-center h-12 w-12 md:h-16 md:w-16 lg:h-20 lg:w-20 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
+      } flex justify-center items-center h-12 w-12 md:h-14 md:w-14 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
     >
       <HighLight row={row} col={col} move={move} piece={piece} />
       {piece && <Piece piece={piece} />}
