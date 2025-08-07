@@ -2,43 +2,36 @@ import { Piece as PieceT } from "@/lib/chess-engine/types";
 import Piece from "./Piece";
 import { useContext } from "react";
 import { ChessContext } from "@/context/chessContext";
+import HighLight from "./HighLight";
 
 type CellProps = {
-  i: number;
-  j: number;
-  piece: PieceT | null;
+  row: number;
+  col: number;
+  piece: PieceT | undefined;
 };
 
-const Cell: React.FC<CellProps> = ({ i, j, piece }) => {
+const Cell: React.FC<CellProps> = ({ row, col, piece }) => {
   const context = useContext(ChessContext);
-  if (!context) throw new Error("Piece must be used within ChessProvider");
-
+  if (!context) throw new Error("Cell must be used within ChessProvider");
   const { moveSet } = context;
 
-  const inMoveSet: boolean = moveSet.some((m) => m.row === i && m.col === j);
+  const move = moveSet.find((m) => m.row === row && m.col === col);
 
   const cellColorStyle = `${
-    (i + j) % 2 === 1 ? "bg-amber-700" : "bg-amber-50"
+    (row + col) % 2 === 1 ? "bg-amber-700 inset-shadow-cell-amberdark" : "bg-amber-50 inset-shadow-cell-amberlight"
   }`;
-
-  const borderStyle = `${i === 0 ? "border-t-2" : ""} ${
-    i === 7 ? "border-b-2" : ""
-  } ${j === 0 ? "border-l-2" : ""} ${j === 7 ? "border-r-2" : ""}`;
+  const borderStyle = `${row === 0 ? "border-t-2" : ""} ${
+    row === 7 ? "border-b-2" : ""
+  } ${col === 0 ? "border-l-2" : ""} ${col === 7 ? "border-r-2" : ""}`;
 
   return (
     <div
-      key={j}
-      className={`flex justify-center items-center h-20 w-20 relative ${cellColorStyle} ${borderStyle} box-border border-amber-950`}
+      id={`${row}-${col}`}
+      className={`relative ${
+        !!move && "dropzone"
+      } flex justify-center items-center h-12 w-12 md:h-16 md:w-16 lg:h-20 lg:w-20 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
     >
-      <span
-        className={`absolute top-1 left-1 right-1 bottom-1 ${
-          inMoveSet ? "opacity-100" : "opacity-0"
-        } rounded-full border-4 ${
-          piece ? "border-orange-700" : "border-green-700"
-        } transform ease-in-out duration-150`}
-      >
-        {i + " " + j}
-      </span>
+      <HighLight row={row} col={col} move={move} piece={piece} />
       {piece && <Piece piece={piece} />}
     </div>
   );

@@ -1,71 +1,102 @@
-"use state";
 import { ChessContext } from "@/context/chessContext";
-import { piecesIcons } from "@/lib/chess-engine/constants/piecesIcons";
-import {
-  bishopMoves,
-  kingMoves,
-  knightMoves,
-  pawnMoves,
-  queenMoves,
-  rookMoves,
-} from "@/lib/chess-engine/movesets";
-import { Piece as PieceT } from "@/lib/chess-engine/types";
-import { useContext } from "react";
+import { Piece as PieceType } from "@/lib/chess-engine/types";
+import { dragStart as handleDragStart } from "@/lib/chess-engine/dragNDrop/dragStart";
+import { MouseEvent, TouchEvent, useContext } from "react";
+import { getMoveSet } from "@/lib/chess-engine/utils/getMoveSet";
+import { PieceIcon } from "@/lib/chess-engine/constants/icons";
+import PiecesToExchange from "./PiecesToExchange";
 
 type PieceProps = {
-  piece: PieceT;
+  piece: PieceType;
 };
 
 const Piece: React.FC<PieceProps> = ({ piece }) => {
   const context = useContext(ChessContext);
   if (!context) throw new Error("Piece must be used within ChessProvider");
   const {
+    playerState,
+    currentTurn,
+    setCurrentTurn,
     selectedPiece,
     setSelectedPiece,
-    moveSet,
+    pieceToExchange,
+    setPieceToExchange,
     setMoveSet,
-    piecesState,
-    setPiecesState,
+    pieces,
   } = context;
 
-  const { type, color, cell, hasMoved } = piece;
-  const PieceIcon = piecesIcons[type];
+  const { type, color } = piece;
 
-  const handleClick = () => {
-    if (selectedPiece != piece) setMoveSet([]);
-    setSelectedPiece(piece);
-    switch (piece.type) {
-      case "pawn":
-        setMoveSet(pawnMoves(piece, piecesState));
-        break;
-      case "rook":
-        setMoveSet(rookMoves(piece, piecesState));
-        break;
-      case "knight":
-        setMoveSet(knightMoves(piece, piecesState));
-        break;
-      case "bishop":
-        setMoveSet(bishopMoves(piece, piecesState));
-        break;
-      case "queen":
-        setMoveSet(queenMoves(piece, piecesState));
-        break;
-      case "king":
-        setMoveSet(kingMoves(piece, piecesState));
-        break;
-      default:
-        setMoveSet([]);
-    }
-    console.log(color, cell, moveSet);
+  const isSelected =
+    selectedPiece?.cell.col === piece.cell.col &&
+    selectedPiece?.cell.row === piece.cell.row;
+
+  const isCurrentPlayer = color === currentTurn;
+
+  const changeTurn = () => {
+    setSelectedPiece(undefined);
+    setCurrentTurn((prev) => (prev === "white" ? "black" : "white"));
   };
 
   return (
-    <button
-      onClick={() => handleClick()}
-      className={`text-amber-950 cursor-pointer scale-100 hover:scale-110 transform ease-in-out duration-300`}
+    <div
+      className={`piece relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}
     >
-      <PieceIcon color={color} />
-    </button>
+      {pieceToExchange && pieceToExchange.id === piece.id && (
+        <PiecesToExchange changeTurn={changeTurn} />
+      )}
+      <button
+        {...(isCurrentPlayer && !pieceToExchange
+          ? {
+              onMouseDown: (e: MouseEvent<HTMLButtonElement>) =>
+                handleDragStart(
+                  e,
+                  piece,
+                  pieces,
+                  playerState.color,
+                  currentTurn,
+                  setSelectedPiece,
+                  setPieceToExchange,
+                  setMoveSet,
+                  changeTurn
+                ),
+              onTouchStart: (e: TouchEvent<HTMLButtonElement>) =>
+                handleDragStart(
+                  e,
+                  piece,
+                  pieces,
+                  playerState.color,
+                  currentTurn,
+                  setSelectedPiece,
+                  setPieceToExchange,
+                  setMoveSet,
+                  changeTurn
+                ),
+            }
+          : {
+              onClick: () => {
+                if (!pieceToExchange)
+                  getMoveSet(
+                    piece,
+                    pieces,
+                    setMoveSet,
+                    setSelectedPiece,
+                    currentTurn
+                  );
+              },
+            })}
+        className={`relative ${
+          isCurrentPlayer &&
+          (isSelected ? "animate-scale-pulse cursor-grabbing" : "cursor-grab")
+        } ${
+          isCurrentPlayer && "hover:scale-110 scale-100"
+        } bg-transparent transform ease-in-out duration-300 ${
+          playerState.color === "white" ? "rotate-0" : "rotate-180"
+        }`}
+      >
+        <PieceIcon color={color} type={type} />
+      </button>
+    </div>
   );
 };
 

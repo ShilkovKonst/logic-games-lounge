@@ -1,15 +1,23 @@
+import { ChessContext } from "@/context/chessContext";
 import { IncrementProps } from "@/lib/chess-engine/types";
+import { useContext } from "react";
 
 const RowCount: React.FC<IncrementProps> = ({ increment }) => {
+  const context = useContext(ChessContext);
+  if (!context) throw new Error("Piece must be used within ChessProvider");
+
+  const { playerState } = context;
   const count: number[] = Array.from({ length: 8 }, (_, i) => 8 - i);
   return (
-    <div className="col-span-1  box-border border-amber-950 *:flex *:justify-center *:items-center *:h-20 *:w-20 *:font-semibold *:text-3xl">
+    <div className="col-span-1  box-border border-amber-950 *:flex *:justify-center *:items-center *:font-semibold">
       {count.map((c, i) => (
         <p
           key={i}
-          className={
+          className={`${
             (i + increment) % 2 === 0 ? "bg-amber-600" : "bg-amber-100"
-          }
+          } h-12 w-12 text-xl md:h-16 md:w-16 md:text-2xl lg:h-20 lg:w-20 lg:text-3xl ${
+            playerState.color === "white" ? "rotate-0" : "rotate-180"
+          }`}
         >
           {c}
         </p>
