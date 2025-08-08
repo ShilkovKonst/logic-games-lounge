@@ -9,12 +9,13 @@ import { Piece, Color, Cell } from "../types";
 export type HandleDragStartType = (
   e: ReactMouseEvent | ReactTouchEvent,
   piece: Piece,
-  piecesState: Piece[],
+  pieces: Piece[],
   playerColor: Color,
   currentTurn: Color,
+  board: Cell[][],
   setSelectedPiece: Dispatch<SetStateAction<Piece | undefined>>,
   setPieceToExchange: Dispatch<SetStateAction<Piece | undefined>>,
-  setMoveSet: Dispatch<SetStateAction<Cell[]>>,
+  // setMoveSet: Dispatch<SetStateAction<Cell[]>>,
   changeTurn: () => void
 ) => void;
 
@@ -22,9 +23,9 @@ export type HandleDragEndType = (
   e: MouseEvent | TouchEvent,
   target: HTMLElement,
   clone: HTMLElement,
-  piecesState: Piece[],
+  pieces: Piece[],
   piece: Piece,
-  moveSet: Cell[],
+  board: Cell[][],
   setPieceToExchange: Dispatch<SetStateAction<Piece | undefined>>,
   changeTurn: () => void,
   handleDragging: (e: MouseEvent | TouchEvent) => void,

@@ -1,5 +1,6 @@
 "use client";
 import { Cell, Piece, Color, PlayerState } from "@/lib/chess-engine/types";
+import { createBoard } from "@/lib/chess-engine/utils/createBoard";
 import {
   createContext,
   Dispatch,
@@ -22,8 +23,7 @@ interface ChessContextType {
   setSelectedPiece: Dispatch<SetStateAction<Piece | undefined>>;
   pieceToExchange: Piece | undefined;
   setPieceToExchange: Dispatch<SetStateAction<Piece | undefined>>;
-  moveSet: Cell[];
-  setMoveSet: Dispatch<SetStateAction<Cell[]>>;
+  board: Cell[][];
   pieces: Piece[];
   setPieces: Dispatch<SetStateAction<Piece[]>>;
   log: LogType[];
@@ -39,6 +39,8 @@ export const ChessContext = createContext<ChessContextType | undefined>(
 );
 
 export default function ChessProvider({ children }: ChessProviderProps) {
+  const board: Cell[][] = createBoard();
+
   const [playerState, setPlayerState] = useState<PlayerState>({
     type: "host",
     color: "white",
@@ -51,7 +53,6 @@ export default function ChessProvider({ children }: ChessProviderProps) {
   const [pieceToExchange, setPieceToExchange] = useState<Piece | undefined>(
     undefined
   );
-  const [moveSet, setMoveSet] = useState<Cell[]>([]);
   const [pieces, setPieces] = useState<Piece[]>([]);
   const [log, setLog] = useState<LogType[]>([]);
 
@@ -64,8 +65,7 @@ export default function ChessProvider({ children }: ChessProviderProps) {
     setSelectedPiece,
     pieceToExchange,
     setPieceToExchange,
-    moveSet,
-    setMoveSet,
+    board,
     pieces,
     setPieces,
     log,

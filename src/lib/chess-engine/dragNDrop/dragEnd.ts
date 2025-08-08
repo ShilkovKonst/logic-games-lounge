@@ -9,7 +9,7 @@ export const dragEnd: HandleDragEndType = (
   clone,
   pieces,
   piece,
-  moveSet,
+  board,
   setPieceToExchange,
   changeTurn,
   handleDragging,
@@ -20,13 +20,15 @@ export const dragEnd: HandleDragEndType = (
 
   if (dropzone) {
     const [row, col] = dropzone.id.split("-").map((i) => parseInt(i, 10));
+    const cell = board[row][col];
+    
     const currentPiece = pieces.find(
       (p) => p.cell.row === piece.cell.row && p.cell.col === piece.cell.col
     );
     if (currentPiece) {
-      handleCapture(row, col, currentPiece, pieces, moveSet);
-      handleCastling(row, col, currentPiece, pieces, moveSet);
-      updateFlagsAndPosition(row, col, currentPiece, pieces);
+      handleCapture(cell, currentPiece, pieces, currentPiece.moveSet);
+      handleCastling(cell, currentPiece, pieces, currentPiece.moveSet, board);
+      updateFlagsAndPosition(cell, currentPiece, pieces);
       handleExchange(row, currentPiece, setPieceToExchange, changeTurn);
     }
   }
@@ -45,31 +47,30 @@ export const dragEnd: HandleDragEndType = (
 };
 
 function handleCapture(
-  targetRow: number,
-  targetCol: number,
+  cell: Cell,
   currentPiece: Piece,
   pieces: Piece[],
   moveSet: Cell[]
 ): void {
-  let pieceToTake = pieces.find(
-    (p) => p.cell.row === targetRow && p.cell.col === targetCol
-  );
+  let pieceToTake = pieces.find((p) => p.cell.id === cell.id);
+  const takenCell: Cell = {
+    id: `takenFrom${cell.id}`,
+    row: -1,
+    col: -1,
+    threats: [],
+  };
   if (pieceToTake) {
     pieceToTake.isTaken = true;
-    pieceToTake.cell.row = -1;
-    pieceToTake.cell.col = -1;
+    pieceToTake["cell"] = takenCell;
   } else if (!pieceToTake && currentPiece.type === "pawn") {
-    const moveEnPassant = moveSet.find(
-      (m) => m.col === targetCol && m.row === targetRow
-    );
+    const moveEnPassant = moveSet.find((m) => m.id === cell.id);
     if (moveEnPassant && moveEnPassant.special) {
       if (moveEnPassant.special.type === "enPassant") {
         const { pawnId } = moveEnPassant.special;
         pieceToTake = pieces.find((p) => p.id === pawnId);
         if (pieceToTake) {
           pieceToTake.isTaken = true;
-          pieceToTake.cell.row = -1;
-          pieceToTake.cell.col = -1;
+          pieceToTake["cell"] = takenCell;
         }
       }
     }
@@ -77,28 +78,25 @@ function handleCapture(
 }
 
 function handleCastling(
-  targetRow: number,
-  targetCol: number,
+  cell: Cell,
   currentPiece: Piece,
   pieces: Piece[],
-  moveSet: Cell[]
+  moveSet: Cell[],
+  board: Cell[][]
 ): void {
   if (currentPiece.type !== "king" || currentPiece.hasMoved) return;
 
-  const dir = currentPiece.cell.col > targetCol ? 1 : -1;
-  const moveCastling = moveSet.find(
-    (m) => m.col === targetCol && m.row === targetRow
-  );
-  if (moveCastling && moveCastling.special)
-    if (moveCastling.special.type === "castling") {
-      const { rookId } = moveCastling.special;
-      const rookToCastle = pieces.find((p) => p.id === rookId);
-      if (rookToCastle && rookToCastle.type === "rook") {
-        rookToCastle.cell.col = targetCol + dir;
-        rookToCastle.cell.row = targetRow;
-        rookToCastle.hasMoved = true;
-      }
-    }
+  const moveCastling = moveSet.find((m) => m.id === cell.id);
+  if (!moveCastling || moveCastling.special?.type !== "castling") return;
+
+  const { rookId } = moveCastling.special;
+  const rookToCastle = pieces.find((p) => p.id === rookId);
+  if (rookToCastle && rookToCastle.type === "rook") {
+    const dir = currentPiece.cell.col > cell.col ? 1 : -1;
+    const rookMove = board[cell.row][cell.col + dir];
+    rookToCastle["cell"] = rookMove;
+    rookToCastle["hasMoved"] = true;
+  }
 }
 
 function handleExchange(
@@ -120,18 +118,15 @@ function handleExchange(
 }
 
 function updateFlagsAndPosition(
-  targetRow: number,
-  targetCol: number,
+  cell: Cell,
   currentPiece: Piece,
   pieces: Piece[]
 ): void {
   pieces.forEach((p) => {
     if (p.type === "pawn") p.canBeTakenEnPassant = false;
   });
-  const step = Math.abs(targetRow - currentPiece.cell.row);
-
-  currentPiece.cell.row = targetRow;
-  currentPiece.cell.col = targetCol;
+  const step = Math.abs(cell.row - currentPiece.cell.row);
+  currentPiece["cell"] = cell;
 
   if (
     (currentPiece.type === "pawn" ||

@@ -1,13 +1,20 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import Cell from "@/components/chess/Cell";
-import { Piece, Color, PlayerState } from "@/lib/chess-engine/types";
+import {
+  Piece,
+  Color,
+  PlayerState,
+  Cell as CellType,
+} from "@/lib/chess-engine/types";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
-import { useContext, useEffect } from "react";
+import { Dispatch, SetStateAction, useContext, useEffect } from "react";
 import { ChessContext } from "@/context/chessContext";
 import TakenPieces from "./TakenPieces";
+import { filterLegalMoves } from "@/lib/chess-engine/utils/filterLegalMoves";
+import { checkThreats } from "@/lib/chess-engine/utils/checkThreats";
 
 type BoardProps = {
   curTurn: Color | null;
@@ -26,27 +33,31 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
     setCurrentTurn,
     setSelectedPiece,
     setPieceToExchange,
-    setMoveSet,
+    board,
     pieces,
     setPieces,
   } = context;
 
-  const board: (Piece | null)[][] = Array.from({ length: 8 }, () =>
-    Array.from({ length: 8 }, () => null)
-  );
+  const pS: PlayerState = pState
+    ? pState
+    : { color: "white", status: "NORMAL", type: "host" };
 
   const thisPiece: (i: number, j: number) => Piece | undefined = (i, j) =>
     pieces.find((p) => p.cell.col === j && p.cell.row === i && !p.isTaken);
 
   useEffect(() => {
-    setPlayerState(pState ?? { color: "white", status: "NORMAL", type: "host" });
+    setPlayerState(
+      pState ?? { color: "white", status: "NORMAL", type: "host" }
+    );
     setCurrentTurn(curTurn ?? "white");
-    setPieces(pcs ?? populateBoard());
+    setPieces(pcs ?? populateBoard(pS.color, board));
   }, []);
 
   useEffect(() => {
-    setMoveSet([]);
+    defineMoveSets(currentTurn, pieces, board);
     setSelectedPiece(undefined);
+    if (pieces.length > 0)
+      checkPlayerStatus(playerState, pieces, board, setPlayerState);
   }, [currentTurn]);
 
   return (
@@ -68,12 +79,13 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
           <button
             className="p-2 bg-amber-200"
             onClick={() => {
-              setMoveSet([]);
               setSelectedPiece(undefined);
               setPieceToExchange(undefined);
-              setPlayerState(pState ?? { color: "white", status: "NORMAL", type: "host" });
-              setPieces(pcs ?? populateBoard());
               setCurrentTurn(curTurn ?? "white");
+              setPlayerState(
+                pState ?? { color: "white", status: "NORMAL", type: "host" }
+              );
+              setPieces(pcs ?? populateBoard(pS.color, board));
             }}
           >
             restart
@@ -86,8 +98,8 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
             onClick={() => {
               setPlayerState((prev) =>
                 prev.color === "white"
-                  ? { color: "black", status: prev.status, type:"guest" }
-                  : { color: "white", status: prev.status, type:"host" }
+                  ? { color: "black", status: prev.status, type: "guest" }
+                  : { color: "white", status: prev.status, type: "host" }
               );
             }}
           >
@@ -111,11 +123,10 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
             <div className="col-start-2 col-span-8 border-amber-950">
               {board.map((r, i) => (
                 <div key={i} className="flex">
-                  {r.map((_, j) => (
+                  {r.map((cell, j) => (
                     <Cell
                       key={i * 10 + j}
-                      row={i}
-                      col={j}
+                      cell={cell}
                       piece={thisPiece(i, j)}
                     />
                   ))}
@@ -132,3 +143,26 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
 };
 
 export default Board;
+
+function checkPlayerStatus(
+  player: PlayerState,
+  pieces: Piece[],
+  board: CellType[][],
+  setPlayerState: Dispatch<SetStateAction<PlayerState>>
+) {
+  const king = pieces.find(
+    (p) => p.color === player.color && p.type === "king"
+  );
+  if (!king) throw new Error("King must be on board!");
+
+  const threats = checkThreats(king.cell, pieces, player.color, board);
+  if (threats.length > 0) setPlayerState({ ...player, status: "CHECK" });
+  else setPlayerState({ ...player, status: "NORMAL" });
+}
+
+function defineMoveSets(player: Color, pieces: Piece[], board: CellType[][]) {
+  const activePieces = pieces.filter((p) => !p.isTaken);
+  for (const p of activePieces) {
+    p["moveSet"] = filterLegalMoves(p, activePieces, player, board);
+  }
+}

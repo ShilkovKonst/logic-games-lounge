@@ -6,7 +6,6 @@ import { HandleDragStartType } from "./types";
 import { moveAt } from "./moveAt";
 import { dragging } from "./dragging";
 import { dragEnd } from "./dragEnd";
-import { getMoveSet } from "../utils/getMoveSet";
 
 export const dragStart: HandleDragStartType = (
   e,
@@ -14,20 +13,14 @@ export const dragStart: HandleDragStartType = (
   pieces,
   playerColor,
   currentTurn,
+  board,
   setSelectedPiece,
   setPieceToExchange,
-  setMoveSet,
   changeTurn
 ) => {
   if (e.type === "mousedown") (e as ReactMouseEvent).preventDefault();
 
-  const moveSet = getMoveSet(
-    piece,
-    pieces,
-    setMoveSet,
-    setSelectedPiece,
-    currentTurn
-  );
+  setSelectedPiece(piece);
 
   const target = e.currentTarget as HTMLElement;
   target.style.opacity = "75%";
@@ -76,7 +69,7 @@ export const dragStart: HandleDragStartType = (
       clone,
       pieces,
       piece,
-      moveSet,
+      board,
       setPieceToExchange,
       changeTurn,
       handleDragging,

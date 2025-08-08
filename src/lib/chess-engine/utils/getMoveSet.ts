@@ -1,34 +1,34 @@
-import { Dispatch, SetStateAction } from "react";
-import { Cell, Color, Piece } from "../types";
-import { defineMoveSet } from "./defineMoveSet";
-import { checkThreats } from "./checkThreats";
+import {
+  bishopMoves,
+  kingMoves,
+  knightMoves,
+  pawnMoves,
+  pawnThreats,
+  queenMoves,
+  rookMoves,
+} from "../movesets";
+import { Cell, Piece } from "../types";
 
-export const getMoveSet: (
+export function getMoveSet(
   piece: Piece,
-  pieces: Piece[],
-  setMoveSet: Dispatch<SetStateAction<Cell[]>>,
-  setSelectedPiece: Dispatch<SetStateAction<Piece | undefined>>,
-  currentTurn: Color
-) => Cell[] = (piece, pieces, setMoveSet, setSelectedPiece, currentTurn) => {
-  setSelectedPiece(undefined);
-  setMoveSet([]);
-  let moveSet = defineMoveSet(piece, pieces, false);
-  for (const move of moveSet) {
-    move.threats = checkThreats(move, pieces, currentTurn);
+  piecesState: Piece[],
+  board: Cell[][],
+  checkThreats: boolean,
+): Cell[] {
+  switch (piece.type) {
+    case "pawn":
+      return checkThreats
+        ? pawnThreats(piece, piecesState, board, true)
+        : pawnMoves(piece, piecesState, board);
+    case "rook":
+      return rookMoves(piece, piecesState, board, checkThreats);
+    case "knight":
+      return knightMoves(piece, piecesState, board, checkThreats);
+    case "bishop":
+      return bishopMoves(piece, piecesState, board, checkThreats);
+    case "queen":
+      return queenMoves(piece, piecesState, board, checkThreats);
+    case "king":
+      return kingMoves(piece, piecesState, board, checkThreats);
   }
-  if (piece.type === "king" && piece.color === currentTurn) {
-    moveSet = moveSet.filter((m) => m.threats?.length === 0);
-  }
-  if (
-    piece.type === "pawn" &&
-    !piece.hasMoved &&
-    moveSet[1]?.threats?.length === 0
-  ) {
-    moveSet[1]["threats"] = moveSet[0].threats;
-  }
-  setMoveSet(moveSet);
-  setSelectedPiece(piece);
-
-  console.log("selected piece", piece, "move set", moveSet);
-  return moveSet;
-};
+}

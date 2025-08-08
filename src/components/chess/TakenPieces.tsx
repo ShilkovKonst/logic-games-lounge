@@ -14,7 +14,7 @@ const TakenPieces: React.FC<TakenPiecesProps> = ({ player }) => {
   const { pieces } = context;
 
   return (
-    <div className="flex">
+    <div className="flex max-h-60 md:max-h-70">
       <div className="flex flex-col">
         {pieces
           .filter((p) => p.color !== player && p.isTaken && p.type === "pawn")
@@ -28,7 +28,7 @@ const TakenPieces: React.FC<TakenPiecesProps> = ({ player }) => {
             </button>
           ))}
       </div>
-      <div className="flex flex-col">
+      <div className="flex flex-col flex-wrap">
         {pieces
           .filter((p) => p.color !== player && p.isTaken && p.type !== "pawn")
           .map((p, i) => (

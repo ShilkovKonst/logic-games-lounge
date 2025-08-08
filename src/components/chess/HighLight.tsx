@@ -13,7 +13,7 @@ type HighLightProps = {
 const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
   const context = useContext(ChessContext);
   if (!context) throw new Error("Piece must be used within ChessProvider");
-  const { selectedPiece, moveSet, currentTurn } = context;
+  const { selectedPiece, currentTurn } = context;
 
   const [isCastlingRook, setIsCastlingRook] = useState<boolean | undefined>(
     false
@@ -24,7 +24,7 @@ const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
   const hasPieces = selectedPiece && piece;
   const canMove: boolean = selectedPiece?.color === currentTurn;
   const inMoveSet: boolean = !!move;
-  const enPassantCell: Cell | undefined = moveSet.find(
+  const enPassantCell: Cell | undefined = selectedPiece?.moveSet.find(
     (m) =>
       m.row ===
         row +
@@ -40,7 +40,7 @@ const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
       hasPieces &&
         isKingInitial(selectedPiece) &&
         isRookInitial(piece, selectedPiece) &&
-        hasInMoves(moveSet, piece, selectedPiece)
+        hasInMoves(selectedPiece?.moveSet, piece, selectedPiece)
     );
   }, [selectedPiece]);
 

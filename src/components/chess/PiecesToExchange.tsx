@@ -1,6 +1,7 @@
 import { ChessContext } from "@/context/chessContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { Piece } from "@/lib/chess-engine/types";
+import { defineMoveSet } from "@/lib/chess-engine/utils/filterLegalMoves";
 import { useContext, useEffect, useState } from "react";
 
 type ExchangeProps = {
@@ -36,6 +37,7 @@ const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
           isTaken: true,
           type: "rook",
           hasMoved: true,
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -43,6 +45,7 @@ const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "bishop",
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -50,6 +53,7 @@ const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "knight",
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -57,13 +61,18 @@ const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "queen",
+          moveSet: [],
         },
       ]);
     }
   }, [pieceToExchange]);
 
   return (
-    <div className={`z-10 absolute ${selectedPiece?.color === "white" ? "top-1/2" : "bottom-full"}  m-1 left-1/2 transform -translate-x-1/2 bg-amber-200 flex justify-evenly items-center border-2 border-amber-800 `}>
+    <div
+      className={`z-10 absolute ${
+        selectedPiece?.color === "white" ? "top-1/2" : "bottom-full"
+      }  m-1 left-1/2 transform -translate-x-1/2 bg-amber-200 flex justify-evenly items-center border-2 border-amber-800 `}
+    >
       {piecesToExchange.map((p, i) => (
         <button
           key={i}

@@ -35,6 +35,7 @@ type EnPassant = {
 };
 
 export interface Cell {
+  id: string
   row: number;
   col: number;
   threats: Piece[];
@@ -46,6 +47,7 @@ export interface Base {
   cell: Cell;
   color: Color;
   isTaken: boolean;
+  moveSet: Cell[];
 }
 
 export interface Pawn extends Base {

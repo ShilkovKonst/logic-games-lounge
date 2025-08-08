@@ -25,20 +25,14 @@ const bDir: number[][] = [
 ];
 const qDir: number[][] = [...rDir, ...bDir];
 
-const getPieceAt: (
-  row: number,
-  col: number,
-  pieces: Piece[]
-) => Piece | undefined = (row, col, pieces) =>
-  pieces.find((p) => p.cell.row === row && p.cell.col === col);
-
 const moveGenerator: (
   piece: Piece,
   pieces: Piece[],
+  board: Cell[][],
   dirs: number[][],
   maxStep: number,
   evaluateThreats: boolean
-) => Cell[] = (piece, pieces, dirs, maxStep, evaluateThreats) => {
+) => Cell[] = (piece, pieces, board, dirs, maxStep, evaluateThreats) => {
   const r = piece.cell.row;
   const c = piece.cell.col;
   const moves: Cell[] = [];
@@ -48,15 +42,15 @@ const moveGenerator: (
     let tC = c + dc;
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
-      const target = getPieceAt(tR, tC, pieces);
+      const cell = board[tR][tC];
+      const target = getPieceAt(cell.id, pieces);
+
       if (target) {
-        if (evaluateThreats && target.color === piece.color)
-          moves.push({ row: tR, col: tC, threats: [] });
-        if (target.color !== piece.color)
-          moves.push({ row: tR, col: tC, threats: [] });
+        if (evaluateThreats && target.color === piece.color) moves.push(cell);
+        if (target.color !== piece.color) moves.push(cell);
         break;
       }
-      moves.push({ row: tR, col: tC, threats: [] });
+      moves.push(cell);
       tR += dr;
       tC += dc;
       step++;
@@ -65,53 +59,54 @@ const moveGenerator: (
   return moves;
 };
 
-export const pawnMoves: (pawn: Pawn, pieces: Piece[]) => Cell[] = (
-  pawn,
-  pieces
-) => {
+export const pawnMoves: (
+  pawn: Pawn,
+  pieces: Piece[],
+  board: Cell[][]
+) => Cell[] = (pawn, pieces, board) => {
   const moves: Cell[] = [];
-
+  const col = pawn.cell.col;
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = pawn.cell.row + dir;
-  const doubleRow = pawn.cell.row + dir * 2;
-  const col = pawn.cell.col;
 
-  if (
-    nextRow >= 0 &&
-    nextRow < 8 &&
-    !pieces.some((p) => p.cell.row === nextRow && p.cell.col === col)
-  ) {
-    moves.push({ row: nextRow, col: col, threats: [] });
-    if (
-      !pawn.hasMoved &&
-      !pieces.some((p) => p.cell.row === doubleRow && p.cell.col === col)
-    )
-      moves.push({ row: doubleRow, col: col, threats: [] });
+  if (nextRow < 0 || nextRow >= 8) return moves;
+
+  const nextCell = board[nextRow][col];
+  if (!pieces.some((p) => p.cell.id === nextCell.id)) moves.push(nextCell);
+
+  const doubleRow = pawn.cell.row + dir * 2;
+  if (!pawn.hasMoved && doubleRow >= 0 && doubleRow < 8) {
+    const doubleCell = board[doubleRow][col];
+    if (!pieces.some((p) => p.cell.id === doubleCell.id))
+      moves.push(doubleCell);
   }
-  const threats: Cell[] = pawnThreats(pawn, pieces, false);
+
+  const threats: Cell[] = pawnThreats(pawn, pieces, board, false);
   return moves.concat(threats);
 };
 
 export const pawnThreats: (
   pawn: Pawn,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (pawn, pieces, evaluateThreats) => {
+) => Cell[] = (pawn, pieces, board, evaluateThreats) => {
+  const threats: Cell[] = [];
+
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = pawn.cell.row + dir;
   const col = pawn.cell.col;
-  const threats: Cell[] = [];
   for (const tCol of [col - 1, col + 1]) {
-    if (tCol >= 0 && tCol < 8 && nextRow >= 0 && nextRow < 8) {
-      if (evaluateThreats) {
-        threats.push({ row: nextRow, col: tCol, threats: [] });
-      } else {
-        const target = getPieceAt(nextRow, tCol, pieces);
-        if (target && target.color !== pawn.color) {
-          threats.push({ row: nextRow, col: tCol, threats: [] });
-        } else if (!target) {
-          checkEnPassantMoves(pawn, pieces, nextRow, tCol, threats);
-        }
+    if (tCol < 0 || tCol >= 8 || nextRow < 0 || nextRow >= 8) continue;
+
+    const threatCell = board[nextRow][tCol];
+    if (evaluateThreats) threats.push(threatCell);
+    else {
+      const target = getPieceAt(threatCell.id, pieces);
+      if (target && target.color !== pawn.color) {
+        threats.push(threatCell);
+      } else if (!target) {
+        checkEnPassantMoves(pawn, pieces, nextRow, tCol, threats, board);
       }
     }
   }
@@ -123,69 +118,78 @@ const checkEnPassantMoves = (
   pieces: Piece[],
   nextRow: number,
   tCol: number,
-  threats: Cell[]
+  threats: Cell[],
+  board: Cell[][]
 ) => {
-  const target = getPieceAt(pawn.cell.row, tCol, pieces);
-  switch (target?.type) {
-    case "pawn":
-      if (target && target.color !== pawn.color && target.canBeTakenEnPassant)
-        threats.push({
-          row: nextRow,
-          col: tCol,
-          threats: [],
-          special: { type: "enPassant", pawnId: target.id },
-        });
-      break;
-    default:
-      break;
+  const targetCell = board[pawn.cell.row][tCol];
+  const target = getPieceAt(targetCell.id, pieces);
+  if (!target) return;
+  if (target.type !== "pawn") return;
+
+  if (target.color !== pawn.color && target.canBeTakenEnPassant) {
+    const nextCell = board[nextRow][tCol];
+    nextCell["special"] = { type: "enPassant", pawnId: target.id };
+    threats.push(nextCell);
   }
 };
 
 export const rookMoves: (
   rook: Rook,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (rook, pieces, evaluateThreats) => {
-  return moveGenerator(rook, pieces, rDir, 7, evaluateThreats);
+) => Cell[] = (rook, pieces, board, evaluateThreats) => {
+  return moveGenerator(rook, pieces, board, rDir, 7, evaluateThreats);
 };
 
 export const knightMoves: (
   knight: Knight,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (knight, pieces, evaluateThreats) => {
-  return moveGenerator(knight, pieces, kDir, 1, evaluateThreats);
+) => Cell[] = (knight, pieces, board, evaluateThreats) => {
+  return moveGenerator(knight, pieces, board, kDir, 1, evaluateThreats);
 };
 
 export const bishopMoves: (
   bishop: Bishop,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (bishop, pieces, evaluateThreats) => {
-  return moveGenerator(bishop, pieces, bDir, 7, evaluateThreats);
+) => Cell[] = (bishop, pieces, board, evaluateThreats) => {
+  return moveGenerator(bishop, pieces, board, bDir, 7, evaluateThreats);
 };
 
 export const queenMoves: (
   queen: Queen,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (queen, pieces, evaluateThreats) => {
-  return moveGenerator(queen, pieces, qDir, 7, evaluateThreats);
+) => Cell[] = (queen, pieces, board, evaluateThreats) => {
+  return moveGenerator(queen, pieces, board, qDir, 7, evaluateThreats);
 };
 
 export const kingMoves: (
   king: King,
   pieces: Piece[],
+  board: Cell[][],
   evaluateThreats: boolean
-) => Cell[] = (king, pieces, evaluateThreats) => {
-  const kingMoves = moveGenerator(king, pieces, qDir, 1, evaluateThreats);
+) => Cell[] = (king, pieces, board, evaluateThreats) => {
+  const kingMoves = moveGenerator(
+    king,
+    pieces,
+    board,
+    qDir,
+    1,
+    evaluateThreats
+  );
   if (!king.hasMoved && !evaluateThreats)
-    kingMoves.push(...castlingMoves(king, pieces));
+    kingMoves.push(...castlingMoves(king, pieces, board));
   return kingMoves;
 };
 
-const castlingMoves = (king: King, pieces: Piece[]) => {
-  let threats = checkThreats(king.cell, pieces, king.color);
+const castlingMoves = (king: King, pieces: Piece[], board: Cell[][]) => {
+  let threats = checkThreats(king.cell, pieces, king.color, board);
   if (threats.length > 0) return [];
 
   const cMoves: Cell[] = [];
@@ -194,29 +198,35 @@ const castlingMoves = (king: King, pieces: Piece[]) => {
   );
   for (const r of rooks) {
     if (r.type !== "rook") continue;
-    const dir = r.cell.col > king.cell.col ? 1 : -1;
-    let blocked = false;
-    let col = king.cell.col + dir;
+
     const row = king.cell.row;
+    const dir = r.cell.col > king.cell.col ? 1 : -1;
+    let col = king.cell.col + dir;
+    let blocked = false;
     while (col !== r.cell.col) {
-      const cell = { row: row, col: col, threats: [] };
-      threats = checkThreats(cell, pieces, king.color);
-      if (isOcupied(pieces, king.cell.row, col) || threats.length > 0) {
+      const cell = board[row][col];
+
+      threats = checkThreats(cell, pieces, king.color, board);
+      if (isOcupied(pieces, row, col) || threats.length > 0) {
         blocked = true;
         break;
       }
       col += dir;
     }
-    if (!blocked)
-      cMoves.push({
-        row: king.cell.row,
-        col: king.cell.col + dir * 2,
-        threats: [],
-        special: { type: "castling", rookId: r.id },
-      });
+
+    if (blocked) continue;
+
+    const cell = board[row][king.cell.col + dir * 2];
+    cell["special"] = { type: "castling", rookId: r.id };
+    cMoves.push(cell);
   }
   return cMoves;
 };
 
 const isOcupied = (pieces: Piece[], row: number, col: number) =>
   pieces.some((p) => col === p.cell.col && p.cell.row === row);
+
+const getPieceAt: (id: string, pieces: Piece[]) => Piece | undefined = (
+  id,
+  pieces
+) => pieces.find((p) => !p.isTaken && p.cell.id === id);

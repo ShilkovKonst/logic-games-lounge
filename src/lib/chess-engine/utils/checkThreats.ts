@@ -1,19 +1,20 @@
 import { Cell, Piece } from "../types";
-import { defineMoveSet } from "./defineMoveSet";
+import { getMoveSet } from "./getMoveSet";
 
 export function checkThreats(
   cell: Cell,
-  piecesState: Piece[],
-  currentPlayer: string
+  pieces: Piece[],
+  currentPlayerColor: string,
+  board: Cell[][]
 ): Piece[] {
-  const foePieces = piecesState.filter(
-    (p) => p.color !== currentPlayer && !p.isTaken
+  const foePieces = pieces.filter(
+    (p) => p.color !== currentPlayerColor && !p.isTaken
   );
   const threats = [];
   for (const foe of foePieces) {
-    const foeMoveSet = defineMoveSet(foe, piecesState, true);
+    const foeMoveSet = getMoveSet(foe, pieces, board, true);
     for (const move of foeMoveSet) {
-      if (move.col === cell.col && move.row === cell.row) {
+      if (move.id === cell.id) {
         threats.push(foe);
       }
     }

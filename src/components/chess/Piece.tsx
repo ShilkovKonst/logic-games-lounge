@@ -2,7 +2,6 @@ import { ChessContext } from "@/context/chessContext";
 import { Piece as PieceType } from "@/lib/chess-engine/types";
 import { dragStart as handleDragStart } from "@/lib/chess-engine/dragNDrop/dragStart";
 import { MouseEvent, TouchEvent, useContext } from "react";
-import { getMoveSet } from "@/lib/chess-engine/utils/getMoveSet";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import PiecesToExchange from "./PiecesToExchange";
 
@@ -14,6 +13,7 @@ const Piece: React.FC<PieceProps> = ({ piece }) => {
   const context = useContext(ChessContext);
   if (!context) throw new Error("Piece must be used within ChessProvider");
   const {
+    board,
     playerState,
     currentTurn,
     setCurrentTurn,
@@ -21,7 +21,7 @@ const Piece: React.FC<PieceProps> = ({ piece }) => {
     setSelectedPiece,
     pieceToExchange,
     setPieceToExchange,
-    setMoveSet,
+    // setMoveSet,
     pieces,
   } = context;
 
@@ -52,37 +52,33 @@ const Piece: React.FC<PieceProps> = ({ piece }) => {
                 handleDragStart(
                   e,
                   piece,
-                  pieces,
+                  pieces.filter(p => !p.isTaken),
                   playerState.color,
                   currentTurn,
+                  board,
                   setSelectedPiece,
                   setPieceToExchange,
-                  setMoveSet,
+                  // setMoveSet,
                   changeTurn
                 ),
               onTouchStart: (e: TouchEvent<HTMLButtonElement>) =>
                 handleDragStart(
                   e,
                   piece,
-                  pieces,
+                  pieces.filter(p => !p.isTaken),
                   playerState.color,
                   currentTurn,
+                  board,
                   setSelectedPiece,
                   setPieceToExchange,
-                  setMoveSet,
+                  // setMoveSet,
                   changeTurn
                 ),
             }
           : {
               onClick: () => {
                 if (!pieceToExchange)
-                  getMoveSet(
-                    piece,
-                    pieces,
-                    setMoveSet,
-                    setSelectedPiece,
-                    currentTurn
-                  );
+                  setSelectedPiece(piece);
               },
             })}
         className={`relative scale-100 ${
