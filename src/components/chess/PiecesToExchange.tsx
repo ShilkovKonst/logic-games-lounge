@@ -1,7 +1,6 @@
 import { ChessContext } from "@/context/chessContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { Piece } from "@/lib/chess-engine/types";
-import { defineMoveSet } from "@/lib/chess-engine/utils/filterLegalMoves";
 import { useContext, useEffect, useState } from "react";
 
 type ExchangeProps = {
