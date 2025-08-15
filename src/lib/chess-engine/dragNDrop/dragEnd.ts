@@ -17,11 +17,12 @@ export const dragEnd: HandleDragEndType = (
 ) => {
   clone.hidden = true;
   const dropzone = defineDropzone(e, clone);
+  clone.hidden = false;
 
   if (dropzone) {
     const [row, col] = dropzone.id.split("-").map((i) => parseInt(i, 10));
     const cell = board[row][col];
-    
+
     const currentPiece = pieces.find(
       (p) => p.cell.row === piece.cell.row && p.cell.col === piece.cell.col
     );

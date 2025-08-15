@@ -11,8 +11,6 @@ export const dragStart: HandleDragStartType = (
   e,
   piece,
   pieces,
-  playerColor,
-  currentTurn,
   board,
   setSelectedPiece,
   setPieceToExchange,
@@ -31,7 +29,7 @@ export const dragStart: HandleDragStartType = (
     "h-[4rem] w-[4rem] md:h-[5rem] md:w-[5rem] lg:w-18 lg:h-18 cursor-grabbing"
   );
   clone.style.position = "absolute";
-  clone.style.rotate = playerColor === "white" ? "0deg" : "180deg";
+  // clone.style.rotate = playerColor === "white" ? "0deg" : "180deg";
   clone.style.zIndex = "1000";
   clone.style.opacity = "100%";
   document.body.appendChild(clone);

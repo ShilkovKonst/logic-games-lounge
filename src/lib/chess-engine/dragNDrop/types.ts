@@ -4,14 +4,12 @@ import {
   SetStateAction,
   TouchEvent as ReactTouchEvent,
 } from "react";
-import { Piece, Color, Cell } from "../types";
+import { Piece, Cell } from "../types";
 
 export type HandleDragStartType = (
   e: ReactMouseEvent | ReactTouchEvent,
   piece: Piece,
   pieces: Piece[],
-  playerColor: Color,
-  currentTurn: Color,
   board: Cell[][],
   setSelectedPiece: Dispatch<SetStateAction<Piece | undefined>>,
   setPieceToExchange: Dispatch<SetStateAction<Piece | undefined>>,

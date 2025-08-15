@@ -1,6 +1,6 @@
 import { DefineDropzoneType } from "./types";
 
-export const defineDropzone: DefineDropzoneType = (e, clone) => {
+export const defineDropzone: DefineDropzoneType = (e) => {
   let dropzone;
   if (e instanceof MouseEvent) {
     dropzone = document
@@ -15,6 +15,5 @@ export const defineDropzone: DefineDropzoneType = (e, clone) => {
       )
       ?.closest(".dropzone");
   }
-  clone.hidden = false;
   return dropzone as HTMLElement | null;
 };

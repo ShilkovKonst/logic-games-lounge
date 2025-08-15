@@ -6,13 +6,37 @@ export type Player = "host" | "guest";
 
 export type Status = "CHECK" | "CHECKMATE" | "STALEMATE" | "NORMAL";
 
+export type Color = "white" | "black";
+
 export type PlayerState = {
   type: Player;
   color: Color;
   status: Status;
 };
 
-export type Color = "white" | "black";
+export interface BoardState {
+  pieces: Piece[];
+}
+
+export interface Turn {
+  turnNo: number;
+  pieceToMove: Piece;
+  pieceToTake?: Piece;
+  pieceToCastle?: Piece;
+  pieceToExchange?: Piece;
+  fromCell: Cell;
+  toCell: Cell;
+  exchange: boolean;
+  castling: boolean;
+  gameState: PlayerState[];
+  boardState: BoardState;
+}
+
+export interface GameState {
+  currentBoardState: BoardState;
+  turn: PlayerState;
+  log: Turn[];
+}
 
 export type PieceType =
   | "pawn"
@@ -42,7 +66,7 @@ export interface Cell {
   special?: Castling | EnPassant;
 }
 
-export interface Base {
+export interface BasePiece {
   id: string;
   cell: Cell;
   color: Color;
@@ -50,52 +74,28 @@ export interface Base {
   moveSet: Cell[];
 }
 
-export interface Pawn extends Base {
+export interface Pawn extends BasePiece {
   type: "pawn";
   hasMoved: boolean;
   canBeTakenEnPassant: boolean;
 }
-export interface Rook extends Base {
+export interface Rook extends BasePiece {
   type: "rook";
   hasMoved: boolean;
 }
-export interface King extends Base {
+export interface King extends BasePiece {
   type: "king";
   hasMoved: boolean;
   isInDanger: boolean;
 }
-export interface Queen extends Base {
+export interface Queen extends BasePiece {
   type: "queen";
 }
-export interface Knight extends Base {
+export interface Knight extends BasePiece {
   type: "knight";
 }
-export interface Bishop extends Base {
+export interface Bishop extends BasePiece {
   type: "bishop";
 }
 
 export type Piece = Pawn | King | Rook | Queen | Knight | Bishop;
-
-export interface BoardState {
-  pieces: Piece[];
-}
-
-export interface Turn {
-  turnNo: number;
-  pieceToMove: Piece;
-  pieceToTake: Piece | undefined;
-  pieceToCastle: Piece | undefined;
-  pieceToExchange: Piece | undefined;
-  fromCell: Cell;
-  toCell: Cell;
-  exchange: boolean;
-  castling: boolean;
-  gameState: PlayerState[];
-  boardState: BoardState;
-}
-
-export interface GameState {
-  currentBoardState: BoardState;
-  turn: PlayerState;
-  log: Turn[];
-}
