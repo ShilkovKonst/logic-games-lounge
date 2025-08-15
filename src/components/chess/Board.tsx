@@ -10,45 +10,40 @@ import {
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
-import { Dispatch, SetStateAction, useContext, useEffect } from "react";
-import { ChessContext } from "@/context/chessContext";
+import { Dispatch, SetStateAction, useEffect } from "react";
 import TakenPieces from "./TakenPieces";
 import { filterLegalMoves } from "@/lib/chess-engine/utils/filterLegalMoves";
 import { checkThreats } from "@/lib/chess-engine/utils/checkThreats";
+import { createBoard } from "@/lib/chess-engine/utils/createBoard";
+import { usePlayerState } from "@/context/PlayerStateContext";
+import { useBoardState } from "@/context/BoardStateContext";
+import { useGameState } from "@/context/GameStateContext";
 
 type BoardProps = {
   curTurn: Color | null;
-  pState: PlayerState | null;
+  plState: PlayerState | null;
   pcs: Piece[] | null;
 };
 
-const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Board must be used within ChessProvider");
+const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
+  const board: CellType[][] = createBoard();
 
-  const {
-    playerState,
-    setPlayerState,
-    currentTurn,
-    setCurrentTurn,
-    setSelectedPiece,
-    setPieceToExchange,
-    board,
-    pieces,
-    setPieces,
-  } = context;
+  const { playerState, setPlayerState } = usePlayerState();
+  const { currentTurn, setCurrentTurn, setSelectedPiece, setPieceToExchange } =
+    useGameState();
+  const { pieces, setPieces } = useBoardState();
 
-  const pS: PlayerState = pState
-    ? pState
-    : { color: "white", status: "NORMAL", type: "host" };
+  const pS: PlayerState = plState ?? {
+    color: "white",
+    status: "NORMAL",
+    type: "host",
+  };
 
   const thisPiece: (i: number, j: number) => Piece | undefined = (i, j) =>
     pieces.find((p) => p.cell.col === j && p.cell.row === i && !p.isTaken);
 
   useEffect(() => {
-    setPlayerState(
-      pState ?? { color: "white", status: "NORMAL", type: "host" }
-    );
+    setPlayerState(pS);
     setCurrentTurn(curTurn ?? "white");
     setPieces(pcs ?? populateBoard(pS.color, board));
   }, []);
@@ -82,9 +77,7 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
               setSelectedPiece(undefined);
               setPieceToExchange(undefined);
               setCurrentTurn(curTurn ?? "white");
-              setPlayerState(
-                pState ?? { color: "white", status: "NORMAL", type: "host" }
-              );
+              setPlayerState(pS);
               setPieces(pcs ?? populateBoard(pS.color, board));
             }}
           >
@@ -128,6 +121,7 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, pState }) => {
                       key={i * 10 + j}
                       cell={cell}
                       piece={thisPiece(i, j)}
+                      board={board}
                     />
                   ))}
                 </div>

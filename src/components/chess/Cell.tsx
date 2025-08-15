@@ -1,15 +1,16 @@
 import { Cell as CellType, Piece as PieceT } from "@/lib/chess-engine/types";
 import Piece from "./Piece";
-import { useContext } from "react";
-import { ChessContext } from "@/context/chessContext";
 import HighLight from "./HighLight";
+import { useGameState } from "@/context/GameStateContext";
 
-type CellProps = { cell: CellType; piece: PieceT | undefined };
+type CellProps = {
+  board: CellType[][];
+  cell: CellType;
+  piece: PieceT | undefined;
+};
 
-const Cell: React.FC<CellProps> = ({ cell, piece }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Cell must be used within ChessProvider");
-  const { selectedPiece } = context;
+const Cell: React.FC<CellProps> = ({ board, cell, piece }) => {
+  const { selectedPiece } = useGameState();
 
   const move =
     selectedPiece && selectedPiece.moveSet.find((m) => m.id === cell.id);
@@ -24,7 +25,7 @@ const Cell: React.FC<CellProps> = ({ cell, piece }) => {
   } ${cell.col === 0 ? "border-l-2" : ""} ${
     cell.col === 7 ? "border-r-2" : ""
   }`;
-  
+
   return (
     <div
       id={`${cell.row}-${cell.col}`}
@@ -33,7 +34,7 @@ const Cell: React.FC<CellProps> = ({ cell, piece }) => {
       } flex justify-center items-center h-12 w-12 md:h-14 md:w-14 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
     >
       <HighLight row={cell.row} col={cell.col} move={move} piece={piece} />
-      {piece && <Piece piece={piece} />}
+      {piece && <Piece board={board} piece={piece} />}
     </div>
   );
 };

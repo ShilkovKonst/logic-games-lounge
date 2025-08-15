@@ -1,21 +1,17 @@
-import { ChessContext } from "@/context/chessContext";
+import { useBoardState } from "@/context/BoardStateContext";
+import { useGameState } from "@/context/GameStateContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { Piece } from "@/lib/chess-engine/types";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
-type ExchangeProps = {
-  changeTurn: () => void;
-};
-
-const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Piece must be used within ChessProvider");
-  const { selectedPiece, pieces, pieceToExchange, setPieceToExchange } =
-    context;
+const PiecesToExchange: React.FC = () => {
+  const { selectedPiece, pieceToExchange, setPieceToExchange, changeTurn } =
+    useGameState();
+  const { pieces } = useBoardState();
 
   const [piecesToExchange, setPiecesToExchange] = useState<Piece[]>([]);
 
-  const handleExchange = (pieceToChange: Piece, changeTurn: () => void) => {
+  const handleExchange = (pieceToChange: Piece) => {
     if (selectedPiece) {
       const selected = pieces.find((p) => p.id === selectedPiece.id);
       if (selected) {
@@ -76,7 +72,7 @@ const PiecesToExchange: React.FC<ExchangeProps> = ({ changeTurn }) => {
         <button
           key={i}
           className="cursor-pointer p-1 inset-shadow-cell-ambermedium hover:bg-amber-600 hover:opacity-90"
-          onClick={() => handleExchange(p, changeTurn)}
+          onClick={() => handleExchange(p)}
         >
           <PieceIcon color={p.color} type={p.type} />
         </button>

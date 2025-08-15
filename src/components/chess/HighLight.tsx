@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { ChessContext } from "@/context/chessContext";
+import { useGameState } from "@/context/GameStateContext";
+import { usePlayerState } from "@/context/PlayerStateContext";
 import { Cell, Piece } from "@/lib/chess-engine/types";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 type HighLightProps = {
   row: number;
@@ -11,9 +12,8 @@ type HighLightProps = {
 };
 
 const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Piece must be used within ChessProvider");
-  const { selectedPiece, currentTurn } = context;
+  const { playerState } = usePlayerState();
+  const { currentTurn, selectedPiece } = useGameState();
 
   const [isCastlingRook, setIsCastlingRook] = useState<boolean | undefined>(
     false
@@ -22,7 +22,8 @@ const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
   const isSelected =
     selectedPiece?.cell.row === row && selectedPiece.cell.col === col;
   const hasPieces = selectedPiece && piece;
-  const canMove: boolean = selectedPiece?.color === currentTurn;
+  const canMove: boolean =
+    selectedPiece?.color === currentTurn && currentTurn === playerState.color;
   const inMoveSet: boolean = !!move;
   const enPassantCell: Cell | undefined = selectedPiece?.moveSet.find(
     (m) =>

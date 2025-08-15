@@ -1,11 +1,8 @@
-import { ChessContext } from "@/context/chessContext";
+import { usePlayerState } from "@/context/PlayerStateContext";
 import { IncrementProps } from "@/lib/chess-engine/types";
-import { useContext } from "react";
 
 const ColCount: React.FC<IncrementProps> = ({ increment }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Piece must be used within ChessProvider");
-  const { playerState } = context;
+  const { playerState } = usePlayerState();
 
   const count: string[] = Array.from({ length: 8 }, (_, i) =>
     String.fromCharCode(65 + (playerState.color === "white" ? i : 7 - i))

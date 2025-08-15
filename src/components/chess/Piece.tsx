@@ -1,49 +1,46 @@
-import { ChessContext } from "@/context/chessContext";
-import { Piece as PieceType } from "@/lib/chess-engine/types";
+import { Cell, Piece as PieceType } from "@/lib/chess-engine/types";
 import { dragStart as handleDragStart } from "@/lib/chess-engine/dragNDrop/dragStart";
-import { MouseEvent, TouchEvent, useContext } from "react";
+import { MouseEvent, TouchEvent } from "react";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import PiecesToExchange from "./PiecesToExchange";
+import { useGameState } from "@/context/GameStateContext";
+import { usePlayerState } from "@/context/PlayerStateContext";
+import { useBoardState } from "@/context/BoardStateContext";
 
 type PieceProps = {
+  board: Cell[][];
   piece: PieceType;
 };
 
-const Piece: React.FC<PieceProps> = ({ piece }) => {
-  const context = useContext(ChessContext);
-  if (!context) throw new Error("Piece must be used within ChessProvider");
+const Piece: React.FC<PieceProps> = ({ board, piece }) => {
+  const { type, color } = piece;
+
+  const { playerState } = usePlayerState();
+  const { pieces } = useBoardState();
   const {
-    board,
-    playerState,
     currentTurn,
-    setCurrentTurn,
+    changeTurn,
     selectedPiece,
     setSelectedPiece,
     pieceToExchange,
     setPieceToExchange,
-    // setMoveSet,
-    pieces,
-  } = context;
+  } = useGameState();
 
-  const { type, color } = piece;
+  const activePieces = pieces.filter((p) => !p.isTaken);
 
   const isSelected =
     selectedPiece?.cell.col === piece.cell.col &&
     selectedPiece?.cell.row === piece.cell.row;
 
-  const isCurrentPlayer = color === currentTurn;
-
-  const changeTurn = () => {
-    setSelectedPiece(undefined);
-    setCurrentTurn((prev) => (prev === "white" ? "black" : "white"));
-  };
+  const isCurrentPlayer =
+    currentTurn === playerState.color && color === currentTurn;
 
   return (
     <div
       className={`piece relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}
     >
       {pieceToExchange && pieceToExchange.id === piece.id && (
-        <PiecesToExchange changeTurn={changeTurn} />
+        <PiecesToExchange />
       )}
       <button
         {...(isCurrentPlayer && !pieceToExchange
@@ -52,33 +49,26 @@ const Piece: React.FC<PieceProps> = ({ piece }) => {
                 handleDragStart(
                   e,
                   piece,
-                  pieces.filter(p => !p.isTaken),
-                  playerState.color,
-                  currentTurn,
+                  activePieces,
                   board,
                   setSelectedPiece,
                   setPieceToExchange,
-                  // setMoveSet,
                   changeTurn
                 ),
               onTouchStart: (e: TouchEvent<HTMLButtonElement>) =>
                 handleDragStart(
                   e,
                   piece,
-                  pieces.filter(p => !p.isTaken),
-                  playerState.color,
-                  currentTurn,
+                  activePieces,
                   board,
                   setSelectedPiece,
                   setPieceToExchange,
-                  // setMoveSet,
                   changeTurn
                 ),
             }
           : {
               onClick: () => {
-                if (!pieceToExchange)
-                  setSelectedPiece(piece);
+                if (!pieceToExchange) setSelectedPiece(piece);
               },
             })}
         className={`relative scale-100 ${
