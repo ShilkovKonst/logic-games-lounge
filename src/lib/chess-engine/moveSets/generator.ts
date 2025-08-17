@@ -10,8 +10,6 @@ export function moveGenerator(
 ): string[] {
   const moves: string[] = [];
   const pieceCell = getCell(board, piece.cell);
-  if (!pieceCell) return moves;
-
   const r = pieceCell.row;
   const c = pieceCell.col;
 
@@ -46,8 +44,6 @@ export function attackGenerator(
 ): string[] {
   const attacks: string[] = [];
   const pieceToCheckCell = getCell(board, pieceToCheck.cell);
-  if (!pieceToCheckCell) return attacks;
-
   const r = pieceToCheckCell.row;
   const c = pieceToCheckCell.col;
 

@@ -31,8 +31,6 @@ export function pawnMoves(
 ): string[] {
   const moves: string[] = [];
   const cell = getCell(board, pawn.cell);
-  if (!cell) return moves;
-
   const col = cell.col;
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
@@ -60,8 +58,6 @@ export function pawnAttackMoves(
 ): string[] {
   const attackMoves: string[] = [];
   const cell = getCell(board, pawn.cell);
-  if (!cell) return attackMoves;
-
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
   const col = cell.col;
@@ -91,8 +87,6 @@ function checkEnPassantMoves(
   board: Cell[][]
 ): void {
   const cell = getCell(board, pawn.cell);
-  if (!cell) return;
-
   const targetCell = board[cell.row][tCol];
   const target = getPieceAt(targetCell.id, pieces);
   if (!target) return;

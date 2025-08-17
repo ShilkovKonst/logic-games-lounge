@@ -97,8 +97,6 @@ function getAttackSet(
 function pawnAttacks(pawn: Pawn, board: Cell[][]): string[] {
   const res: string[] = [];
   const cell = getCell(board, pawn.cell);
-  if (!cell) return res;
-
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
   const col = cell.col;

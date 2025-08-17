@@ -17,7 +17,6 @@ import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import { checkPieceFinalMoves } from "@/lib/chess-engine/moveSets/checkPieceFinalMoves";
-import { getCell } from "@/lib/chess-engine/utils/cellUtil";
 
 type BoardProps = {
   curTurn: Color | null;
@@ -30,7 +29,6 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
   const {
     currentTurn,
     setCurrentTurn,
-    selectedPiece,
     setSelectedPiece,
     setPieceToExchange,
   } = useGameState();
@@ -42,14 +40,6 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
     type: "host",
   };
 
-  const clearThreats = () => {
-    for (const row of board) {
-      for (const cell of row) {
-        cell.threats.clear();
-      }
-    }
-  };
-
   useEffect(() => {
     setPlayerState(pS);
     setCurrentTurn(curTurn ?? "white");
@@ -57,27 +47,8 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
   }, []);
 
   useEffect(() => {
-    // clearThreats();
-    // getAllActiveMoveSets(currentTurn, pieces, board);
     setSelectedPiece(undefined);
   }, [currentTurn]);
-
-  useEffect(() => {
-    // clearThreats();
-    // if (selectedPiece) {
-    //   selectedPiece.moveSet.clear();
-    //   const moveSet = checkPieceFinalMoves(
-    //     selectedPiece,
-    //     pieces,
-    //     playerState.color,
-    //     board
-    //   );
-    //   for (const move of moveSet) selectedPiece.moveSet.add(move);
-
-    // console.log(selectedPiece.id, selectedPiece.moveSet);
-    // }
-    console.log(board);
-  }, [selectedPiece]);
 
   return (
     <>

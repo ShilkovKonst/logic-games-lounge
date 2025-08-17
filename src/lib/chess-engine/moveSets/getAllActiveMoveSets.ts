@@ -17,6 +17,4 @@ export function getAllActiveMoveSets(
     const moveSet = checkPieceFinalMoves(p, pieces, player, board);
     for (const move of moveSet) p.moveSet.add(move);
   }
-  console.log(board);
-  console.log(pieces);
 }

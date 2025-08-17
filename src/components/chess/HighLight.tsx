@@ -25,11 +25,24 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
   const isSelected = selectedPiece && selectedPiece?.id === piece?.id;
   const hasPieces = !!selectedPiece && !!piece;
   const inMoveSet = selectedPiece?.moveSet.has(cell.id);
+  const isInDanger = inMoveSet && cell.threats.size > 0;
+
+  const enPassantCell = () => {
+    if (!selectedPiece || !piece) return undefined;
+    for (const move of selectedPiece.moveSet) {
+      const moveCell = getCell(board, move);
+      const rowEnPassant =
+        moveCell.row === cell.row + (piece?.color === "white" ? +1 : -1);
+      const sameCol = moveCell.col === cell.col;
+      if (rowEnPassant && sameCol) return moveCell;
+    }
+  };
   const canBeTakenEnPassant: boolean | undefined =
+    selectedPiece?.type === "pawn" &&
     piece?.type === "pawn" &&
     piece.canBeTakenEnPassant &&
-    piece.color !== currentTurn;
-  const isInDanger = inMoveSet && cell.threats.size > 0;
+    piece.color !== currentTurn &&
+    !!enPassantCell();
 
   useEffect(() => {
     setIsCastlingRook(
@@ -38,11 +51,6 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
         isRookInitial(piece, selectedPiece) &&
         hasInMoves(selectedPiece, piece, board)
     );
-    if (piece && piece.type === "rook" && hasPieces) {
-      console.log("isKingInitial", isKingInitial(selectedPiece));
-      console.log("isRookInitial", isRookInitial(piece, selectedPiece));
-      console.log("hasInMoves", hasInMoves(selectedPiece, piece, board));
-    }
   }, [selectedPiece]);
 
   return (
@@ -76,10 +84,10 @@ export default HighLight;
 
 function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
   const selectedPieceCell = getCell(board, selected.cell);
-  if (!selectedPieceCell) return false;
-
   const d = dir(piece, selected, board);
-  const col = long(piece, selected, board) ? selectedPieceCell.col + d * 2 : selectedPieceCell.col + d;
+  const col = long(piece, selected, board)
+    ? selectedPieceCell.col + d * 2
+    : selectedPieceCell.col + d;
   const cell = board[selectedPieceCell.row][col];
   return selected.moveSet.has(cell?.id);
 }
@@ -97,16 +105,12 @@ function isRookInitial(piece: Piece, selected: Piece): boolean {
 function dir(piece: Piece, selected: Piece, board: Cell[][]): number {
   const selectedPieceCell = getCell(board, selected.cell);
   const pieceCell = getCell(board, piece.cell);
-  if (!selectedPieceCell || !pieceCell) return 0;
-
   return selectedPieceCell.col > pieceCell.col ? -1 : 1;
 }
 
 function long(piece: Piece, selected: Piece, board: Cell[][]): boolean {
   const selectedPieceCell = getCell(board, selected.cell);
   const pieceCell = getCell(board, piece.cell);
-  if (!selectedPieceCell || !pieceCell) return false;
-
   return Math.abs(selectedPieceCell.col - pieceCell.col) === 4;
 }
 

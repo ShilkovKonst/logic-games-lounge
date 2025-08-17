@@ -10,5 +10,7 @@ export function rcToNotation(row: number, col: number): string {
 }
 
 export function getCell(board: Cell[][], cellId: string) {
-  return board.flat().find((c) => c.id === cellId);
+  const cell = board.flat().find((c) => c.id === cellId);
+  if (!cell) throw new Error(`Cell with id "${cellId}" not found`);
+  return cell;
 }

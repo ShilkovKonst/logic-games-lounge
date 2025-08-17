@@ -13,14 +13,6 @@ type CellProps = {
 const Cell: React.FC<CellProps> = ({ board, cell }) => {
   const { selectedPiece } = useGameState();
   const { pieces } = useBoardState();
-  if (selectedPiece) {
-    // console.log(cell.id, selectedPiece.moveSet.values().toArray());
-    for (const move of selectedPiece.moveSet)
-      if (move == cell.id) {
-        console.log(cell, selectedPiece.moveSet.values().toArray());
-        console.log(selectedPiece.moveSet.has(cell.id));
-      }
-  }
   const piece = getPieceAt(cell.id, pieces);
   const inMoveSet = selectedPiece?.moveSet.has(cell.id);
 

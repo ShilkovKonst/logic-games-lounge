@@ -24,15 +24,13 @@ export const dragEnd: HandleDragEndType = (
     const [row, col] = dropzone.id.split("-").map((i) => parseInt(i, 10));
     const cell = board[row][col];
 
-    const currentPiece = pieces.find((p) => p.cell === piece.cell);
+    const currentPiece = pieces.find((p) => p.id === piece.id);
 
     if (currentPiece) {
       handleCapture(cell, currentPiece, pieces, currentPiece.moveSet, board);
       handleCastling(cell, currentPiece, pieces, currentPiece.moveSet, board);
       updateFlagsAndPosition(cell, currentPiece, pieces, board);
       handleExchange(row, currentPiece, setPieceToExchange, changeTurn);
-
-      console.log(currentPiece);
     }
   }
 
@@ -94,8 +92,6 @@ function handleCastling(
   if (currentPiece.type !== "king" || currentPiece.hasMoved) return;
 
   const currentPieceCell = getCell(board, currentPiece.cell);
-  if (!currentPieceCell) return;
-
   let moveCastling = undefined;
   for (const move of moveSet) {
     if (move === cell.id) moveCastling = getCell(board, move);
@@ -140,8 +136,6 @@ function updateFlagsAndPosition(
     if (p.type === "pawn") p.canBeTakenEnPassant = false;
   });
   const currentPieceCell = getCell(board, currentPiece.cell);
-  if (!currentPieceCell) return;
-
   const step = Math.abs(cell.row - currentPieceCell.row);
   currentPiece.cell = cell.id;
 
