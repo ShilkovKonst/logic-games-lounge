@@ -1,5 +1,5 @@
 import { Cell, Color, Piece } from "../types";
-import { filterLegalMoves } from "./filterLegalMoves";
+import { getAllActiveMoveSets } from "../moveSets/getAllActiveMoveSets";
 
 export const populateBoard: (player: Color, board: Cell[][]) => Piece[] = (
   player,
@@ -12,8 +12,7 @@ export const populateBoard: (player: Color, board: Cell[][]) => Piece[] = (
     pieces.push(type(6, col, board));
     pieces.push(type(7, col, board));
   }
-  for (const p of pieces)
-    p["moveSet"] = filterLegalMoves(p, pieces, player, board);
+  getAllActiveMoveSets(player, pieces, board);
   return pieces;
 };
 
@@ -30,47 +29,47 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
       case 0:
         return {
           id: `rook${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "rook",
           hasMoved: false,
         };
       case 1:
         return {
           id: `knight${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "knight",
         };
       case 2:
         return {
           id: `bishop${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "bishop",
         };
       case 3:
         return {
           id: `queen${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "queen",
         };
       case 4:
         return {
           id: `king${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "king",
           hasMoved: false,
           isInDanger: false,
@@ -78,28 +77,28 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
       case 5:
         return {
           id: `bishop${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "bishop",
         };
       case 6:
         return {
           id: `knight${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "knight",
         };
       case 7:
         return {
           id: `rook${row}${col}`,
-          cell: cell,
+          cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: [],
+          moveSet: new Set<string>(),
           type: "rook",
           hasMoved: false,
         };
@@ -109,10 +108,10 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
   } else
     return {
       id: `pawn${row}${col}`,
-      cell: cell,
+      cell: cell.id,
       color: row === 1 ? "black" : "white",
       isTaken: false,
-      moveSet: [],
+      moveSet: new Set<string>(),
       type: "pawn",
       hasMoved: false,
       canBeTakenEnPassant: false,

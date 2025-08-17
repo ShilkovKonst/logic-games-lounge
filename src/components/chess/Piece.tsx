@@ -29,8 +29,7 @@ const Piece: React.FC<PieceProps> = ({ board, piece }) => {
   const activePieces = pieces.filter((p) => !p.isTaken);
 
   const isSelected =
-    selectedPiece?.cell.col === piece.cell.col &&
-    selectedPiece?.cell.row === piece.cell.row;
+    selectedPiece?.cell === piece.cell && selectedPiece?.cell === piece.cell;
 
   const isCurrentPlayer =
     currentTurn === playerState.color && color === currentTurn;
@@ -51,6 +50,7 @@ const Piece: React.FC<PieceProps> = ({ board, piece }) => {
                   piece,
                   activePieces,
                   board,
+                  playerState,
                   setSelectedPiece,
                   setPieceToExchange,
                   changeTurn
@@ -61,6 +61,7 @@ const Piece: React.FC<PieceProps> = ({ board, piece }) => {
                   piece,
                   activePieces,
                   board,
+                  playerState,
                   setSelectedPiece,
                   setPieceToExchange,
                   changeTurn

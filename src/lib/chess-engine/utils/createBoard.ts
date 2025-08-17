@@ -10,7 +10,7 @@ export function createBoard(): Cell[][] {
         id: rcToNotation(i, j),
         row: i,
         col: j,
-        threats: [],
+        threats: new Set<string>(),
       };
       row.push(cell);
     }

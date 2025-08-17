@@ -7,9 +7,11 @@ import {
   useState,
   useContext,
 } from "react";
-import { Piece } from "@/lib/chess-engine/types";
+import { Cell, Piece } from "@/lib/chess-engine/types";
+import { createBoard } from "@/lib/chess-engine/utils/createBoard";
 
 interface BoardContextType {
+  board: Cell[][];
   pieces: Piece[];
   setPieces: Dispatch<SetStateAction<Piece[]>>;
 }
@@ -23,10 +25,11 @@ interface BoardProviderProps {
 }
 
 export function BoardProvider({ children }: BoardProviderProps) {
+  const board: Cell[][] = createBoard();
   const [pieces, setPieces] = useState<Piece[]>([]);
 
   return (
-    <BoardStateContext.Provider value={{ pieces, setPieces }}>
+    <BoardStateContext.Provider value={{ board, pieces, setPieces }}>
       {children}
     </BoardStateContext.Provider>
   );

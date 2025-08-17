@@ -1,17 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
+import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { Cell, Piece } from "@/lib/chess-engine/types";
+import { getCell } from "@/lib/chess-engine/utils/cellUtil";
 import { useEffect, useState } from "react";
 
 type HighLightProps = {
-  row: number;
-  col: number;
-  move: Cell | undefined;
+  cell: Cell;
   piece?: Piece | undefined;
 };
 
-const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
+const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
+  const { board } = useBoardState();
   const { playerState } = usePlayerState();
   const { currentTurn, selectedPiece } = useGameState();
 
@@ -19,30 +20,29 @@ const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
     false
   );
 
-  const isSelected =
-    selectedPiece?.cell.row === row && selectedPiece.cell.col === col;
-  const hasPieces = selectedPiece && piece;
-  const canMove: boolean =
+  const canMove =
     selectedPiece?.color === currentTurn && currentTurn === playerState.color;
-  const inMoveSet: boolean = !!move;
-  const enPassantCell: Cell | undefined = selectedPiece?.moveSet.find(
-    (m) =>
-      m.row ===
-        row +
-          (piece?.type === "pawn" ? (piece?.color === "white" ? +1 : -1) : 0) &&
-      m.col === col
-  );
+  const isSelected = selectedPiece && selectedPiece?.id === piece?.id;
+  const hasPieces = !!selectedPiece && !!piece;
+  const inMoveSet = selectedPiece?.moveSet.has(cell.id);
   const canBeTakenEnPassant: boolean | undefined =
-    piece?.type === "pawn" && piece.canBeTakenEnPassant && !!enPassantCell;
-  const isInDanger = !!move && move?.threats && move?.threats.length > 0;
+    piece?.type === "pawn" &&
+    piece.canBeTakenEnPassant &&
+    piece.color !== currentTurn;
+  const isInDanger = inMoveSet && cell.threats.size > 0;
 
   useEffect(() => {
     setIsCastlingRook(
       hasPieces &&
         isKingInitial(selectedPiece) &&
         isRookInitial(piece, selectedPiece) &&
-        hasInMoves(selectedPiece?.moveSet, piece, selectedPiece)
+        hasInMoves(selectedPiece, piece, board)
     );
+    if (piece && piece.type === "rook" && hasPieces) {
+      console.log("isKingInitial", isKingInitial(selectedPiece));
+      console.log("isRookInitial", isRookInitial(piece, selectedPiece));
+      console.log("hasInMoves", hasInMoves(selectedPiece, piece, board));
+    }
   }, [selectedPiece]);
 
   return (
@@ -74,15 +74,14 @@ const HighLight: React.FC<HighLightProps> = ({ row, col, move, piece }) => {
 
 export default HighLight;
 
-function hasInMoves(moveSet: Cell[], piece: Piece, selected: Piece): boolean {
-  return moveSet.some(
-    (m) =>
-      m.col ===
-        piece.cell.col -
-          (long(piece, selected)
-            ? dir(piece, selected) * 2
-            : dir(piece, selected)) && m.row === selected.cell.row
-  );
+function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
+  const selectedPieceCell = getCell(board, selected.cell);
+  if (!selectedPieceCell) return false;
+
+  const d = dir(piece, selected, board);
+  const col = long(piece, selected, board) ? selectedPieceCell.col + d * 2 : selectedPieceCell.col + d;
+  const cell = board[selectedPieceCell.row][col];
+  return selected.moveSet.has(cell?.id);
 }
 
 function isKingInitial(selected: Piece): boolean {
@@ -94,11 +93,21 @@ function isRookInitial(piece: Piece, selected: Piece): boolean {
     return !piece.hasMoved && piece.color === selected.color;
   return false;
 }
-function dir(piece: Piece, selected: Piece): number {
-  return selected.cell.col > piece.cell.col ? -1 : 1;
+
+function dir(piece: Piece, selected: Piece, board: Cell[][]): number {
+  const selectedPieceCell = getCell(board, selected.cell);
+  const pieceCell = getCell(board, piece.cell);
+  if (!selectedPieceCell || !pieceCell) return 0;
+
+  return selectedPieceCell.col > pieceCell.col ? -1 : 1;
 }
-function long(piece: Piece, selected: Piece): boolean {
-  return Math.abs(selected.cell.col - piece.cell.col) === 4;
+
+function long(piece: Piece, selected: Piece, board: Cell[][]): boolean {
+  const selectedPieceCell = getCell(board, selected.cell);
+  const pieceCell = getCell(board, piece.cell);
+  if (!selectedPieceCell || !pieceCell) return false;
+
+  return Math.abs(selectedPieceCell.col - pieceCell.col) === 4;
 }
 
 const styleGeneral = "absolute top-1 right-1 left-1 bottom-1 bg-radial";

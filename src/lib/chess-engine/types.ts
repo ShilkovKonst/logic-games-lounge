@@ -62,16 +62,16 @@ export interface Cell {
   id: string
   row: number;
   col: number;
-  threats: Piece[];
+  threats: Set<string>;
   special?: Castling | EnPassant;
 }
 
 export interface BasePiece {
   id: string;
-  cell: Cell;
+  cell: string;
   color: Color;
   isTaken: boolean;
-  moveSet: Cell[];
+  moveSet: Set<string>;
 }
 
 export interface Pawn extends BasePiece {

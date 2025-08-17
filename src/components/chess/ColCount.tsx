@@ -5,7 +5,7 @@ const ColCount: React.FC<IncrementProps> = ({ increment }) => {
   const { playerState } = usePlayerState();
 
   const count: string[] = Array.from({ length: 8 }, (_, i) =>
-    String.fromCharCode(65 + (playerState.color === "white" ? i : 7 - i))
+    String.fromCharCode(65 + i)
   );
 
   return (

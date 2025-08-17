@@ -6,18 +6,22 @@ import { HandleDragStartType } from "./types";
 import { moveAt } from "./moveAt";
 import { dragging } from "./dragging";
 import { dragEnd } from "./dragEnd";
+import { checkPieceFinalMoves } from "../moveSets/checkPieceFinalMoves";
+import { Cell, Piece, PlayerState } from "../types";
 
 export const dragStart: HandleDragStartType = (
   e,
   piece,
   pieces,
   board,
+  playerState,
   setSelectedPiece,
   setPieceToExchange,
   changeTurn
 ) => {
   if (e.type === "mousedown") (e as ReactMouseEvent).preventDefault();
 
+  getPieceMoveSet(piece, pieces, playerState, board);
   setSelectedPiece(piece);
 
   const target = e.currentTarget as HTMLElement;
@@ -83,3 +87,26 @@ export const dragStart: HandleDragStartType = (
     document.addEventListener("touchend", handleDragEnd);
   }
 };
+
+function getPieceMoveSet(
+  piece: Piece,
+  pieces: Piece[],
+  playerState: PlayerState,
+  board: Cell[][]
+): void {
+  for (const row of board) {
+    for (const cell of row) {
+      cell.threats.clear();
+    }
+  }
+  if (piece) {
+    piece.moveSet.clear();
+    const moveSet = checkPieceFinalMoves(
+      piece,
+      pieces,
+      playerState.color,
+      board
+    );
+    for (const move of moveSet) piece.moveSet.add(move);
+  }
+}
