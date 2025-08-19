@@ -14,8 +14,7 @@ const Cell: React.FC<CellProps> = ({ board, cell }) => {
   const { selectedPiece } = useGameState();
   const { pieces } = useBoardState();
   const piece = getPieceAt(cell.id, pieces);
-  const inMoveSet = selectedPiece?.moveSet.has(cell.id);
-
+  const inMoveSet = selectedPiece?.moveSet.some((m) => m === cell.id);
   const cellColorStyle = `${
     (cell.row + cell.col) % 2 === 1
       ? "bg-amber-700 inset-shadow-cell-amberdark"

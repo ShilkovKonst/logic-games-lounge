@@ -13,8 +13,8 @@ export function getAllActiveMoveSets(
   }
   const activePieces = pieces.filter((p) => !p.isTaken && p.color === player);
   for (const p of activePieces) {
-    p.moveSet.clear();
+    p.moveSet.length = 0;
     const moveSet = checkPieceFinalMoves(p, pieces, player, board);
-    for (const move of moveSet) p.moveSet.add(move);
+    p.moveSet.push(...moveSet);
   }
 }

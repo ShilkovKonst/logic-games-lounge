@@ -8,6 +8,7 @@ import { dragging } from "./dragging";
 import { dragEnd } from "./dragEnd";
 import { checkPieceFinalMoves } from "../moveSets/checkPieceFinalMoves";
 import { Cell, Piece, PlayerState } from "../types";
+import { checkMoveSetForThreats } from "../moveSets/checkMoveSetForThreats";
 
 export const dragStart: HandleDragStartType = (
   e,
@@ -99,14 +100,5 @@ function getPieceMoveSet(
       cell.threats.clear();
     }
   }
-  if (piece) {
-    piece.moveSet.clear();
-    const moveSet = checkPieceFinalMoves(
-      piece,
-      pieces,
-      playerState.color,
-      board
-    );
-    for (const move of moveSet) piece.moveSet.add(move);
-  }
+  checkMoveSetForThreats(piece, pieces, playerState.color, board);
 }

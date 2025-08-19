@@ -17,6 +17,7 @@ import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import { checkPieceFinalMoves } from "@/lib/chess-engine/moveSets/checkPieceFinalMoves";
+import { isKingInDanger } from "@/lib/chess-engine/gameStates/isKingInDanger";
 
 type BoardProps = {
   curTurn: Color | null;
@@ -29,6 +30,7 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
   const {
     currentTurn,
     setCurrentTurn,
+    selectedPiece,
     setSelectedPiece,
     setPieceToExchange,
   } = useGameState();
@@ -48,7 +50,18 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
 
   useEffect(() => {
     setSelectedPiece(undefined);
+    getAllActiveMoveSets(currentTurn, pieces, board);
+    isKingInDanger(pieces, currentTurn, board);
+    // setPlayerState({
+    //   ...pS,
+    //   status: isKingInDanger(pieces, currentTurn, board) ? "CHECK" : "NORMAL",
+    // });
+    console.log(pieces);
   }, [currentTurn]);
+
+  useEffect(() => {
+    console.log(selectedPiece);
+  }, [selectedPiece]);
 
   return (
     <>
@@ -115,11 +128,7 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
               {board.map((r, i) => (
                 <div key={i} className="flex">
                   {r.map((cell, j) => (
-                    <Cell
-                      key={i * 10 + j}
-                      cell={cell}
-                      board={board}
-                    />
+                    <Cell key={i * 10 + j} cell={cell} board={board} />
                   ))}
                 </div>
               ))}

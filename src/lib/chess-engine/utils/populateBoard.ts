@@ -32,7 +32,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "rook",
           hasMoved: false,
         };
@@ -42,7 +42,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "knight",
         };
       case 2:
@@ -51,7 +51,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "bishop",
         };
       case 3:
@@ -60,7 +60,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "queen",
         };
       case 4:
@@ -69,7 +69,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "king",
           hasMoved: false,
           isInDanger: false,
@@ -80,7 +80,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "bishop",
         };
       case 6:
@@ -89,7 +89,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "knight",
         };
       case 7:
@@ -98,7 +98,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
           cell: cell.id,
           color: color,
           isTaken: false,
-          moveSet: new Set<string>(),
+          moveSet: [],
           type: "rook",
           hasMoved: false,
         };
@@ -111,7 +111,7 @@ const type: (row: number, col: number, board: Cell[][]) => Piece = (
       cell: cell.id,
       color: row === 1 ? "black" : "white",
       isTaken: false,
-      moveSet: new Set<string>(),
+      moveSet: [],
       type: "pawn",
       hasMoved: false,
       canBeTakenEnPassant: false,

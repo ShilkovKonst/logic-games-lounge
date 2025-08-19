@@ -24,7 +24,7 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
     selectedPiece?.color === currentTurn && currentTurn === playerState.color;
   const isSelected = selectedPiece && selectedPiece?.id === piece?.id;
   const hasPieces = !!selectedPiece && !!piece;
-  const inMoveSet = selectedPiece?.moveSet.has(cell.id);
+  const inMoveSet = selectedPiece?.moveSet.some((m) => m === cell.id);
   const isInDanger = inMoveSet && cell.threats.size > 0;
 
   const enPassantCell = () => {
@@ -89,7 +89,7 @@ function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
     ? selectedPieceCell.col + d * 2
     : selectedPieceCell.col + d;
   const cell = board[selectedPieceCell.row][col];
-  return selected.moveSet.has(cell?.id);
+  return selected.moveSet.some((m) => m === cell?.id);
 }
 
 function isKingInitial(selected: Piece): boolean {

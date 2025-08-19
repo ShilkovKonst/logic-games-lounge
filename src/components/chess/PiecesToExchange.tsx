@@ -32,7 +32,7 @@ const PiecesToExchange: React.FC = () => {
           isTaken: true,
           type: "rook",
           hasMoved: true,
-          moveSet: new Set<string>(),
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -40,7 +40,7 @@ const PiecesToExchange: React.FC = () => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "bishop",
-          moveSet: new Set<string>(),
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -48,7 +48,7 @@ const PiecesToExchange: React.FC = () => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "knight",
-          moveSet: new Set<string>(),
+          moveSet: [],
         },
         {
           id: pieceToExchange.id,
@@ -56,7 +56,7 @@ const PiecesToExchange: React.FC = () => {
           color: pieceToExchange.color,
           isTaken: true,
           type: "queen",
-          moveSet: new Set<string>(),
+          moveSet: [],
         },
       ]);
     }

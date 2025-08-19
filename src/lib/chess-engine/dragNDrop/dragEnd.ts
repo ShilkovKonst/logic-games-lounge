@@ -51,7 +51,7 @@ function handleCapture(
   cell: Cell,
   currentPiece: Piece,
   pieces: Piece[],
-  moveSet: Set<string>,
+  moveSet: string[],
   board: Cell[][]
 ): void {
   let pieceToTake = pieces.find((p) => p.cell === cell.id);
@@ -86,7 +86,7 @@ function handleCastling(
   cell: Cell,
   currentPiece: Piece,
   pieces: Piece[],
-  moveSet: Set<string>,
+  moveSet: string[],
   board: Cell[][]
 ): void {
   if (currentPiece.type !== "king" || currentPiece.hasMoved) return;

@@ -71,7 +71,7 @@ export interface BasePiece {
   cell: string;
   color: Color;
   isTaken: boolean;
-  moveSet: Set<string>;
+  moveSet: string[];
 }
 
 export interface Pawn extends BasePiece {
