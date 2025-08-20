@@ -1,16 +1,25 @@
 import { checkThreats } from "../moveSets/getAttackSets";
 import { Cell, Color, King, Piece } from "../types";
+import { getCell } from "../utils/cellUtil";
 
-export function isKingInDanger(
+type ReturnType = {
+  king: King;
+  kingCell: Cell;
+};
+
+export function checkKingSafety(
   pieces: Piece[],
   currentPlayer: Color,
   board: Cell[][]
-): boolean {
+): ReturnType {
   const king = getKing(pieces, currentPlayer);
+  const kingCell = getCell(board, king.cell);
   const threats = checkThreats(king, king.cell, pieces, currentPlayer, board);
-  console.log(king.id, threats)
+
   king.isInDanger = threats.length > 0;
-  return king.isInDanger;
+  for (const t of threats) kingCell.threats.add(t);
+  
+  return { king, kingCell };
 }
 
 export function getKing(pieces: Piece[], currentPlayer: Color): King {

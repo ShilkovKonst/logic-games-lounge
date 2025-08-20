@@ -1,18 +1,21 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import Cell from "@/components/chess/Cell";
-import { Piece, Color, PlayerState } from "@/lib/chess-engine/types";
-import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
-import RowCount from "./RowCount";
-import ColCount from "./ColCount";
 import { useEffect } from "react";
-import TakenPieces from "./TakenPieces";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
+import Cell from "./Cell";
+import TakenPieces from "./TakenPieces";
+import RowCount from "./RowCount";
+import ColCount from "./ColCount";
+import { Piece, Color, PlayerState } from "@/lib/chess-engine/types";
+import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
-import { isKingInDanger } from "@/lib/chess-engine/gameStates/isKingInDanger";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
+import {
+  checkKingSafety,
+  getKing,
+} from "@/lib/chess-engine/gameStates/checkKingSafety";
 
 type BoardProps = {
   curTurn: Color | null;
@@ -45,13 +48,13 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
 
   useEffect(() => {
     setSelectedPiece(undefined);
-    getAllActiveMoveSets(currentTurn, pieces, board);
-    if (pieces.length > 0) isKingInDanger(pieces, playerState.color, board);
+
+    if (pieces.length > 0) getAllActiveMoveSets(currentTurn, pieces, board);
   }, [currentTurn]);
 
   useEffect(() => {
     if (pieces.length > 0) {
-      isKingInDanger(pieces, playerState.color, board);
+      checkKingSafety(pieces, playerState.color, board);
     }
   }, [playerState]);
 
@@ -142,19 +145,3 @@ const Board: React.FC<BoardProps> = ({ pcs, curTurn, plState }) => {
 };
 
 export default Board;
-
-// function checkPlayerStatus(
-//   player: PlayerState,
-//   pieces: Piece[],
-//   board: CellType[][],
-//   setPlayerState: Dispatch<SetStateAction<PlayerState>>
-// ) {
-//   const king = pieces.find(
-//     (p) => p.color === player.color && p.type === "king"
-//   );
-//   if (!king) throw new Error("King must be on board!");
-
-//   const threats = checkThreats(king.cell, pieces, player.color, board);
-//   if (threats.length > 0) setPlayerState({ ...player, status: "CHECK" });
-//   else setPlayerState({ ...player, status: "NORMAL" });
-// }

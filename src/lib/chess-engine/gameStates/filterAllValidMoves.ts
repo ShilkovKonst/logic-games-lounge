@@ -1,29 +1,20 @@
-import { Cell, Piece } from "../types";
-import { getCell } from "../utils/cellUtil";
+import { Piece } from "../types";
 
-export function findAllValidMoves(
-  kingCell: Cell,
+export function filterAllValidMoves(
   currentPiece: Piece,
-  pieces: Piece[],
-  board: Cell[][]
-) {
-  const threatPieces = [];
-  for (const threat of kingCell.threats) {
-    const threatPiece = pieces.find((p) => p.id === threat);
-    if (threatPiece) threatPieces.push(threatPiece);
+  attackTrajectory: string[]
+): void {
+  const validMoves = [];
+  for (const cell of attackTrajectory) {
+    if (currentPiece.moveSet.includes(cell)) {
+      validMoves.push(cell);
+    }
   }
-
-//   for (const threatPiece of threatPieces) {
-//     const threatCell = getCell(board, threatPiece.cell);
-//     if (threatPiece.type === "pawn" || threatPiece.type === "knight") {
-//       currentPiece.moveSet.clear();
-//       if (currentPiece.moveSet.has(threatPiece.cell)) {
-//         currentPiece.moveSet.add(threatPiece.cell);
-//       }
-//     }
-//   }
+  // console.log(currentPiece);
+  // console.log(validMoves);
+  currentPiece.moveSet.length = 0;
+  currentPiece.moveSet.push(...validMoves);
 }
-
 
 /*
 1 если шах:
