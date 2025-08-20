@@ -26,7 +26,6 @@ export function checkThreats(
   const threatenedBy: string[] = [];
 
   for (const foe of foes) {
-    if (threatenedBy.some((fId) => fId === foe.id)) continue;
     const attacks = getAttackSet(current, foe, pieces, board);
     if (attacks.some((id) => id === cellId)) {
       threatenedBy.push(foe.id);

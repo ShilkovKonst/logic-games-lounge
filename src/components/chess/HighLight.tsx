@@ -85,9 +85,10 @@ export default HighLight;
 function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
   const selectedPieceCell = getCell(board, selected.cell);
   const d = dir(piece, selected, board);
-  const col = long(piece, selected, board)
-    ? selectedPieceCell.col + d * 2
-    : selectedPieceCell.col + d;
+  // const col = long(piece, selected, board)
+  //   ? selectedPieceCell.col + d * 2
+  //   : selectedPieceCell.col + d;
+  const col = selectedPieceCell.col + d * 2;
   const cell = board[selectedPieceCell.row][col];
   return selected.moveSet.some((m) => m === cell?.id);
 }
@@ -106,12 +107,6 @@ function dir(piece: Piece, selected: Piece, board: Cell[][]): number {
   const selectedPieceCell = getCell(board, selected.cell);
   const pieceCell = getCell(board, piece.cell);
   return selectedPieceCell.col > pieceCell.col ? -1 : 1;
-}
-
-function long(piece: Piece, selected: Piece, board: Cell[][]): boolean {
-  const selectedPieceCell = getCell(board, selected.cell);
-  const pieceCell = getCell(board, piece.cell);
-  return Math.abs(selectedPieceCell.col - pieceCell.col) === 4;
 }
 
 const styleGeneral = "absolute top-1 right-1 left-1 bottom-1 bg-radial";

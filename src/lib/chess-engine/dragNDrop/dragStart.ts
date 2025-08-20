@@ -6,7 +6,6 @@ import { HandleDragStartType } from "./types";
 import { moveAt } from "./moveAt";
 import { dragging } from "./dragging";
 import { dragEnd } from "./dragEnd";
-import { checkPieceFinalMoves } from "../moveSets/checkPieceFinalMoves";
 import { Cell, Piece, PlayerState } from "../types";
 import { checkMoveSetForThreats } from "../moveSets/checkMoveSetForThreats";
 

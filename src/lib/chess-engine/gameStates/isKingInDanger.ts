@@ -8,6 +8,7 @@ export function isKingInDanger(
 ): boolean {
   const king = getKing(pieces, currentPlayer);
   const threats = checkThreats(king, king.cell, pieces, currentPlayer, board);
+  console.log(king.id, threats)
   king.isInDanger = threats.length > 0;
   return king.isInDanger;
 }

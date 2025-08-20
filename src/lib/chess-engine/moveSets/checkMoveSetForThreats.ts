@@ -1,4 +1,4 @@
-import { Cell, Color, King, Piece } from "../types";
+import { Cell, Color, King, Pawn, Piece } from "../types";
 import { getCell } from "../utils/cellUtil";
 import { checkThreats } from "./getAttackSets";
 
@@ -26,16 +26,40 @@ export function checkMoveSetForThreats(
     return;
   }
   if (currentPiece.type === "pawn" && moveSet[1]) {
-    const cell = getCell(board, moveSet[1]);
-    if (cell && !currentPiece.hasMoved && cell.threats.size === 0) {
-      const threats = getCell(board, moveSet[0])?.threats;
-      for (const t of threats) {
-        const foe = pieces.find((f) => f.id === t);
-        if (foe && foe.type === "pawn") cell.threats.add(t);
-      }
-    }
+    assignPawnEnPasantThreat(
+      moveSet[1],
+      moveSet[0],
+      currentPiece,
+      pieces,
+      board
+    );
+    // const cell = getCell(board, moveSet[1]);
+    // if (cell && !currentPiece.hasMoved && cell.threats.size === 0) {
+    //   const threats = getCell(board, moveSet[0])?.threats;
+    //   for (const t of threats) {
+    //     const foe = pieces.find((f) => f.id === t);
+    //     if (foe && foe.type === "pawn") cell.threats.add(t);
+    //   }
+    // }
   }
   currentPiece.moveSet = moveSet;
+}
+
+function assignPawnEnPasantThreat(
+  enPassantMove: string,
+  regularMove: string,
+  currentPiece: Pawn,
+  pieces: Piece[],
+  board: Cell[][]
+): void {
+  const cell = getCell(board, enPassantMove);
+  if (cell && !currentPiece.hasMoved && cell.threats.size === 0) {
+    const threats = getCell(board, regularMove)?.threats;
+    for (const t of threats) {
+      const foe = pieces.find((f) => f.id === t);
+      if (foe && foe.type === "pawn") cell.threats.add(t);
+    }
+  }
 }
 
 function getCastlingMoves(
@@ -61,8 +85,10 @@ function getCastlingMoves(
     let blocked = false;
     while (col !== rookCell.col) {
       const cell = board[row][col];
-
-      const threats = checkThreats(king, cell.id, pieces, king.color, board);
+      const threats =
+        Math.abs(kingCell.col - col) < 3
+          ? checkThreats(king, cell.id, pieces, king.color, board)
+          : [];
       if (isOcupied(pieces, cell) || threats.length > 0) {
         blocked = true;
         break;
