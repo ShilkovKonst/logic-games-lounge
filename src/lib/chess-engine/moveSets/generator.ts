@@ -1,10 +1,11 @@
-import { Cell, Piece } from "../types";
+import { CellType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
+import { getPieceAt } from "../utils/pieceUtils";
 
 export function moveGenerator(
-  piece: Piece,
-  pieces: Piece[],
-  board: Cell[][],
+  piece: PieceType,
+  pieces: PieceType[],
+  board: CellType[][],
   dirs: number[][],
   maxStep: number
 ): string[] {
@@ -35,10 +36,10 @@ export function moveGenerator(
 }
 
 export function attackGenerator(
-  current: Piece,
-  pieceToCheck: Piece,
-  pieces: Piece[],
-  board: Cell[][],
+  current: PieceType,
+  pieceToCheck: PieceType,
+  pieces: PieceType[],
+  board: CellType[][],
   dirs: number[][],
   maxStep: number
 ): string[] {
@@ -56,7 +57,7 @@ export function attackGenerator(
       const target = getPieceAt(cell.id, pieces);
 
       if (target && target.id !== current.id) {
-      // if (target) {
+        // if (target) {
         attacks.push(cell.id);
         break;
       }
@@ -69,9 +70,3 @@ export function attackGenerator(
   }
   return attacks;
 }
-
-export const getPieceAt: (
-  cellId: string,
-  pieces: Piece[]
-) => Piece | undefined = (cellId, pieces) =>
-  pieces.find((p) => !p.isTaken && p.cell === cellId);

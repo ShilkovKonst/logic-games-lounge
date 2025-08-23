@@ -1,30 +1,27 @@
 import { bDir, kDir, qDir, rDir } from "../constants/dirs";
 import { attackGenerator } from "./generator";
 import {
+  PieceType,
+  CellType,
   Bishop,
-  Cell,
   Color,
   King,
   Knight,
   Pawn,
-  Piece,
   Queen,
   Rook,
 } from "../types";
 import { getCell } from "../utils/cellUtil";
 
 export function checkThreats(
-  current: Piece,
+  current: PieceType,
   cellId: string,
-  pieces: Piece[],
-  currentPlayerColor: Color,
-  board: Cell[][]
+  pieces: PieceType[],
+  currentPlayer: Color,
+  board: CellType[][]
 ): string[] {
-  const foes = pieces.filter(
-    (p) => !p.isTaken && p.color !== currentPlayerColor
-  );
+  const foes = pieces.filter((p) => !p.isTaken && p.color !== currentPlayer);
   const threatenedBy: string[] = [];
-
   for (const foe of foes) {
     const attacks = getAttackSet(current, foe, pieces, board);
     if (attacks.some((id) => id === cellId)) {
@@ -35,10 +32,10 @@ export function checkThreats(
 }
 
 function getAttackSet(
-  current: Piece,
-  pieceToCheck: Piece,
-  pieces: Piece[],
-  board: Cell[][]
+  current: PieceType,
+  pieceToCheck: PieceType,
+  pieces: PieceType[],
+  board: CellType[][]
 ): string[] {
   switch (pieceToCheck.type) {
     case "pawn":
@@ -93,7 +90,7 @@ function getAttackSet(
   }
 }
 
-function pawnAttacks(pawn: Pawn, board: Cell[][]): string[] {
+function pawnAttacks(pawn: Pawn, board: CellType[][]): string[] {
   const res: string[] = [];
   const cell = getCell(board, pawn.cell);
   const dir = pawn.color === "white" ? -1 : 1;

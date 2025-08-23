@@ -1,12 +1,12 @@
-import { Cell } from "../types";
+import { CellType } from "../types";
 import { rcToNotation } from "./cellUtil";
 
-export function createBoard(): Cell[][] {
-  const board: Cell[][] = [];
+export function createBoard(): CellType[][] {
+  const board: CellType[][] = [];
   for (let i = 0; i < 8; i++) {
-    const row: Cell[] = [];
+    const row: CellType[] = [];
     for (let j = 0; j < 8; j++) {
-      const cell: Cell = {
+      const cell: CellType = {
         id: rcToNotation(i, j),
         row: i,
         col: j,

@@ -4,9 +4,16 @@ export type IncrementProps = {
 
 export type Player = "host" | "guest";
 
+export type GameType = "hotseat" | "online";
+
 export type Status = "CHECK" | "CHECKMATE" | "STALEMATE" | "NORMAL";
 
 export type Color = "white" | "black";
+
+export type ColorState = {
+  color: Color;
+  status: Status;
+};
 
 export type PlayerState = {
   type: Player;
@@ -15,17 +22,17 @@ export type PlayerState = {
 };
 
 export interface BoardState {
-  pieces: Piece[];
+  pieces: PieceType[];
 }
 
 export interface Turn {
   turnNo: number;
-  pieceToMove: Piece;
-  pieceToTake?: Piece;
-  pieceToCastle?: Piece;
-  pieceToExchange?: Piece;
-  fromCell: Cell;
-  toCell: Cell;
+  pieceToMove: PieceType;
+  pieceToTake?: PieceType;
+  pieceToCastle?: PieceType;
+  pieceToExchange?: PieceType;
+  fromCell: CellType;
+  toCell: CellType;
   exchange: boolean;
   castling: boolean;
   gameState: PlayerState[];
@@ -33,20 +40,20 @@ export interface Turn {
 }
 
 export interface GameState {
+  gameType: GameType;
   currentBoardState: BoardState;
-  turn: PlayerState;
+  currentTurn: Color;
   log: Turn[];
+  winner: Color;
 }
 
-export type PieceType =
+export type Pieces =
   | "pawn"
   | "rook"
   | "knight"
   | "bishop"
   | "queen"
   | "king";
-
-export type BoardMatrix = (Piece | null)[][];
 
 type Castling = {
   type: "castling";
@@ -58,8 +65,8 @@ type EnPassant = {
   pawnId: string;
 };
 
-export interface Cell {
-  id: string
+export interface CellType {
+  id: string;
   row: number;
   col: number;
   threats: Set<string>;
@@ -98,4 +105,4 @@ export interface Bishop extends BasePiece {
   type: "bishop";
 }
 
-export type Piece = Pawn | King | Rook | Queen | Knight | Bishop;
+export type PieceType = Pawn | King | Rook | Queen | Knight | Bishop;

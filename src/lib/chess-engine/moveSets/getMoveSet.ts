@@ -1,12 +1,22 @@
-import { Bishop, Cell, King, Knight, Pawn, Piece, Queen, Rook } from "../types";
-import { getPieceAt, moveGenerator } from "./generator";
+import {
+  CellType,
+  PieceType,
+  Bishop,
+  King,
+  Knight,
+  Pawn,
+  Queen,
+  Rook,
+} from "../types";
+import { moveGenerator } from "./generator";
 import { bDir, kDir, qDir, rDir } from "../constants/dirs";
 import { getCell } from "../utils/cellUtil";
+import { getPieceAt } from "../utils/pieceUtils";
 
 export function getMoveSet(
-  piece: Piece,
-  pieces: Piece[],
-  board: Cell[][]
+  piece: PieceType,
+  pieces: PieceType[],
+  board: CellType[][]
 ): string[] {
   switch (piece.type) {
     case "pawn":
@@ -26,8 +36,8 @@ export function getMoveSet(
 
 export function pawnMoves(
   pawn: Pawn,
-  pieces: Piece[],
-  board: Cell[][]
+  pieces: PieceType[],
+  board: CellType[][]
 ): string[] {
   const moves: string[] = [];
   const cell = getCell(board, pawn.cell);
@@ -53,8 +63,8 @@ export function pawnMoves(
 
 export function pawnAttackMoves(
   pawn: Pawn,
-  pieces: Piece[],
-  board: Cell[][]
+  pieces: PieceType[],
+  board: CellType[][]
 ): string[] {
   const attackMoves: string[] = [];
   const cell = getCell(board, pawn.cell);
@@ -80,11 +90,11 @@ export function pawnAttackMoves(
 
 function checkEnPassantMoves(
   pawn: Pawn,
-  pieces: Piece[],
+  pieces: PieceType[],
   nextRow: number,
   tCol: number,
   threats: string[],
-  board: Cell[][]
+  board: CellType[][]
 ): void {
   const cell = getCell(board, pawn.cell);
   const targetCell = board[cell.row][tCol];

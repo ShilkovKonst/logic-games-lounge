@@ -1,19 +1,20 @@
-import { Cell as CellType } from "@/lib/chess-engine/types";
+import { CellType } from "@/lib/chess-engine/types";
 import Piece from "./Piece";
 import HighLight from "./HighLight";
 import { useGameState } from "@/context/GameStateContext";
-import { getPieceAt } from "@/lib/chess-engine/moveSets/generator";
 import { useBoardState } from "@/context/BoardStateContext";
+import PiecesToExchange from "./PiecesToExchange";
+import { getPieceAt } from "@/lib/chess-engine/utils/pieceUtils";
 
 type CellProps = {
-  board: CellType[][];
   cell: CellType;
 };
 
-const Cell: React.FC<CellProps> = ({ board, cell }) => {
-  const { selectedPiece } = useGameState();
+const Cell: React.FC<CellProps> = ({ cell }) => {
+  const { selectedPiece, isExchange } = useGameState();
   const { pieces } = useBoardState();
   const piece = getPieceAt(cell.id, pieces);
+
   const inMoveSet = selectedPiece?.moveSet.some((m) => m === cell.id);
   const cellColorStyle = `${
     (cell.row + cell.col) % 2 === 1
@@ -28,13 +29,14 @@ const Cell: React.FC<CellProps> = ({ board, cell }) => {
 
   return (
     <div
-      id={`${cell.row}-${cell.col}`}
-      className={`relative ${
-        inMoveSet && "dropzone"
-      } flex justify-center items-center h-12 w-12 md:h-14 md:w-14 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
+      data-cell-id={cell.id}
+      className={`${
+        inMoveSet && "move cursor-pointer"
+      } relative flex justify-center items-center h-12 w-12 md:h-14 md:w-14 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
     >
+      {isExchange && selectedPiece?.cell === cell.id && <PiecesToExchange />}
       <HighLight cell={cell} piece={piece} />
-      {piece && <Piece board={board} piece={piece} />}
+      {piece && <Piece cell={cell} piece={piece} />}
     </div>
   );
 };

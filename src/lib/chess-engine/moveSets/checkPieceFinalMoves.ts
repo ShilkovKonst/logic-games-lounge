@@ -1,13 +1,13 @@
 import { checkThreats } from "./getAttackSets";
-import { Cell, Color, Piece } from "../types";
+import { CellType, Color, PieceType } from "../types";
 import { getMoveSet } from "./getMoveSet";
 import { getCell } from "../utils/cellUtil";
 
 export function checkPieceFinalMoves(
-  currentPiece: Piece,
-  pieces: Piece[],
+  currentPiece: PieceType,
+  pieces: PieceType[],
   playerColor: Color,
-  board: Cell[][]
+  board: CellType[][]
 ): string[] {
   const moveSet = getMoveSet(currentPiece, pieces, board);
   if (currentPiece.type === "king" && currentPiece.color === playerColor) {
@@ -17,11 +17,11 @@ export function checkPieceFinalMoves(
 }
 
 function defineKingMoveSet(
-  currentPiece: Piece,
-  pieces: Piece[],
+  currentPiece: PieceType,
+  pieces: PieceType[],
   playerColor: Color,
   moveSet: string[],
-  board: Cell[][]
+  board: CellType[][]
 ) {
   for (const move of moveSet) {
     const cell = getCell(board, move);
@@ -37,7 +37,7 @@ function defineKingMoveSet(
   return moveSet.filter((m) => !hasThreats(board, m));
 }
 
-function hasThreats(board: Cell[][], cellId: string): boolean {
+function hasThreats(board: CellType[][], cellId: string): boolean {
   const cell = getCell(board, cellId);
   return cell.threats.size > 0;
 }

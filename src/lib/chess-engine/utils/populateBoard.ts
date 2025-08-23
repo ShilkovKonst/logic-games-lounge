@@ -1,11 +1,11 @@
-import { Cell, Color, Piece } from "../types";
+import { CellType, Color, PieceType } from "../types";
 import { getAllActiveMoveSets } from "../moveSets/getAllActiveMoveSets";
 
-export const populateBoard: (player: Color, board: Cell[][]) => Piece[] = (
-  player,
-  board
-) => {
-  const pieces: Piece[] = [];
+export const populateBoard: (
+  player: Color,
+  board: CellType[][]
+) => PieceType[] = (player, board) => {
+  const pieces: PieceType[] = [];
   for (let col = 0; col < 8; col++) {
     pieces.push(type(0, col, board));
     pieces.push(type(1, col, board));
@@ -16,7 +16,7 @@ export const populateBoard: (player: Color, board: Cell[][]) => Piece[] = (
   return pieces;
 };
 
-const type: (row: number, col: number, board: Cell[][]) => Piece = (
+const type: (row: number, col: number, board: CellType[][]) => PieceType = (
   row,
   col,
   board

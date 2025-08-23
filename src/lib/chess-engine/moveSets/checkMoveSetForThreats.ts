@@ -1,24 +1,35 @@
-import { Cell, Color, King, Pawn, Piece } from "../types";
+import { CellType, Color, King, Pawn, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
 import { checkThreats } from "./getAttackSets";
 
 export function checkMoveSetForThreats(
-  currentPiece: Piece,
-  pieces: Piece[],
+  currentPiece: PieceType,
+  pieces: PieceType[],
   playerColor: Color,
-  board: Cell[][]
+  board: CellType[][]
 ): void {
   const moveSet = currentPiece.moveSet;
+  assignThreats(currentPiece, currentPiece.cell, playerColor, pieces, board);
+  // const pieceCell = getCell(board, currentPiece.cell);
+  // const pieceThreats = checkThreats(
+  //   currentPiece,
+  //   currentPiece.cell,
+  //   pieces,
+  //   playerColor,
+  //   board
+  // );
+  // for (const threat of pieceThreats) pieceCell.threats.add(threat);
   for (const move of moveSet) {
-    const cell = getCell(board, move);
-    const threats = checkThreats(
-      currentPiece,
-      move,
-      pieces,
-      playerColor,
-      board
-    );
-    for (const threat of threats) cell.threats.add(threat);
+    // const cell = getCell(board, move);
+    // const threats = checkThreats(
+    //   currentPiece,
+    //   move,
+    //   pieces,
+    //   playerColor,
+    //   board
+    // );
+    // for (const threat of threats) cell.threats.add(threat);
+    assignThreats(currentPiece, move, playerColor, pieces, board);
   }
   if (currentPiece.type === "king" && currentPiece.color === playerColor) {
     const castlingMoves = getCastlingMoves(currentPiece, pieces, board);
@@ -45,12 +56,30 @@ export function checkMoveSetForThreats(
   currentPiece.moveSet = moveSet;
 }
 
+function assignThreats(
+  currentPiece: PieceType,
+  cellId: string,
+  playerColor: Color,
+  pieces: PieceType[],
+  board: CellType[][]
+) {
+  const pieceThreats = checkThreats(
+    currentPiece,
+    cellId,
+    pieces,
+    playerColor,
+    board
+  );
+  const cell = getCell(board, cellId);
+  for (const threat of pieceThreats) cell.threats.add(threat);
+}
+
 function assignPawnEnPasantThreat(
   enPassantMove: string,
   regularMove: string,
   currentPiece: Pawn,
-  pieces: Piece[],
-  board: Cell[][]
+  pieces: PieceType[],
+  board: CellType[][]
 ): void {
   const cell = getCell(board, enPassantMove);
   if (cell && !currentPiece.hasMoved && cell.threats.size === 0) {
@@ -64,8 +93,8 @@ function assignPawnEnPasantThreat(
 
 function getCastlingMoves(
   king: King,
-  pieces: Piece[],
-  board: Cell[][]
+  pieces: PieceType[],
+  board: CellType[][]
 ): string[] {
   const cMoves: string[] = [];
   if (king.isInDanger) return cMoves;
@@ -105,6 +134,6 @@ function getCastlingMoves(
   return cMoves;
 }
 
-function isOcupied(pieces: Piece[], cell: Cell): boolean {
+function isOcupied(pieces: PieceType[], cell: CellType): boolean {
   return pieces.some((p) => cell.id === p.cell);
 }

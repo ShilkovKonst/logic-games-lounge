@@ -2,26 +2,27 @@
 import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { Cell, Piece } from "@/lib/chess-engine/types";
+import { CellType, PieceType } from "@/lib/chess-engine/types";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
 import { useEffect, useState } from "react";
 
 type HighLightProps = {
-  cell: Cell;
-  piece?: Piece | undefined;
+  cell: CellType;
+  piece?: PieceType | undefined;
 };
 
 const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
   const { board } = useBoardState();
   const { playerState } = usePlayerState();
-  const { currentTurn, selectedPiece } = useGameState();
+  const { currentTurn, selectedPiece, gameType } = useGameState();
 
   const [isCastlingRook, setIsCastlingRook] = useState<boolean | undefined>(
     false
   );
 
   const canMove =
-    selectedPiece?.color === currentTurn && currentTurn === playerState.color;
+    selectedPiece?.color === currentTurn &&
+    (gameType === "hotseat" || currentTurn === playerState.color);
   const isSelected = selectedPiece && selectedPiece?.id === piece?.id;
   const hasPieces = !!selectedPiece && !!piece;
   const inMoveSet = selectedPiece?.moveSet.some((m) => m === cell.id);
@@ -82,7 +83,7 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece }) => {
 
 export default HighLight;
 
-function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
+function hasInMoves(selected: PieceType, piece: PieceType, board: CellType[][]): boolean {
   const selectedPieceCell = getCell(board, selected.cell);
   const d = dir(piece, selected, board);
   // const col = long(piece, selected, board)
@@ -93,17 +94,17 @@ function hasInMoves(selected: Piece, piece: Piece, board: Cell[][]): boolean {
   return selected.moveSet.some((m) => m === cell?.id);
 }
 
-function isKingInitial(selected: Piece): boolean {
+function isKingInitial(selected: PieceType): boolean {
   if (selected.type === "king") return !selected.hasMoved;
   return false;
 }
-function isRookInitial(piece: Piece, selected: Piece): boolean {
+function isRookInitial(piece: PieceType, selected: PieceType): boolean {
   if (piece.type === "rook")
     return !piece.hasMoved && piece.color === selected.color;
   return false;
 }
 
-function dir(piece: Piece, selected: Piece, board: Cell[][]): number {
+function dir(piece: PieceType, selected: PieceType, board: CellType[][]): number {
   const selectedPieceCell = getCell(board, selected.cell);
   const pieceCell = getCell(board, piece.cell);
   return selectedPieceCell.col > pieceCell.col ? -1 : 1;

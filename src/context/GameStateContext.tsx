@@ -7,15 +7,17 @@ import {
   ReactNode,
   useContext,
 } from "react";
-import { Color, Piece, Turn } from "@/lib/chess-engine/types";
+import { Color, GameType, PieceType, Turn } from "@/lib/chess-engine/types";
 
 interface GameContextType {
+  gameType: GameType;
+  setGameType: Dispatch<SetStateAction<GameType>>;
   currentTurn: Color;
   setCurrentTurn: Dispatch<SetStateAction<Color>>;
-  selectedPiece: Piece | undefined;
-  setSelectedPiece: Dispatch<SetStateAction<Piece | undefined>>;
-  pieceToExchange: Piece | undefined;
-  setPieceToExchange: Dispatch<SetStateAction<Piece | undefined>>;
+  selectedPiece: PieceType | undefined;
+  setSelectedPiece: Dispatch<SetStateAction<PieceType | undefined>>;
+  isExchange: boolean;
+  setIsExchange: Dispatch<SetStateAction<boolean>>;
   log: Turn[];
   setLog: Dispatch<SetStateAction<Turn[]>>;
   changeTurn: () => void;
@@ -26,13 +28,12 @@ export const GameStateContext = createContext<GameContextType | undefined>(
 );
 
 export function GameProvider({ children }: { children: ReactNode }) {
+  const [gameType, setGameType] = useState<GameType>("hotseat");
   const [currentTurn, setCurrentTurn] = useState<Color>("white");
-  const [selectedPiece, setSelectedPiece] = useState<Piece | undefined>(
+  const [selectedPiece, setSelectedPiece] = useState<PieceType | undefined>(
     undefined
   );
-  const [pieceToExchange, setPieceToExchange] = useState<Piece | undefined>(
-    undefined
-  );
+  const [isExchange, setIsExchange] = useState<boolean>(false);
   const [log, setLog] = useState<Turn[]>([]);
 
   const changeTurn = () => {
@@ -43,15 +44,17 @@ export function GameProvider({ children }: { children: ReactNode }) {
   return (
     <GameStateContext.Provider
       value={{
+        gameType,
+        setGameType,
         currentTurn,
         setCurrentTurn,
         selectedPiece,
         setSelectedPiece,
-        pieceToExchange,
-        setPieceToExchange,
+        isExchange,
+        setIsExchange,
         log,
         setLog,
-        changeTurn
+        changeTurn,
       }}
     >
       {children}

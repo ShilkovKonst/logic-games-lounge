@@ -1,13 +1,13 @@
-import { checkKingSafety } from "../gameStates/checkKingSafety";
-import { filterAllValidMoves } from "../gameStates/filterAllValidMoves";
-import { getAttackTrajectory } from "../gameStates/getAttackTrajectory";
-import { Cell, Color, Piece } from "../types";
+import { checkKingSafety } from "./checkKingSafety";
+import { filterAllValidMoves } from "./filterAllValidMoves";
+import { getAttackTrajectory } from "./getAttackTrajectory";
+import { CellType, Color, PieceType } from "../types";
 import { checkPieceFinalMoves } from "./checkPieceFinalMoves";
 
 export function getAllActiveMoveSets(
   player: Color,
-  pieces: Piece[],
-  board: Cell[][]
+  pieces: PieceType[],
+  board: CellType[][]
 ): void {
   for (const row of board) {
     for (const cell of row) {
@@ -22,8 +22,6 @@ export function getAllActiveMoveSets(
     if (p.color !== player) continue;
     if (king.isInDanger && kingCell.threats.size > 1 && p.id !== king.id)
       continue;
-    console.log(king.isInDanger, kingCell.threats.size > 1, p.id, king.id);
-    console.log(p);
     const moveSet = checkPieceFinalMoves(p, pieces, player, board);
     p.moveSet.push(...moveSet);
     if (!king.isInDanger || p.id === king.id) continue;

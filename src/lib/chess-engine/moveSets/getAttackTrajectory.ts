@@ -1,10 +1,10 @@
-import { Cell, Piece } from "../types";
+import { CellType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
 
 export function getAttackTrajectory(
-  kingCell: Cell,
-  attacker: Piece,
-  board: Cell[][]
+  kingCell: CellType,
+  attacker: PieceType,
+  board: CellType[][]
 ): string[] {
   const trajectory: string[] = [];
   const attackerCell = getCell(board, attacker.cell);

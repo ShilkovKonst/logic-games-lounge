@@ -1,8 +1,8 @@
-import { Color, PieceType } from "../types";
+import { Color, Pieces } from "../types";
 
 export type IconProps = {
   color: Color;
-  type: PieceType;
+  type: Pieces;
   isTaken?: boolean;
 };
 
@@ -14,7 +14,9 @@ export type TargetIconProps = {
 export const PieceIcon: React.FC<IconProps> = ({ color, isTaken, type }) => {
   return (
     <svg
-      className={`${isTaken ? " w-6 h-6 md:w-8 md:h-8 " : " w-10 h-10 md:w-12 md:h-12"}`}
+      className={`${
+        isTaken ? " w-6 h-6 md:w-8 md:h-8 " : " w-10 h-10 md:w-12 md:h-12"
+      }`}
       width="800px"
       height="800px"
       viewBox="0 0 512 512"
