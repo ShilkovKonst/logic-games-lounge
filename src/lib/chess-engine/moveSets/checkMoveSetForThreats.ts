@@ -128,7 +128,11 @@ function getCastlingMoves(
     if (blocked) continue;
 
     const cell = board[row][kingCell.col + dir * 2];
-    cell["special"] = { type: "castling", rookId: r.id };
+    cell["special"] = {
+      type: "castling",
+      rookId: r.id,
+      long: Math.abs(kingCell.col - rookCell.col) === 4,
+    };
     cMoves.push(cell.id);
   }
   return cMoves;

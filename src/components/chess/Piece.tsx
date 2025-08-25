@@ -12,7 +12,7 @@ const Piece: React.FC<PieceProps> = ({ cell, piece }) => {
   const { type, color } = piece;
 
   const { playerState } = usePlayerState();
-  const { gameType, currentTurn, selectedPiece } = useGameState();
+  const { gameType, currentTurn, selectedPiece, isExchange } = useGameState();
 
   const isSelected = selectedPiece?.cell === cell.id;
   const inMoveSet =
@@ -24,15 +24,15 @@ const Piece: React.FC<PieceProps> = ({ cell, piece }) => {
   return (
     <div
       className={`${
-        piece.color === currentTurn ? "piece" : ""
+        (piece.color === currentTurn ) ? "piece" : ""
       } relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}
     >
       <button
         data-piece-id={piece.id}
-        className={`${piece.color === currentTurn && "piece"} ${
+        className={`${piece.color === currentTurn && !isExchange && "piece"} ${
           piece.color !== currentTurn && inMoveSet && "to-take"
         } relative scale-100 ${
-          isCurrentPlayer && (isSelected ? "cursor-grabbing" : "cursor-grab")
+          isCurrentPlayer && !isExchange && (isSelected ? "cursor-grabbing" : "cursor-grab")
         } ${!isCurrentPlayer && inMoveSet && "cursor-crosshair"}
           ${
             isCurrentPlayer && "hover:scale-110"

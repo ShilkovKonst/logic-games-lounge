@@ -1,6 +1,11 @@
-import Board from "@/components/chess/Board";
+import Chess from "@/components/chess/Chess";
 import AppProviders from "@/context/AppProviders";
-import { Color, PlayerState, GameType, PieceType } from "@/lib/chess-engine/types";
+import {
+  Color,
+  PlayerState,
+  GameType,
+  PieceType,
+} from "@/lib/chess-engine/types";
 
 export default async function Home() {
   const pieces: PieceType[] | null = null;
@@ -12,7 +17,7 @@ export default async function Home() {
     <div className="font-sans grid items-center justify-items-center min-h-screen p-8">
       <main className="flex flex-col items-center sm:items-start">
         <AppProviders>
-          <Board
+          <Chess
             pcs={pieces}
             curTurn={currentTurn}
             plState={playerState}

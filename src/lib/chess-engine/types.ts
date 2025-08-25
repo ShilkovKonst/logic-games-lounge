@@ -21,46 +21,44 @@ export type PlayerState = {
   status: Status;
 };
 
-export interface BoardState {
-  pieces: PieceType[];
-}
+type CastlingType = "short" | "long";
 
-export interface Turn {
+export interface TurnDetails {
   turnNo: number;
-  pieceToMove: PieceType;
-  pieceToTake?: PieceType;
-  pieceToCastle?: PieceType;
-  pieceToExchange?: PieceType;
-  fromCell: CellType;
-  toCell: CellType;
-  exchange: boolean;
-  castling: boolean;
-  gameState: PlayerState[];
-  boardState: BoardState;
+  curentPlayer: Color;
+  boardState: PieceType[];
+  pieceToMove?: string;
+  fromCell?: string;
+  toCell?: string;
+  pieceToTake?: string;
+  pieceToExchange?: string;
+  exchange?: boolean;
+  castling?: CastlingType;
+  enPassant?: boolean;
+  check?: Color;
+  checkmate?: Color;
+  stalemate?: boolean;
 }
 
 export interface GameState {
-  gameType: GameType;
-  currentBoardState: BoardState;
+  currentBoardState: PieceType[];
   currentTurn: Color;
-  log: Turn[];
-  winner: Color;
+  turnDetails: TurnDetails;
+  log: TurnDetails[];
+  selectedPiece?: PieceType;
+  isExchange: boolean;
+  isTurnOver: boolean;
 }
 
-export type Pieces =
-  | "pawn"
-  | "rook"
-  | "knight"
-  | "bishop"
-  | "queen"
-  | "king";
+export type Pieces = "pawn" | "rook" | "knight" | "bishop" | "queen" | "king";
 
-type Castling = {
+export type Castling = {
   type: "castling";
   rookId: string;
+  long: boolean;
 };
 
-type EnPassant = {
+export type EnPassant = {
   type: "enPassant";
   pawnId: string;
 };

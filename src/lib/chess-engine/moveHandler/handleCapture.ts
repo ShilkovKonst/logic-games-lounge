@@ -1,11 +1,13 @@
-import { CellType, PieceType } from "../types";
+import { Dispatch, SetStateAction } from "react";
+import { CellType, PieceType, TurnDetails } from "../types";
 import { getCell } from "../utils/cellUtil";
 
 export function handleCapture(
   cell: CellType,
   selectedPiece: PieceType,
   pieces: PieceType[],
-  board: CellType[][]
+  board: CellType[][],
+  setTurnDetails: Dispatch<SetStateAction<TurnDetails>>
 ): void {
   let pieceToTake = pieces.find((p) => p.cell === cell.id);
   if (pieceToTake && pieceToTake.id !== selectedPiece.id) {
@@ -17,10 +19,18 @@ export function handleCapture(
 
     const { pawnId } = enPassantMove.special;
     pieceToTake = pieces.find((p) => p.id === pawnId);
-    console.log(pieceToTake);
     if (pieceToTake) {
+      setTurnDetails((turnDetails) => ({
+        ...turnDetails,
+        pieceToTake: pieceToTake?.id,
+        enPassant: enPassantMove.special?.type === "enPassant",
+      }));
       pieceToTake.isTaken = true;
       pieceToTake.cell = `takenFrom${cell.id}`;
     }
   }
+  setTurnDetails((turnDetails) => ({
+    ...turnDetails,
+    pieceToTake: pieceToTake?.id,
+  }));
 }

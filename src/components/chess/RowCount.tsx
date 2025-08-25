@@ -7,7 +7,7 @@ const RowCount: React.FC<IncrementProps> = ({ increment }) => {
   const count: number[] = Array.from({ length: 8 }, (_, i) => 8 - i);
   
   return (
-    <div className="col-span-1  box-border border-amber-950 *:flex *:justify-center *:items-center *:font-semibold">
+    <div className="col-span-1 box-border border-amber-950 *:flex *:justify-center *:items-center *:font-semibold">
       {count.map((c, i) => (
         <p
           key={i}

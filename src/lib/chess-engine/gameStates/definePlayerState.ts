@@ -1,7 +1,7 @@
 import { Color, ColorState, PieceType } from "../types";
 import { getKing } from "../utils/pieceUtils";
 
-export function defineColorState(
+export function definePlayerState(
   pieces: PieceType[],
   currentPlayer: Color
 ): ColorState {
