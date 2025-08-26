@@ -25,7 +25,7 @@ interface BoardProviderProps {
 }
 
 export function BoardProvider({ children }: BoardProviderProps) {
-  const board: CellType[][] = createBoard();
+  const [board] = useState<CellType[][]>(() => createBoard());
   const [pieces, setPieces] = useState<PieceType[]>([]);
 
   return (

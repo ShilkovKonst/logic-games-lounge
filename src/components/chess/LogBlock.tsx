@@ -1,8 +1,12 @@
 "use client";
 import { useGameState } from "@/context/GameStateContext";
+import { GameState } from "@/lib/chess-engine/types";
 
-const LogBlock = () => {
-  const { log } = useGameState();
+type LogBlockProps = { state: GameState };
+
+const LogBlock: React.FC<LogBlockProps> = ({ state }) => {
+  const { log } = state;
+
 
   return (
     <div className="col-start-13 col-span-4 flex flex-col justify-start">

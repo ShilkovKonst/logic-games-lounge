@@ -1,4 +1,4 @@
-import { CellType, PieceType } from "../types";
+import { CellType, MoveType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
 import { getPieceAt } from "../utils/pieceUtils";
 
@@ -8,9 +8,9 @@ export function moveGenerator(
   board: CellType[][],
   dirs: number[][],
   maxStep: number
-): string[] {
-  const moves: string[] = [];
-  const pieceCell = getCell(board, piece.cell);
+): MoveType[] {
+  const moves: MoveType[] = [];
+  const pieceCell = getCell(board, piece.cell.id);
   const r = pieceCell.row;
   const c = pieceCell.col;
 
@@ -23,10 +23,11 @@ export function moveGenerator(
       const target = getPieceAt(cell.id, pieces);
 
       if (target) {
-        if (target.color !== piece.color) moves.push(cell.id);
+        if (target.color !== piece.color)
+          moves.push({ id: cell.id, threats: new Set() });
         break;
       }
-      moves.push(cell.id);
+      moves.push({ id: cell.id, threats: new Set() });
       tR += dr;
       tC += dc;
       step++;
@@ -44,7 +45,7 @@ export function attackGenerator(
   maxStep: number
 ): string[] {
   const attacks: string[] = [];
-  const pieceToCheckCell = getCell(board, pieceToCheck.cell);
+  const pieceToCheckCell = getCell(board, pieceToCheck.cell.id);
   const r = pieceToCheckCell.row;
   const c = pieceToCheckCell.col;
 

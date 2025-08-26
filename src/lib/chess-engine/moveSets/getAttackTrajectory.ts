@@ -7,12 +7,12 @@ export function getAttackTrajectory(
   board: CellType[][]
 ): string[] {
   const trajectory: string[] = [];
-  const attackerCell = getCell(board, attacker.cell);
+  const attackerCell = getCell(board, attacker.cell.id);
 
   const dr = Math.sign(attackerCell.row - kingCell.row);
   const dc = Math.sign(attackerCell.col - kingCell.col);
 
-  trajectory.push(attacker.cell);
+  trajectory.push(attacker.cell.id);
 
   if (attacker.type === "knight" || attacker.type === "pawn") {
     return trajectory;

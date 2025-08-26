@@ -1,8 +1,8 @@
-import { CellType, PieceType } from "../types";
+import { CellType, MoveType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
 
 export function updateFlagsAndPosition(
-  cell: CellType,
+  moveTo: MoveType,
   selectedPiece: PieceType,
   pieces: PieceType[],
   board: CellType[][]
@@ -10,11 +10,12 @@ export function updateFlagsAndPosition(
   pieces.forEach((p) => {
     if (p.type === "pawn") p.canBeTakenEnPassant = false;
   });
-  const currentPieceCell = getCell(board, selectedPiece.cell);
-  const step = Math.abs(cell.row - currentPieceCell.row);
-  selectedPiece.cell = cell.id;
-  selectedPiece.moveSet.length = 0;
-
+  const currentPieceCell = getCell(board, selectedPiece.cell.id);
+  const moveToCell = getCell(board, moveTo.id);
+  const step = Math.abs(moveToCell.row - currentPieceCell.row);
+  if (selectedPiece.type === "pawn" && step === 2) {
+    selectedPiece.canBeTakenEnPassant = true;
+  }
   if (
     (selectedPiece.type === "pawn" ||
       selectedPiece.type === "rook" ||
@@ -23,10 +24,6 @@ export function updateFlagsAndPosition(
   ) {
     selectedPiece.hasMoved = true;
   }
-
-  if (selectedPiece.type === "pawn") {
-    if (step === 2) {
-      selectedPiece.canBeTakenEnPassant = true;
-    }
-  }
+  selectedPiece.cell.id = moveTo.id;
+  selectedPiece.moveSet.length = 0;
 }

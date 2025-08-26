@@ -7,6 +7,7 @@ import {
   Pawn,
   Queen,
   Rook,
+  MoveType,
 } from "../types";
 import { moveGenerator } from "./generator";
 import { bDir, kDir, qDir, rDir } from "../constants/dirs";
@@ -17,7 +18,7 @@ export function getMoveSet(
   piece: PieceType,
   pieces: PieceType[],
   board: CellType[][]
-): string[] {
+): MoveType[] {
   switch (piece.type) {
     case "pawn":
       return pawnMoves(piece as Pawn, pieces, board);
@@ -38,9 +39,9 @@ export function pawnMoves(
   pawn: Pawn,
   pieces: PieceType[],
   board: CellType[][]
-): string[] {
-  const moves: string[] = [];
-  const cell = getCell(board, pawn.cell);
+): MoveType[] {
+  const moves: MoveType[] = [];
+  const cell = getCell(board, pawn.cell.id);
   const col = cell.col;
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
@@ -48,13 +49,15 @@ export function pawnMoves(
   if (nextRow < 0 || nextRow >= 8) return moves;
 
   const nextCell = board[nextRow][col];
-  if (!pieces.some((p) => p.cell === nextCell.id)) moves.push(nextCell.id);
+  if (!pieces.some((p) => p.cell.id === nextCell.id))
+    moves.push({ id: nextCell.id, threats: new Set() });
+
   const target = getPieceAt(nextCell.id, pieces);
   const doubleRow = !target ? cell.row + dir * 2 : -1;
   if (!pawn.hasMoved && doubleRow >= 0 && doubleRow < 8) {
     const doubleCell = board[doubleRow][col];
-    if (!pieces.some((p) => p.cell === doubleCell.id))
-      moves.push(doubleCell.id);
+    if (!pieces.some((p) => p.cell.id === doubleCell.id))
+      moves.push({ id: doubleCell.id, threats: new Set() });
   }
 
   const attackMoves = pawnAttackMoves(pawn, pieces, board);
@@ -65,9 +68,9 @@ export function pawnAttackMoves(
   pawn: Pawn,
   pieces: PieceType[],
   board: CellType[][]
-): string[] {
-  const attackMoves: string[] = [];
-  const cell = getCell(board, pawn.cell);
+): MoveType[] {
+  const attackMoves: MoveType[] = [];
+  const cell = getCell(board, pawn.cell.id);
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
   const col = cell.col;
@@ -80,7 +83,7 @@ export function pawnAttackMoves(
     const threatCell = board[nextRow][tCol];
     const target = getPieceAt(threatCell.id, pieces);
     if (target && target.color !== pawn.color) {
-      attackMoves.push(threatCell.id);
+      attackMoves.push({ id: threatCell.id, threats: new Set() });
     } else if (!target) {
       checkEnPassantMoves(pawn, pieces, nextRow, tCol, attackMoves, board);
     }
@@ -93,10 +96,10 @@ function checkEnPassantMoves(
   pieces: PieceType[],
   nextRow: number,
   tCol: number,
-  threats: string[],
+  attackMoves: MoveType[],
   board: CellType[][]
 ): void {
-  const cell = getCell(board, pawn.cell);
+  const cell = getCell(board, pawn.cell.id);
   const targetCell = board[cell.row][tCol];
   const target = getPieceAt(targetCell.id, pieces);
   if (!target) return;
@@ -104,7 +107,10 @@ function checkEnPassantMoves(
 
   if (target.color !== pawn.color && target.canBeTakenEnPassant) {
     const nextCell = board[nextRow][tCol];
-    nextCell["special"] = { type: "enPassant", pawnId: target.id };
-    threats.push(nextCell.id);
+    attackMoves.push({
+      id: nextCell.id,
+      threats: new Set(),
+      special: { type: "enPassant", pawnId: target.id },
+    });
   }
 }

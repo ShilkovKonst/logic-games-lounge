@@ -1,4 +1,4 @@
-import { CellType, PieceType } from "@/lib/chess-engine/types";
+import { CellType, GameState, PieceType } from "@/lib/chess-engine/types";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { useGameState } from "@/context/GameStateContext";
 import { usePlayerState } from "@/context/PlayerStateContext";
@@ -6,17 +6,19 @@ import { usePlayerState } from "@/context/PlayerStateContext";
 type PieceProps = {
   cell: CellType;
   piece: PieceType;
+  state: GameState;
 };
 
-const Piece: React.FC<PieceProps> = ({ cell, piece }) => {
+const Piece: React.FC<PieceProps> = ({ cell, piece, state }) => {
   const { type, color } = piece;
 
   const { playerState } = usePlayerState();
-  const { gameType, currentTurn, selectedPiece, isExchange } = useGameState();
+  const { gameType } = useGameState();
+  const { selectedPiece, currentTurn, isExchange } = state;
 
-  const isSelected = selectedPiece?.cell === cell.id;
+  const isSelected = selectedPiece?.cell.id === cell.id;
   const inMoveSet =
-    selectedPiece && selectedPiece.moveSet.some((m) => m === cell.id);
+    selectedPiece && selectedPiece.moveSet.some((m) => m.id === cell.id);
   const isCurrentPlayer =
     (gameType === "hotseat" || currentTurn === playerState.color) &&
     color === currentTurn;
@@ -24,7 +26,7 @@ const Piece: React.FC<PieceProps> = ({ cell, piece }) => {
   return (
     <div
       className={`${
-        (piece.color === currentTurn ) ? "piece" : ""
+        piece.color === currentTurn ? "piece" : ""
       } relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}
     >
       <button
@@ -32,7 +34,9 @@ const Piece: React.FC<PieceProps> = ({ cell, piece }) => {
         className={`${piece.color === currentTurn && !isExchange && "piece"} ${
           piece.color !== currentTurn && inMoveSet && "to-take"
         } relative scale-100 ${
-          isCurrentPlayer && !isExchange && (isSelected ? "cursor-grabbing" : "cursor-grab")
+          isCurrentPlayer &&
+          !isExchange &&
+          (isSelected ? "cursor-grabbing" : "cursor-grab")
         } ${!isCurrentPlayer && inMoveSet && "cursor-crosshair"}
           ${
             isCurrentPlayer && "hover:scale-110"

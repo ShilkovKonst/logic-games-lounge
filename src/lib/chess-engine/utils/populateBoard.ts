@@ -29,7 +29,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 0:
         return {
           id: `rook${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -39,7 +39,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 1:
         return {
           id: `knight${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -48,7 +48,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 2:
         return {
           id: `bishop${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -57,7 +57,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 3:
         return {
           id: `queen${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -66,7 +66,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 4:
         return {
           id: `king${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -77,7 +77,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 5:
         return {
           id: `bishop${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -86,7 +86,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 6:
         return {
           id: `knight${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -95,7 +95,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       case 7:
         return {
           id: `rook${row}${col}`,
-          cell: cell.id,
+          cell: { id: cell.id, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -108,7 +108,7 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
   } else
     return {
       id: `pawn${row}${col}`,
-      cell: cell.id,
+      cell: { id: cell.id, threats: new Set() },
       color: row === 1 ? "black" : "white",
       isTaken: false,
       moveSet: [],

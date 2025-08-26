@@ -10,7 +10,7 @@ const PiecesToExchange: React.FC = () => {
   const piecesToExchange: PieceType[] = [
     {
       id: "",
-      cell: "",
+      cell: { id: "" , threats: new Set()},
       color: currentTurn,
       isTaken: true,
       type: "rook",
@@ -19,7 +19,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: "",
+      cell: { id: "" , threats: new Set()},
       color: currentTurn,
       isTaken: true,
       type: "bishop",
@@ -27,7 +27,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: "",
+      cell: { id: "" , threats: new Set()},
       color: currentTurn,
       isTaken: true,
       type: "knight",
@@ -35,7 +35,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: "",
+      cell: { id: "" , threats: new Set()},
       color: currentTurn,
       isTaken: true,
       type: "queen",

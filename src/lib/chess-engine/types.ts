@@ -42,12 +42,12 @@ export interface TurnDetails {
 
 export interface GameState {
   currentBoardState: PieceType[];
+  currentTurnNo: number;
   currentTurn: Color;
   turnDetails: TurnDetails;
   log: TurnDetails[];
   selectedPiece?: PieceType;
   isExchange: boolean;
-  isTurnOver: boolean;
 }
 
 export type Pieces = "pawn" | "rook" | "knight" | "bishop" | "queen" | "king";
@@ -67,16 +67,20 @@ export interface CellType {
   id: string;
   row: number;
   col: number;
+}
+
+export type MoveType = {
+  id: string;
   threats: Set<string>;
   special?: Castling | EnPassant;
-}
+};
 
 export interface BasePiece {
   id: string;
-  cell: string;
+  cell: MoveType;
   color: Color;
   isTaken: boolean;
-  moveSet: string[];
+  moveSet: MoveType[];
 }
 
 export interface Pawn extends BasePiece {

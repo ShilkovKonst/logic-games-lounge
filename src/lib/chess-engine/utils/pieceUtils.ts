@@ -24,7 +24,7 @@ export const getPieceAt: (
   cellId: string,
   pieces: PieceType[]
 ) => PieceType | undefined = (cellId, pieces) =>
-  pieces.find((p) => !p.isTaken && p.cell === cellId);
+  pieces.find((p) => !p.isTaken && p.cell.id === cellId);
 
 export function isPieces(value: string): value is Pieces {
   return piecesSet.has(value as Pieces);

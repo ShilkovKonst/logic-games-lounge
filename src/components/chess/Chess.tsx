@@ -10,12 +10,13 @@ import Board from "./Board";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import { useBoardState } from "@/context/BoardStateContext";
-import { useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import { checkKingSafety } from "@/lib/chess-engine/moveSets/checkKingSafety";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import LogBlock from "./LogBlock";
+import { blankTurn, flip, gameReducer } from "@/reducer/chessReducer";
 
 type ChessProps = {
   gType: GameType | null;
@@ -25,87 +26,45 @@ type ChessProps = {
 };
 const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
   const { playerState, setPlayerState } = usePlayerState();
-  const {
-    setLog,
-    isTurnOver,
-    setIsTurnOver,
-    gameTurnNo,
-    setGameTurnNo,
-    turnDetails,
-    setTurnDetails,
-    currentTurn,
-    setCurrentTurn,
-    setSelectedPiece,
-    setIsExchange,
-  } = useGameState();
-  const { board, pieces, setPieces } = useBoardState();
+  const { board } = useBoardState();
 
-  const setInitialGameState = () => {
-    setGameTurnNo(1);
-    setIsTurnOver(false);
-    setTurnDetails({
-      turnNo: 1,
-      curentPlayer: "white",
-      pieceToMove: "",
-      fromCell: "",
-      toCell: "",
-      castling: undefined,
-      exchange: false,
-      enPassant: false,
-      pieceToTake: "",
-      pieceToExchange: "",
-      boardState: pieces,
-    });
-    setSelectedPiece(undefined);
-    setLog([]);
-    setIsExchange(false);
-    setCurrentTurn(curTurn ?? "white");
-    setPlayerState(
-      plState ?? {
-        color: "white",
-        status: "NORMAL",
-        type: "host",
-      }
-    );
-    setPieces(pcs ?? populateBoard("white", board));
-  };
+  const [state, dispatch] = useReducer(gameReducer, {
+    currentBoardState: populateBoard("white", board),
+    currentTurn: "white",
+    currentTurnNo: 1,
+    turnDetails: blankTurn(1, "white"),
+    log: [],
+    selectedPiece: undefined,
+    isExchange: false,
+  });
 
   useEffect(() => {
-    setInitialGameState();
+    dispatch({
+      type: "INIT",
+      payload: {
+        currentTurn: "white",
+        pieces: populateBoard("white", board),
+      },
+    });
   }, []);
 
   useEffect(() => {
-    if (isTurnOver) {
-      const newTurnDetails = {
-        ...turnDetails,
-        boardState: pieces,
-        turnNo: gameTurnNo,
-        curentPlayer: currentTurn,
-      };
-      setTurnDetails(newTurnDetails);
-      setLog((log) => [...log, turnDetails]);
-      getAllActiveMoveSets(currentTurn, pieces, board);
-      setGameTurnNo((turnNo) => ++turnNo);
-      setSelectedPiece(undefined);
-      setIsTurnOver(false);
-    }
-  }, [isTurnOver]);
-
-  useEffect(() => {
-    if (pieces.length > 0) {
-      checkKingSafety(pieces, playerState.color, board);
-    }
-  }, [playerState]);
+    getAllActiveMoveSets(state.currentTurn, state.currentBoardState, board);
+  }, [state.currentTurn]);
 
   return (
     <>
       <div className="w-full flex justify-between">
         <div>
-          <div>{currentTurn}</div>
+          <div>{state.currentTurn}</div>
           <button
             className="p-2 bg-amber-200"
             onClick={() => {
-              setCurrentTurn((prev) => (prev === "white" ? "black" : "white"));
+              dispatch({
+                type: "PATCH_TURN",
+                payload: { curentPlayer: flip(state.currentTurn) },
+              });
+              // setCurrentTurn((prev) => (prev === "white" ? "black" : "white"));
             }}
           >
             change turn
@@ -116,7 +75,13 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
           <button
             className="p-2 bg-amber-200"
             onClick={() => {
-              setInitialGameState();
+              dispatch({
+                type: "INIT",
+                payload: {
+                  currentTurn: "white",
+                  pieces: populateBoard("white", board),
+                },
+              });
             }}
           >
             restart
@@ -139,14 +104,14 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
         </div>
       </div>
       <div className="w-full flex justify-center items-center">
-        Current player: {currentTurn}; status: {playerState.status}; current
-        turn: {gameTurnNo}
+        Current player: {state.currentTurn}; current turn no:{" "}
+        {state.currentTurnNo}
       </div>
 
       <div className={`grid grid-cols-16 `}>
-        <TakenPiecesBlock />
-        <Board />
-        <LogBlock />
+        <TakenPiecesBlock state={state} />
+        <Board state={state} dispatch={dispatch} />
+        <LogBlock state={state} />
       </div>
     </>
   );

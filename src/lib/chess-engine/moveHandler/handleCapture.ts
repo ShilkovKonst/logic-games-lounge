@@ -1,36 +1,26 @@
-import { Dispatch, SetStateAction } from "react";
-import { CellType, PieceType, TurnDetails } from "../types";
-import { getCell } from "../utils/cellUtil";
+import { ActionDispatch } from "react";
+import { MoveType, PieceType } from "../types";
+import { GameAction } from "@/reducer/chessReducer";
 
 export function handleCapture(
-  cell: CellType,
+  moveTo: MoveType,
   selectedPiece: PieceType,
   pieces: PieceType[],
-  board: CellType[][],
-  setTurnDetails: Dispatch<SetStateAction<TurnDetails>>
+  dispatch: ActionDispatch<[action: GameAction]>
 ): void {
-  let pieceToTake = pieces.find((p) => p.cell === cell.id);
+  let pieceToTake = pieces.find((p) => p.cell.id === moveTo.id);
   if (pieceToTake && pieceToTake.id !== selectedPiece.id) {
     pieceToTake.isTaken = true;
-    pieceToTake.cell = `takenFrom${cell.id}`;
+    pieceToTake.cell.id = `takenFrom${moveTo.id}`;
   } else if (!pieceToTake && selectedPiece.type === "pawn") {
-    const enPassantMove = getCell(board, cell.id);
-    if (enPassantMove.special?.type !== "enPassant") return;
+    if (moveTo.special?.type !== "enPassant") return;
 
-    const { pawnId } = enPassantMove.special;
+    const { pawnId } = moveTo.special;
     pieceToTake = pieces.find((p) => p.id === pawnId);
     if (pieceToTake) {
-      setTurnDetails((turnDetails) => ({
-        ...turnDetails,
-        pieceToTake: pieceToTake?.id,
-        enPassant: enPassantMove.special?.type === "enPassant",
-      }));
       pieceToTake.isTaken = true;
-      pieceToTake.cell = `takenFrom${cell.id}`;
+      pieceToTake.cell.id = `takenFrom${moveTo.id}`;
     }
   }
-  setTurnDetails((turnDetails) => ({
-    ...turnDetails,
-    pieceToTake: pieceToTake?.id,
-  }));
+  dispatch({ type: "PATCH_TURN", payload: { pieceToTake: pieceToTake?.id } });
 }

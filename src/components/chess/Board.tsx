@@ -1,31 +1,30 @@
 "use client";
-import { MouseEvent, TouchEvent } from "react";
+import { ActionDispatch, MouseEvent, TouchEvent } from "react";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useBoardState } from "@/context/BoardStateContext";
 import { useGameState } from "@/context/GameStateContext";
 import Cell from "./Cell";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
-import { Castling } from "@/lib/chess-engine/types";
+import { Castling, GameState } from "@/lib/chess-engine/types";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
 import { isPieces } from "@/lib/chess-engine/utils/pieceUtils";
 import {
   handleMoveClick,
   handlePieceClick,
 } from "@/lib/chess-engine/moveHandler/moveHandler";
+import { GameAction } from "@/reducer/chessReducer";
 
-const Board: React.FC = () => {
+type BoardProps = {
+  state: GameState;
+  dispatch: ActionDispatch<[action: GameAction]>;
+};
+
+const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
   const { playerState } = usePlayerState();
-  const {
-    currentTurn,
-    setTurnDetails,
-    selectedPiece,
-    setSelectedPiece,
-    isExchange,
-    setIsExchange,
-    changeTurn,
-  } = useGameState();
-  const { board, pieces } = useBoardState();
+  const { board } = useBoardState();
+
+  const { selectedPiece, currentBoardState, currentTurn, isExchange } = state;
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -37,13 +36,17 @@ const Board: React.FC = () => {
       const exchangeType = exchangeToEl.getAttribute("data-exchange-to");
       if (exchangeType && isPieces(exchangeType) && selectedPiece) {
         selectedPiece.type = exchangeType;
-        setTurnDetails((turnDetails) => ({
-          ...turnDetails,
-          exchange: true,
-          pieceToExchange: exchangeType,
-        }));
-        setIsExchange(false);
-        changeTurn();
+        dispatch({
+          type: "PATCH_TURN",
+          payload: { exchange: true, pieceToExchange: exchangeType },
+        });
+        dispatch({ type: "END_EXCHANGE" });
+        dispatch({
+          type: "END_TURN",
+          payload: {
+            boardState: currentBoardState.map((p) => ({ ...p })), // копия массива фигур после мутаций
+          },
+        });
       }
       return;
     }
@@ -51,28 +54,44 @@ const Board: React.FC = () => {
     if (moveEl) {
       const moveId = moveEl.getAttribute("data-cell-id");
       if (moveId && selectedPiece) {
-        const move = getCell(board, moveId);
-        if (move.special?.type === "castling") {
+        // const move = getCell(board, moveId);
+        const move = selectedPiece.moveSet.find((m) => m.id === moveId);
+        if (!move) return;
+        if (move?.special?.type === "castling") {
           const castling = move.special as Castling;
-          setTurnDetails((turnDetails) => ({
-            ...turnDetails,
-            castling: castling.long ? "long" : "short",
-          }));
+          dispatch({
+            type: "PATCH_TURN",
+            payload: { castling: castling.long ? "long" : "short" },
+          });
         }
-        if (move.special?.type === "enPassant")
-          setTurnDetails((turnDetails) => ({
-            ...turnDetails,
-            enPassant: true,
-          }));
+        if (move?.special?.type === "enPassant") {
+          dispatch({ type: "PATCH_TURN", payload: { enPassant: true } });
+        }
+        dispatch({ type: "PATCH_TURN", payload: { toCell: move.id } });
+
         handleMoveClick(
           move,
           selectedPiece,
-          pieces,
+          currentBoardState,
           board,
-          setIsExchange,
-          changeTurn,
-          setTurnDetails
+          dispatch
         );
+
+        const moveCell = getCell(board, moveId);
+        const needsPromotion =
+          selectedPiece.type === "pawn" &&
+          ((selectedPiece.color === "white" && moveCell.row === 0) ||
+            (selectedPiece.color === "black" && moveCell.row === 7));
+        if (needsPromotion) {
+          dispatch({ type: "START_EXCHANGE" });
+          return;
+        }
+        dispatch({
+          type: "END_TURN",
+          payload: {
+            boardState: currentBoardState.map((p) => ({ ...p })), // копия массива фигур после мутаций
+          },
+        });
       }
       return;
     }
@@ -81,13 +100,18 @@ const Board: React.FC = () => {
       const pieceId = pieceEl.getAttribute("data-piece-id");
       if (pieceId) {
         if (isExchange) return;
-        const piece = handlePieceClick(pieceId, pieces, currentTurn, board);
-        setTurnDetails((turnDetails) => ({
-          ...turnDetails,
-          pieceToMove: piece.id,
-          fromCell: piece.cell,
-        }));
-        setSelectedPiece(piece);
+        const piece = handlePieceClick(
+          pieceId,
+          currentBoardState,
+          currentTurn,
+          board
+        );
+        console.log(piece);
+        dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
+        dispatch({
+          type: "PATCH_TURN",
+          payload: { pieceToMove: piece.id, fromCell: piece.cell.id },
+        });
       }
       return;
     }
@@ -109,7 +133,7 @@ const Board: React.FC = () => {
           {board.map((r, i) => (
             <div key={i} className="flex">
               {r.map((cell, j) => (
-                <Cell key={i * 10 + j} cell={cell} />
+                <Cell key={i * 10 + j} cell={cell} state={state} />
               ))}
             </div>
           ))}

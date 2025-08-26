@@ -1,14 +1,18 @@
 "use client";
 import { useBoardState } from "@/context/BoardStateContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
-import { Color, PieceType } from "@/lib/chess-engine/types";
+import { Color, GameState, PieceType } from "@/lib/chess-engine/types";
 
-const TakenPiecesBlock = () => {
-  const { pieces } = useBoardState();
+type TakenPiecesBlockProps = {
+  state: GameState;
+};
+
+const TakenPiecesBlock: React.FC<TakenPiecesBlockProps> = ({ state }) => {
+  const { currentBoardState } = state;
   return (
     <div className="col-span-2 flex flex-col justify-between">
-      <TakenPieces pieces={pieces} player="black" />
-      <TakenPieces pieces={pieces} player="white" />
+      <TakenPieces pieces={currentBoardState} player="black" />
+      <TakenPieces pieces={currentBoardState} player="white" />
     </div>
   );
 };

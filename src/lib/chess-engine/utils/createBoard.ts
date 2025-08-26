@@ -10,7 +10,6 @@ export function createBoard(): CellType[][] {
         id: rcToNotation(i, j),
         row: i,
         col: j,
-        threats: new Set<string>(),
       };
       row.push(cell);
     }

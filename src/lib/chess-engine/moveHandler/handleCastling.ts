@@ -1,27 +1,36 @@
-import { CellType, PieceType } from "../types";
+import { CellType, MoveType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
+import { getPiece } from "../utils/pieceUtils";
 
 export function handleCastling(
-  cell: CellType,
+  moveTo: MoveType,
   selectedPiece: PieceType,
   pieces: PieceType[],
   board: CellType[][]
 ): void {
   if (selectedPiece.type !== "king" || selectedPiece.hasMoved) return;
+  if (moveTo.special?.type !== "castling") return;
+  // if (
+  //   selectedPiece.moveSet.every(
+  //     (m) => !m.special || m.special.type !== "castling"
+  //   )
+  // )
+  //   return;
 
-  const selectedPieceCell = getCell(board, selectedPiece.cell);
-  let moveCastling = undefined;
-  for (const move of selectedPiece.moveSet) {
-    if (move === cell.id) moveCastling = getCell(board, move);
-  }
-  if (!moveCastling || moveCastling.special?.type !== "castling") return;
-
-  const { rookId } = moveCastling.special;
-  const rookToCastle = pieces.find((p) => p.id === rookId);
+  // let moveCastling = undefined;
+  // for (const move of selectedPiece.moveSet) {
+  //   if (move.id === moveTo.id) moveCastling = getCell(board, move.id);
+  // }
+  // if (!moveCastling || moveCastling.special?.type !== "castling") return;
+  
+  const rookId = moveTo.special.rookId;
+  const rookToCastle = getPiece(rookId, pieces);
+  const moveToCell = getCell(board, moveTo.id);
+  const kingCell = getCell(board, selectedPiece.cell.id);
   if (rookToCastle && rookToCastle.type === "rook") {
-    const dir = selectedPieceCell.col > cell.col ? 1 : -1;
-    const rookMove = board[cell.row][cell.col + dir];
-    rookToCastle["cell"] = rookMove.id;
-    rookToCastle["hasMoved"] = true;
+    const dir = kingCell.col > moveToCell.col ? 1 : -1;
+    const rookMove = board[kingCell.row][moveToCell.col + dir];
+    rookToCastle.cell.id = rookMove.id;
+    rookToCastle.hasMoved = true;
   }
 }
