@@ -1,8 +1,19 @@
-import { rowToNot } from "../constants/board";
+import { notToRow, rowToNot } from "../constants/board";
 import { CellType } from "../types";
 
 export function cellToNotation(cell: CellType): string {
   return `${rowToNot[cell.col]}${cell.row + 1}`;
+}
+
+export function notToRowCol(id: string): { row: number; col: number } {
+  const col = notToRow[id.charAt(0)];
+  const row = 8 - Number(id.charAt(1));
+  if (!inBounds(row, col))
+    throw new Error(`Row ${row} and col ${col} for id "${id}" not valid `);
+  return {
+    row,
+    col,
+  };
 }
 
 export function rcToNotation(row: number, col: number): string {
@@ -13,4 +24,8 @@ export function getCell(board: CellType[][], cellId: string) {
   const cell = board.flat().find((c) => c.id === cellId);
   if (!cell) throw new Error(`Cell with id "${cellId}" not found`);
   return cell;
+}
+
+export function inBounds(row: number, col: number): boolean {
+  return row >= 0 && row < 8 && col >= 0 && col < 8;
 }

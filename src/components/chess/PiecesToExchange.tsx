@@ -1,16 +1,19 @@
-import { useGameState } from "@/context/GameStateContext";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
-import { PieceType } from "@/lib/chess-engine/types";
+import { GameState, PieceType } from "@/lib/chess-engine/types";
 
-const PiecesToExchange: React.FC = () => {
-  const { currentTurn } = useGameState();
+type PtEProps = {
+  state: GameState;
+};
+
+const PiecesToExchange: React.FC<PtEProps> = ({ state }) => {
+  const { currentTurn } = state;
   const { playerState } = usePlayerState();
 
   const piecesToExchange: PieceType[] = [
     {
       id: "",
-      cell: { id: "" , threats: new Set()},
+      cell: { id: "", threats: new Set() },
       color: currentTurn,
       isTaken: true,
       type: "rook",
@@ -19,7 +22,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: { id: "" , threats: new Set()},
+      cell: { id: "", threats: new Set() },
       color: currentTurn,
       isTaken: true,
       type: "bishop",
@@ -27,7 +30,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: { id: "" , threats: new Set()},
+      cell: { id: "", threats: new Set() },
       color: currentTurn,
       isTaken: true,
       type: "knight",
@@ -35,7 +38,7 @@ const PiecesToExchange: React.FC = () => {
     },
     {
       id: "",
-      cell: { id: "" , threats: new Set()},
+      cell: { id: "", threats: new Set() },
       color: currentTurn,
       isTaken: true,
       type: "queen",

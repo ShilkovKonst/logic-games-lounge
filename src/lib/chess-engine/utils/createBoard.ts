@@ -1,7 +1,9 @@
 import { CellType } from "../types";
 import { rcToNotation } from "./cellUtil";
 
-export function createBoard(): CellType[][] {
+export const BOARD = createBoard();
+
+function createBoard(): CellType[][] {
   const board: CellType[][] = [];
   for (let i = 0; i < 8; i++) {
     const row: CellType[] = [];

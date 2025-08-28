@@ -1,5 +1,3 @@
-import { BoardProvider } from "./BoardStateContext";
-import { GameProvider } from "./GameStateContext";
 import { PlayerProvider } from "./PlayerStateContext";
 
 export default function AppProviders({
@@ -7,11 +5,5 @@ export default function AppProviders({
 }: {
   children: React.ReactNode;
 }) {
-  return (
-    <BoardProvider>
-      <PlayerProvider>
-        <GameProvider>{children}</GameProvider>
-      </PlayerProvider>
-    </BoardProvider>
-  );
+  return <PlayerProvider>{children}</PlayerProvider>;
 }

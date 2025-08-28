@@ -1,5 +1,4 @@
 "use client";
-import { useGameState } from "@/context/GameStateContext";
 import { GameState } from "@/lib/chess-engine/types";
 
 type LogBlockProps = { state: GameState };
@@ -7,9 +6,8 @@ type LogBlockProps = { state: GameState };
 const LogBlock: React.FC<LogBlockProps> = ({ state }) => {
   const { log } = state;
 
-
   return (
-    <div className="col-start-13 col-span-4 flex flex-col justify-start">
+    <div className="col-start-13 col-span-4 flex flex-col justify-start max-h-[480px] md:max-h-[560px] overflow-y-auto">
       {log.map((turn, i) => (
         <div key={i} className="text-xs">
           <p>

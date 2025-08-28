@@ -1,21 +1,29 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import { useBoardState } from "@/context/BoardStateContext";
-import { useGameState } from "@/context/GameStateContext";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { CellType, GameState, PieceType } from "@/lib/chess-engine/types";
+import {
+  CellType,
+  GameState,
+  GameType,
+  PieceType,
+} from "@/lib/chess-engine/types";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
+import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 import { useEffect, useState } from "react";
 
 type HighLightProps = {
   cell: CellType;
   piece?: PieceType | undefined;
   state: GameState;
+  gameType: GameType;
 };
 
-const HighLight: React.FC<HighLightProps> = ({ cell, piece, state }) => {
-  const { board } = useBoardState();
+const HighLight: React.FC<HighLightProps> = ({
+  cell,
+  piece,
+  state,
+  gameType,
+}) => {
   const { playerState } = usePlayerState();
-  const { gameType } = useGameState();
 
   const { selectedPiece, currentTurn } = state;
 
@@ -29,12 +37,14 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece, state }) => {
   const isSelected = selectedPiece && selectedPiece?.id === piece?.id;
   const hasPieces = !!selectedPiece && !!piece;
   const inMoveSet = selectedPiece?.moveSet.some((m) => m.id === cell.id);
-  const isInDanger = inMoveSet && selectedPiece?.moveSet.find(m => m.id === cell.id && m.threats.size > 0);
+  const isInDanger =
+    inMoveSet &&
+    selectedPiece?.moveSet.find((m) => m.id === cell.id && m.threats.size > 0);
 
   const enPassantCell = () => {
     if (!selectedPiece || !piece) return undefined;
     for (const move of selectedPiece.moveSet) {
-      const moveCell = getCell(board, move.id);
+      const moveCell = getCell(BOARD, move.id);
       const rowEnPassant =
         moveCell.row === cell.row + (piece?.color === "white" ? +1 : -1);
       const sameCol = moveCell.col === cell.col;
@@ -53,7 +63,7 @@ const HighLight: React.FC<HighLightProps> = ({ cell, piece, state }) => {
       hasPieces &&
         isKingInitial(selectedPiece) &&
         isRookInitial(piece, selectedPiece) &&
-        hasInMoves(selectedPiece, piece, board)
+        hasInMoves(selectedPiece, piece, BOARD)
     );
     // inMoveSet && console.log(cell.id, cell.threats);
   }, [selectedPiece]);
@@ -94,9 +104,6 @@ function hasInMoves(
 ): boolean {
   const selectedPieceCell = getCell(board, selected.cell.id);
   const d = dir(piece, selected, board);
-  // const col = long(piece, selected, board)
-  //   ? selectedPieceCell.col + d * 2
-  //   : selectedPieceCell.col + d;
   const col = selectedPieceCell.col + d * 2;
   const cell = board[selectedPieceCell.row][col];
   return selected.moveSet.some((m) => m.id === cell?.id);

@@ -1,5 +1,4 @@
 "use client";
-import { useBoardState } from "@/context/BoardStateContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { Color, GameState, PieceType } from "@/lib/chess-engine/types";
 

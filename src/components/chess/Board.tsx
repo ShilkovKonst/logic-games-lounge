@@ -1,12 +1,10 @@
 "use client";
 import { ActionDispatch, MouseEvent, TouchEvent } from "react";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useBoardState } from "@/context/BoardStateContext";
-import { useGameState } from "@/context/GameStateContext";
 import Cell from "./Cell";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
-import { Castling, GameState } from "@/lib/chess-engine/types";
+import { Castling, GameState, GameType } from "@/lib/chess-engine/types";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
 import { isPieces } from "@/lib/chess-engine/utils/pieceUtils";
 import {
@@ -14,15 +12,16 @@ import {
   handlePieceClick,
 } from "@/lib/chess-engine/moveHandler/moveHandler";
 import { GameAction } from "@/reducer/chessReducer";
+import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 
 type BoardProps = {
+  gameType: GameType;
   state: GameState;
   dispatch: ActionDispatch<[action: GameAction]>;
 };
 
-const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
+const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
-  const { board } = useBoardState();
 
   const { selectedPiece, currentBoardState, currentTurn, isExchange } = state;
 
@@ -54,7 +53,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
     if (moveEl) {
       const moveId = moveEl.getAttribute("data-cell-id");
       if (moveId && selectedPiece) {
-        // const move = getCell(board, moveId);
         const move = selectedPiece.moveSet.find((m) => m.id === moveId);
         if (!move) return;
         if (move?.special?.type === "castling") {
@@ -73,11 +71,11 @@ const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
           move,
           selectedPiece,
           currentBoardState,
-          board,
+          BOARD,
           dispatch
         );
 
-        const moveCell = getCell(board, moveId);
+        const moveCell = getCell(BOARD, moveId);
         const needsPromotion =
           selectedPiece.type === "pawn" &&
           ((selectedPiece.color === "white" && moveCell.row === 0) ||
@@ -104,7 +102,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
           pieceId,
           currentBoardState,
           currentTurn,
-          board
+          BOARD
         );
         console.log(piece);
         dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
@@ -130,10 +128,10 @@ const Board: React.FC<BoardProps> = ({ state, dispatch }) => {
           onClick={(e) => handleClick(e)}
           className="col-start-2 col-span-8 border-amber-950"
         >
-          {board.map((r, i) => (
+          {BOARD.map((r, i) => (
             <div key={i} className="flex">
               {r.map((cell, j) => (
-                <Cell key={i * 10 + j} cell={cell} state={state} />
+                <Cell key={i * 10 + j} cell={cell} state={state} gameType={gameType} />
               ))}
             </div>
           ))}

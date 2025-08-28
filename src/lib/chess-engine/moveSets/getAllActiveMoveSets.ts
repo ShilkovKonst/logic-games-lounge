@@ -15,9 +15,10 @@ export function getAllActiveMoveSets(
   for (const p of activePieces) {
     p.moveSet.length = 0;
     if (p.color !== player) continue;
-    if (king.isInDanger && king.cell.threats.size > 1 && p.id !== king.id)
+    // double check case, only king can move
+    if (king.cell.threats.size > 1 && p.id !== king.id)
       continue;
-    const moveSet = checkPieceFinalMoves(p, pieces, player, board);
+    const moveSet = checkPieceFinalMoves(p, pieces, player, board, king);
     p.moveSet.push(...moveSet);
     if (!king.isInDanger || p.id === king.id) continue;
 

@@ -1,19 +1,23 @@
 import { checkThreats } from "./getAttackSets";
-import { CellType, Color, MoveType, PieceType } from "../types";
+import { CellType, Color, King, MoveType, PieceType } from "../types";
 import { getMoveSet } from "./getMoveSet";
-import { getCell } from "../utils/cellUtil";
+import { checkPinPiece } from "./checkPinPiece";
+import { BOARD } from "../utils/createBoard";
 
 export function checkPieceFinalMoves(
   currentPiece: PieceType,
   pieces: PieceType[],
   playerColor: Color,
-  board: CellType[][]
+  board: CellType[][],
+  king: King
 ): MoveType[] {
   const moveSet = getMoveSet(currentPiece, pieces, board);
   if (currentPiece.type === "king" && currentPiece.color === playerColor) {
     return defineKingMoveSet(currentPiece, pieces, playerColor, moveSet, board);
   }
-  return moveSet;
+  const pinMoves = checkPinPiece(currentPiece, king.cell.id, BOARD, pieces);
+  if (pinMoves.length === 0) return moveSet;
+  else return moveSet.filter((m) => pinMoves.includes(m.id));
 }
 
 function defineKingMoveSet(

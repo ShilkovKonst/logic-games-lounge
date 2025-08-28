@@ -6,20 +6,18 @@ export function getAttackTrajectory(
   attacker: PieceType,
   board: CellType[][]
 ): string[] {
-  const trajectory: string[] = [];
+  const trajectory: string[] = [attacker.cell.id];
   const attackerCell = getCell(board, attacker.cell.id);
 
   const dr = Math.sign(attackerCell.row - kingCell.row);
   const dc = Math.sign(attackerCell.col - kingCell.col);
 
-  trajectory.push(attacker.cell.id);
-
   if (attacker.type === "knight" || attacker.type === "pawn") {
     return trajectory;
   }
 
-  let r = kingCell.row + dr,
-    c = kingCell.col + dc;
+  let r = kingCell.row + dr;
+  let c = kingCell.col + dc;
   while (r !== attackerCell.row || c !== attackerCell.col) {
     trajectory.push(board[r][c].id);
     r += dr;

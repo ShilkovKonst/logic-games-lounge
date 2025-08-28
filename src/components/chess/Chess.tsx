@@ -8,30 +8,28 @@ import {
 } from "@/lib/chess-engine/types";
 import Board from "./Board";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useGameState } from "@/context/GameStateContext";
-import { useBoardState } from "@/context/BoardStateContext";
 import { useEffect, useReducer } from "react";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
-import { checkKingSafety } from "@/lib/chess-engine/moveSets/checkKingSafety";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import LogBlock from "./LogBlock";
-import { blankTurn, flip, gameReducer } from "@/reducer/chessReducer";
+import { blankTurn, gameReducer } from "@/reducer/chessReducer";
+import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 
 type ChessProps = {
-  gType: GameType | null;
-  curTurn: Color | null;
+  gameType: GameType;
+  currentTurn: Color;
+  currentTurnNo: number;
+  pieces: PieceType[];
   plState: PlayerState | null;
-  pcs: PieceType[] | null;
 };
-const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
+const Chess: React.FC<ChessProps> = ({ gameType, currentTurn, currentTurnNo, pieces, plState }) => {
   const { playerState, setPlayerState } = usePlayerState();
-  const { board } = useBoardState();
 
   const [state, dispatch] = useReducer(gameReducer, {
-    currentBoardState: populateBoard("white", board),
-    currentTurn: "white",
-    currentTurnNo: 1,
+    currentBoardState: pieces,
+    currentTurn: currentTurn,
+    currentTurnNo: currentTurnNo,
     turnDetails: blankTurn(1, "white"),
     log: [],
     selectedPiece: undefined,
@@ -43,13 +41,13 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
       type: "INIT",
       payload: {
         currentTurn: "white",
-        pieces: populateBoard("white", board),
+        pieces: populateBoard("white", BOARD),
       },
     });
   }, []);
 
   useEffect(() => {
-    getAllActiveMoveSets(state.currentTurn, state.currentBoardState, board);
+    getAllActiveMoveSets(state.currentTurn, state.currentBoardState, BOARD);
   }, [state.currentTurn]);
 
   return (
@@ -61,10 +59,9 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
             className="p-2 bg-amber-200"
             onClick={() => {
               dispatch({
-                type: "PATCH_TURN",
-                payload: { curentPlayer: flip(state.currentTurn) },
+                type: "END_TURN",
+                payload: { boardState: state.currentBoardState },
               });
-              // setCurrentTurn((prev) => (prev === "white" ? "black" : "white"));
             }}
           >
             change turn
@@ -79,7 +76,7 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
                 type: "INIT",
                 payload: {
                   currentTurn: "white",
-                  pieces: populateBoard("white", board),
+                  pieces: populateBoard("white", BOARD),
                 },
               });
             }}
@@ -110,7 +107,7 @@ const Chess: React.FC<ChessProps> = ({ gType, pcs, curTurn, plState }) => {
 
       <div className={`grid grid-cols-16 `}>
         <TakenPiecesBlock state={state} />
-        <Board state={state} dispatch={dispatch} />
+        <Board state={state} dispatch={dispatch} gameType={gameType} />
         <LogBlock state={state} />
       </div>
     </>

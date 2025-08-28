@@ -8,6 +8,7 @@ export function checkKingSafety(
   board: CellType[][]
 ): King {
   const king = getKing(pieces, currentPlayer);
+  king.cell.threats.clear();
   const threats = checkThreats(
     king,
     king.cell.id,

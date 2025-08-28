@@ -7,15 +7,15 @@ import {
 
 export type GameAction =
   | { type: "INIT"; payload: { pieces: PieceType[]; currentTurn: Color } }
-  | { type: "SELECT_PIECE"; payload: { selectedPiece?: PieceType } } // опционально, если хочешь тоже унести
-  | { type: "PATCH_TURN"; payload: Partial<TurnDetails> } // пометить детали хода (castling, enPassant, toCell и т.п.)
+  | { type: "SELECT_PIECE"; payload: { selectedPiece?: PieceType } } 
+  | { type: "PATCH_TURN"; payload: Partial<TurnDetails> } 
   | { type: "START_EXCHANGE" }
   | { type: "END_EXCHANGE" }
   | {
-      type: "END_TURN"; // зафиксировать ход АТОМАРНО
+      type: "END_TURN"; 
       payload: {
-        turnPatch?: Partial<TurnDetails>; // то, что не успели пропатчить ранее
-        boardState: PieceType[]; // снэпшот фигур ПОСЛЕ хода
+        turnPatch?: Partial<TurnDetails>; 
+        boardState: PieceType[]; 
       };
     }
   | { type: "RESET"; payload: { pieces: PieceType[]; currentTurn: Color } };
@@ -57,7 +57,6 @@ export function createInitialState(
 export function gameReducer(state: GameState, action: GameAction): GameState {
   switch (action.type) {
     case "INIT": {
-      //   console.log(action.payload.pieces);
       return createInitialState(
         action.payload.pieces,
         action.payload.currentTurn
@@ -89,7 +88,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isExchange: false };
 
     case "END_TURN": {
-      console.log("END_TURN");
       const justMoved = state.currentTurn;
       const completed: TurnDetails = {
         ...state.turnDetails,
@@ -106,7 +104,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
           : state.currentTurnNo;
       const nextPlayer = flip(justMoved);
 
-      console.log(nextTurnNo, nextPlayer);
       return {
         ...state,
         log: newLog,

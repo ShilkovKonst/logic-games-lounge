@@ -6,22 +6,26 @@ import {
   GameType,
   PieceType,
 } from "@/lib/chess-engine/types";
+import { BOARD } from "@/lib/chess-engine/utils/createBoard";
+import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 
 export default async function Home() {
-  const pieces: PieceType[] | null = null;
-  const currentTurn: Color | null = null;
+  const gameType: GameType = "hotseat";
+  const currentTurn: Color = "white";
+  const currentTurnNo: number = 1;
+  const pieces: PieceType[] = populateBoard("white", BOARD);
   const playerState: PlayerState | null = null;
-  const gameType: GameType | null = null;
 
   return (
     <div className="font-sans grid items-center justify-items-center min-h-screen p-8">
       <main className="flex flex-col items-center sm:items-start">
         <AppProviders>
           <Chess
-            pcs={pieces}
-            curTurn={currentTurn}
+            pieces={pieces}
+            currentTurn={currentTurn}
+            currentTurnNo={currentTurnNo}
             plState={playerState}
-            gType={gameType}
+            gameType={gameType}
           />
         </AppProviders>
       </main>
