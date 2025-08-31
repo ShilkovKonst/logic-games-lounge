@@ -13,7 +13,7 @@ const RowCount: React.FC<IncrementProps> = ({ increment }) => {
           key={i}
           className={`${
             (i + increment) % 2 === 0 ? "bg-amber-600" : "bg-amber-100"
-          } h-12 w-12 text-xl md:h-14 md:w-14 md:text-2xl ${
+          } h-[44px] w-[44px] text-xl md:h-[50px] md:w-[50px] md:text-2xl ${
             playerState.color === "white" ? "rotate-0" : "rotate-180"
           }`}
         >

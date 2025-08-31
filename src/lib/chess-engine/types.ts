@@ -31,13 +31,14 @@ export interface TurnDetails {
   fromCell?: string;
   toCell?: string;
   pieceToTake?: string;
-  pieceToExchange?: string;
-  exchange?: boolean;
+  pieceToExchange?: Pieces;
   castling?: CastlingType;
-  enPassant?: boolean;
+  ambiguity?: string[];
   check?: Color;
   checkmate?: Color;
-  stalemate?: boolean;
+  isExchange?: boolean;
+  isEnPassant?: boolean;
+  isStalemate?: boolean;
 }
 
 export interface GameState {
@@ -45,7 +46,7 @@ export interface GameState {
   currentTurnNo: number;
   currentTurn: Color;
   turnDetails: TurnDetails;
-  log: TurnDetails[];
+  log: TurnDetails[][];
   selectedPiece?: PieceType;
   isExchange: boolean;
 }

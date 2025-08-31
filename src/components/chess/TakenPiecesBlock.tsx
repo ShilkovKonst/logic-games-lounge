@@ -9,7 +9,12 @@ type TakenPiecesBlockProps = {
 const TakenPiecesBlock: React.FC<TakenPiecesBlockProps> = ({ state }) => {
   const { currentBoardState } = state;
   return (
-    <div className="col-span-2 flex flex-col justify-between">
+    <div
+      className="flex justify-between border-b-4 border-l-4 border-amber-950 bg-amber-150
+                order-2 h-[448px] flex-row w-[150px] border-r-4
+                md:order-3 md:flex-col md:w-[728px] md:h-[96px] md:border-r-4
+                lg:flex-row lg:order-1 lg:h-[508px] lg:w-[96px] lg:border-t-4 lg:border-r-0 "
+    >
       <TakenPieces pieces={currentBoardState} player="black" />
       <TakenPieces pieces={currentBoardState} player="white" />
     </div>
@@ -24,37 +29,21 @@ type TakenPiecesProps = {
 };
 
 const TakenPieces: React.FC<TakenPiecesProps> = ({ pieces, player }) => {
-  const takenPawns = pieces.filter(
-    (p) => p.color !== player && p.isTaken && p.type === "pawn"
-  );
-  const takenPieces = pieces.filter(
-    (p) => p.color !== player && p.isTaken && p.type !== "pawn"
-  );
+  const taken = pieces.filter((p) => p.color !== player && p.isTaken).sort((a, b) => a.type.localeCompare(b.type));
 
   return (
-    <div className="flex max-h-60 md:max-h-70">
-      <div className="flex flex-col">
-        {takenPawns.map((p, i) => (
-          <button key={i} className="w-9 h-9">
-            <PieceIcon
-              color={player === "white" ? "black" : "white"}
-              isTaken={true}
-              type={p.type}
-            />
-          </button>
-        ))}
-      </div>
-      <div className="flex flex-col flex-wrap">
-        {takenPieces.map((p, i) => (
-          <button key={i} className="w-9 h-9 flex">
-            <PieceIcon
-              color={player === "white" ? "black" : "white"}
-              isTaken={true}
-              type={p.type}
-            />
-          </button>
-        ))}
-      </div>
+    <div className="flex flex-col flex-wrap md:flex-row lg:flex-col px-1">
+      {taken.map((p, i) => (
+        <button
+          key={i}
+          className="flex justify-center items-center w-8 h-8 md:w-11 md:h-11 lg:w-8 lg:h-8"
+        >
+          <PieceIcon
+            color={player === "white" ? "black" : "white"}
+            type={p.type}
+          />
+        </button>
+      ))}
     </div>
   );
 };

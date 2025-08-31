@@ -12,12 +12,9 @@ export function checkPinPiece(
   const selectedPieceCell = notToRowCol(currentPiece.cell.id);
   const kingCell = notToRowCol(kingCellId);
   if (!isAligned(selectedPieceCell, kingCell)) return [];
-  console.log("currentPiece", currentPiece.id);
 
   const dr = dir(selectedPieceCell.row - kingCell.row);
   const dc = dir(selectedPieceCell.col - kingCell.col);
-  console.log("dir r", selectedPieceCell.row, kingCell.row);
-  console.log("dir c", selectedPieceCell.col, kingCell.col);
 
   let r = kingCell.row + dr;
   let c = kingCell.col + dc;
@@ -25,7 +22,6 @@ export function checkPinPiece(
   while (r !== selectedPieceCell.row || c !== selectedPieceCell.col) {
     if (!inBounds(r, c)) return [];
     const id = board[r][c].id;
-    console.log("piece cell id", id, r, c);
     const piece = getPieceAt(id, pieces);
     if (piece && id !== currentPiece.cell.id) {
       return [];
@@ -40,7 +36,6 @@ export function checkPinPiece(
   const toAttacker: string[] = [];
   while (inBounds(r, c)) {
     const id = board[r][c].id;
-    console.log("attacker cell id", id);
     const attacker = getPieceAt(id, pieces);
     toAttacker.push(id);
     if (attacker) {
@@ -49,7 +44,6 @@ export function checkPinPiece(
         attacker.color !== currentPiece.color &&
         isSliderForDir(attacker, dr, dc)
       ) {
-        console.log("pin moves", [...toKing, ...toAttacker]);
         return [...toKing, ...toAttacker];
       } else {
         return [];

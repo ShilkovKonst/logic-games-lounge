@@ -4,21 +4,34 @@ import {
   PieceType,
   TurnDetails,
 } from "@/lib/chess-engine/types";
+import { BOARD } from "@/lib/chess-engine/utils/createBoard";
+import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 
 export type GameAction =
   | { type: "INIT"; payload: { pieces: PieceType[]; currentTurn: Color } }
-  | { type: "SELECT_PIECE"; payload: { selectedPiece?: PieceType } } 
-  | { type: "PATCH_TURN"; payload: Partial<TurnDetails> } 
+  | {
+      type: "SELECT_PIECE";
+      payload: { selectedPiece?: PieceType };
+    }
+  | { type: "PATCH_TURN"; payload: Partial<TurnDetails> }
   | { type: "START_EXCHANGE" }
   | { type: "END_EXCHANGE" }
   | {
-      type: "END_TURN"; 
+      type: "END_TURN";
       payload: {
-        turnPatch?: Partial<TurnDetails>; 
-        boardState: PieceType[]; 
+        turnPatch?: Partial<TurnDetails>;
+        boardState: PieceType[];
       };
     }
-  | { type: "RESET"; payload: { pieces: PieceType[]; currentTurn: Color } };
+  | {
+      type: "RESET";
+      payload: {
+        pieces: PieceType[];
+        currentTurn: Color;
+        turnNo: number;
+        log: TurnDetails[][];
+      };
+    };
 
 export const flip = (c: Color): Color => (c === "white" ? "black" : "white");
 
@@ -26,29 +39,27 @@ export const blankTurn = (turnNo: number, cur: Color): TurnDetails => ({
   turnNo,
   curentPlayer: cur,
   boardState: [],
-  pieceToMove: "",
-  fromCell: "",
-  toCell: "",
-  pieceToTake: "",
-  pieceToExchange: "",
-  exchange: false,
-  enPassant: false,
   castling: undefined,
   check: undefined,
   checkmate: undefined,
-  stalemate: false,
+  isExchange: false,
+  isEnPassant: false,
+  isStalemate: false,
 });
 
 export function createInitialState(
   pieces: PieceType[],
-  currentTurn: Color
+  currentTurn: Color,
+  turnNo: number,
+  log: TurnDetails[][]
 ): GameState {
   return {
-    currentBoardState: pieces,
-    currentTurnNo: 1,
+    currentBoardState:
+      pieces.length === 0 ? populateBoard("white", BOARD) : pieces,
+    currentTurnNo: turnNo,
     currentTurn,
-    turnDetails: blankTurn(1, currentTurn),
-    log: [],
+    turnDetails: blankTurn(turnNo, currentTurn),
+    log,
     selectedPiece: undefined,
     isExchange: false,
   };
@@ -59,14 +70,18 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "INIT": {
       return createInitialState(
         action.payload.pieces,
-        action.payload.currentTurn
+        action.payload.currentTurn,
+        1,
+        []
       );
     }
 
     case "RESET": {
       return createInitialState(
         action.payload.pieces,
-        action.payload.currentTurn
+        action.payload.currentTurn,
+        action.payload.turnNo,
+        action.payload.log
       );
     }
 
@@ -88,20 +103,25 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       return { ...state, isExchange: false };
 
     case "END_TURN": {
-      const justMoved = state.currentTurn;
+      const { currentTurn, currentTurnNo, turnDetails, log } = state;
+      const justMoved = currentTurn;
       const completed: TurnDetails = {
-        ...state.turnDetails,
+        ...turnDetails,
         ...(action.payload.turnPatch ?? {}),
         curentPlayer: justMoved,
-        boardState: action.payload.boardState,
+        boardState: [...turnDetails.boardState],
       };
 
-      const newLog = [...state.log, completed];
+      const fullTurnIndex = completed.turnNo - 1;
+      const newLog = [...log];
+      if (newLog[fullTurnIndex]) {
+        newLog[fullTurnIndex] = [...newLog[fullTurnIndex], completed];
+      } else {
+        newLog[fullTurnIndex] = [completed];
+      }
 
       const nextTurnNo =
-        justMoved === "black"
-          ? state.currentTurnNo + 1
-          : state.currentTurnNo;
+        justMoved === "black" ? currentTurnNo + 1 : currentTurnNo;
       const nextPlayer = flip(justMoved);
 
       return {

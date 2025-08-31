@@ -30,7 +30,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
       data-cell-id={cell.id}
       className={`${
         inMoveSet && "move cursor-pointer"
-      } relative flex justify-center items-center h-12 w-12 md:h-14 md:w-14 ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
+      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${cellColorStyle} ${borderStyle} box-border border-amber-950 `}
     >
       {isExchange && selectedPiece?.cell.id === cell.id && (
         <PiecesToExchange state={state} />

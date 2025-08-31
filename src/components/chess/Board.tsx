@@ -1,5 +1,6 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { ActionDispatch, MouseEvent, TouchEvent } from "react";
+import { ActionDispatch, MouseEvent, TouchEvent, useEffect } from "react";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import Cell from "./Cell";
 import RowCount from "./RowCount";
@@ -23,7 +24,8 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
 
-  const { selectedPiece, currentBoardState, currentTurn, isExchange } = state;
+  const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
+    state;
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -37,13 +39,13 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
         selectedPiece.type = exchangeType;
         dispatch({
           type: "PATCH_TURN",
-          payload: { exchange: true, pieceToExchange: exchangeType },
+          payload: { isExchange: true, pieceToExchange: exchangeType },
         });
         dispatch({ type: "END_EXCHANGE" });
         dispatch({
           type: "END_TURN",
           payload: {
-            boardState: currentBoardState.map((p) => ({ ...p })), // копия массива фигур после мутаций
+            boardState: currentBoardState.map((p) => ({ ...p })),
           },
         });
       }
@@ -63,9 +65,25 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           });
         }
         if (move?.special?.type === "enPassant") {
-          dispatch({ type: "PATCH_TURN", payload: { enPassant: true } });
+          dispatch({ type: "PATCH_TURN", payload: { isEnPassant: true } });
         }
-        dispatch({ type: "PATCH_TURN", payload: { toCell: move.id } });
+        const ambiguity = currentBoardState.reduce<string[]>((acc, p) => {
+          if (
+            !p.isTaken &&
+            p.color === currentTurn &&
+            p.type === selectedPiece.type &&
+            p.id !== selectedPiece.id
+          ) {
+            const move = p.moveSet.find((m) => m.id === moveId);
+            if (move) acc.push(p.cell.id);
+          }
+          return acc;
+        }, []);
+        
+        dispatch({
+          type: "PATCH_TURN",
+          payload: { toCell: move.id, ambiguity: ambiguity },
+        });
 
         handleMoveClick(
           move,
@@ -87,7 +105,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
         dispatch({
           type: "END_TURN",
           payload: {
-            boardState: currentBoardState.map((p) => ({ ...p })), // копия массива фигур после мутаций
+            boardState: currentBoardState.map((p) => ({ ...p })),
           },
         });
       }
@@ -104,22 +122,39 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           currentTurn,
           BOARD
         );
-        console.log(piece);
         dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
         dispatch({
           type: "PATCH_TURN",
-          payload: { pieceToMove: piece.id, fromCell: piece.cell.id },
+          payload: {
+            pieceToMove: piece.id,
+            fromCell: piece.cell.id,
+          },
         });
       }
       return;
     }
   };
 
+  useEffect(() => {
+    dispatch({
+      type: "PATCH_TURN",
+      payload: {
+        boardState: currentBoardState.map((p) => ({
+          ...p,
+          id: p.id,
+          cell: { ...p.cell },
+          moveSet: [],
+        })),
+      },
+    });
+    console.log("turn");
+  }, [currentTurn, log.length]);
+
   return (
     <div
-      className={`col-start-3 col-span-10 ${
+      className={`order-1 md:order-2 col-span-10 ${
         playerState.color === "white" ? "rotate-0" : "rotate-180"
-      } border-4 border-amber-950`}
+      } border-4 border-amber-950 h-[448px] w-[448px] md:h-[508px] md:w-[508px] `}
     >
       <ColCount increment={0} />
       <div className="grid grid-cols-10">
@@ -131,7 +166,12 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           {BOARD.map((r, i) => (
             <div key={i} className="flex">
               {r.map((cell, j) => (
-                <Cell key={i * 10 + j} cell={cell} state={state} gameType={gameType} />
+                <Cell
+                  key={i * 10 + j}
+                  cell={cell}
+                  state={state}
+                  gameType={gameType}
+                />
               ))}
             </div>
           ))}

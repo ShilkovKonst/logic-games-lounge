@@ -13,6 +13,7 @@
 }
 
 @theme {
+  --color-amber-150: #e3b35d;
   --spacing-18: 4.5rem;
   --spacing-70: 17.5rem;
   /* --inset-shadow-cell: inset 5 5px 5px #00a63e */

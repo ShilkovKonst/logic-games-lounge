@@ -23,7 +23,13 @@ type ChessProps = {
   pieces: PieceType[];
   plState: PlayerState | null;
 };
-const Chess: React.FC<ChessProps> = ({ gameType, currentTurn, currentTurnNo, pieces, plState }) => {
+const Chess: React.FC<ChessProps> = ({
+  gameType,
+  currentTurn,
+  currentTurnNo,
+  pieces,
+  plState,
+}) => {
   const { playerState, setPlayerState } = usePlayerState();
 
   const [state, dispatch] = useReducer(gameReducer, {
@@ -37,18 +43,9 @@ const Chess: React.FC<ChessProps> = ({ gameType, currentTurn, currentTurnNo, pie
   });
 
   useEffect(() => {
-    dispatch({
-      type: "INIT",
-      payload: {
-        currentTurn: "white",
-        pieces: populateBoard("white", BOARD),
-      },
-    });
-  }, []);
-
-  useEffect(() => {
-    getAllActiveMoveSets(state.currentTurn, state.currentBoardState, BOARD);
-  }, [state.currentTurn]);
+    if (state.currentBoardState.length > 0)
+      getAllActiveMoveSets(state.currentTurn, state.currentBoardState, BOARD);
+  }, [state.currentTurn, state.log.length]);
 
   return (
     <>
@@ -105,10 +102,12 @@ const Chess: React.FC<ChessProps> = ({ gameType, currentTurn, currentTurnNo, pie
         {state.currentTurnNo}
       </div>
 
-      <div className={`grid grid-cols-16 `}>
+      <div
+        className={`flex flex-row flex-wrap w-[488px] md:w-[760px] lg:w-auto lg:flex-nowrap`}
+      >
         <TakenPiecesBlock state={state} />
         <Board state={state} dispatch={dispatch} gameType={gameType} />
-        <LogBlock state={state} />
+        <LogBlock state={state} dispatch={dispatch} />
       </div>
     </>
   );
