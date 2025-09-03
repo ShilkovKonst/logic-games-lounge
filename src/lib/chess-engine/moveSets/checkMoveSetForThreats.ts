@@ -1,20 +1,24 @@
 import { CellType, Color, King, MoveType, Pawn, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
+import { BOARD } from "../utils/createBoard";
 import { checkThreats } from "./getAttackSets";
 
 export function checkMoveSetForThreats(
   currentPiece: PieceType,
   pieces: PieceType[],
-  playerColor: Color,
-  board: CellType[][]
+  playerColor: Color
 ): void {
   const moveSet = currentPiece.moveSet;
-  assignThreats(currentPiece, currentPiece.cell, playerColor, pieces, board);
+  assignThreats(currentPiece, currentPiece.cell, playerColor, pieces);
   for (const move of moveSet) {
-    assignThreats(currentPiece, move, playerColor, pieces, board);
+    assignThreats(currentPiece, move, playerColor, pieces);
   }
-  if (currentPiece.type === "king" && currentPiece.color === playerColor) {
-    const castlingMoves = getCastlingMoves(currentPiece, pieces, board);
+  if (
+    currentPiece.type === "king" &&
+    currentPiece.color === playerColor &&
+    !currentPiece.hasMoved
+  ) {
+    const castlingMoves = getCastlingMoves(currentPiece, pieces);
     currentPiece.moveSet = moveSet.concat(castlingMoves);
     return;
   }
@@ -28,18 +32,10 @@ function assignThreats(
   currentPiece: PieceType,
   move: MoveType,
   playerColor: Color,
-  pieces: PieceType[],
-  board: CellType[][]
+  pieces: PieceType[]
 ) {
-  const pieceThreats = checkThreats(
-    currentPiece,
-    move.id,
-    pieces,
-    playerColor,
-    board
-  );
+  const pieceThreats = checkThreats(currentPiece, move.id, pieces, playerColor);
   for (const threat of pieceThreats) move.threats.add(threat);
-  // console.log(move.id, move.threats);
 }
 
 function assignPawnEnPasantThreat(
@@ -56,15 +52,11 @@ function assignPawnEnPasantThreat(
   }
 }
 
-function getCastlingMoves(
-  king: King,
-  pieces: PieceType[],
-  board: CellType[][]
-): MoveType[] {
+function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
   const cMoves: MoveType[] = [];
-  if (king.isInDanger) return cMoves;
+  if (king.isInDanger || king.hasMoved) return cMoves;
 
-  const kingCell = getCell(board, king.cell.id);
+  const kingCell = getCell(king.cell.id);
   const rooks = pieces.filter(
     (p) =>
       p.type === "rook" && p.color === king.color && !p.hasMoved && !p.isTaken
@@ -72,16 +64,16 @@ function getCastlingMoves(
   for (const r of rooks) {
     if (r.type !== "rook") continue;
 
-    const rookCell = getCell(board, r.cell.id);
+    const rookCell = getCell(r.cell.id);
     const row = kingCell.row;
     const dir = rookCell.col > kingCell.col ? 1 : -1;
     let col = kingCell.col + dir;
     let blocked = false;
     while (col !== rookCell.col) {
-      const cell = board[row][col];
+      const cell = BOARD[row][col];
       const threats =
         Math.abs(kingCell.col - col) < 3
-          ? checkThreats(king, cell.id, pieces, king.color, board)
+          ? checkThreats(king, cell.id, pieces, king.color)
           : [];
       if (isOcupied(pieces, cell) || threats.length > 0) {
         blocked = true;
@@ -93,7 +85,7 @@ function getCastlingMoves(
     if (blocked) continue;
 
     const cMove: MoveType = {
-      id: board[row][kingCell.col + dir * 2].id,
+      id: BOARD[row][kingCell.col + dir * 2].id,
       threats: new Set<string>(),
       special: {
         type: "castling",

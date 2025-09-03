@@ -9,14 +9,9 @@ export function getKing(pieces: PieceType[], currentPlayer: Color): King {
   return king;
 }
 
-export function getPieceById(pieceId: string, pieces: PieceType[]): PieceType {
+export function getPiece(pieceId: string, pieces: PieceType[]): PieceType {
   const piece = pieces.find((p) => p.id === pieceId);
   if (!piece) throw new Error(`${pieceId} must be in pieces!`);
-  return piece;
-}
-
-export function getPiece(pieceId: string, pieces: PieceType[]): PieceType {
-  const piece = getPieceById(pieceId, pieces);
   return piece;
 }
 
@@ -28,4 +23,11 @@ export const getPieceAt: (
 
 export function isPieces(value: string): value is Pieces {
   return piecesSet.has(value as Pieces);
+}
+
+export function getActivePieces(
+  player: Color,
+  pieces: PieceType[]
+): PieceType[] {
+  return pieces.filter((p) => !p.isTaken && p.color === player);
 }

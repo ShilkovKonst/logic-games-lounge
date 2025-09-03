@@ -20,8 +20,6 @@ export const PieceIcon: React.FC<IconProps> = ({ color, isTaken, type }) => {
       className={`${
         isTaken ? " w-6 h-6 md:w-8 md:h-8 " : " w-10 h-10 md:w-12 md:h-12"
       }`}
-      width="800px"
-      height="800px"
       viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"
     >
@@ -115,13 +113,12 @@ export const PieceTargetIcon: React.FC<TargetIconProps> = ({
 export const UndoIcon: React.FC<UndoProps> = ({ color }) => {
   return (
     <svg
-      className={`pl-1 w-9 h-9`}
+      className={`w-9 h-9`}
       viewBox="0 0 24 24"
       fill={color === "white" ? "#fef3c6" : "#461901"}
       xmlns="http://www.w3.org/2000/svg"
     >
       <path
-        stroke="#000000"
         d="M9 10h6c1.654 0 3 1.346 3 3s-1.346 3-3 3h-3v2h3c2.757 0 5-2.243 5-5s-2.243-5-5-5H9V5L4 9l5 4v-3z"
       />
     </svg>

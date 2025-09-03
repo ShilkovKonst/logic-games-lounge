@@ -1,0 +1,14 @@
+/* dashboard scrollbar */
+.log::-webkit-scrollbar {
+  width: 8px;
+}
+.log::-webkit-scrollbar-track {
+  background: none;
+}
+.log::-webkit-scrollbar-thumb {
+  background: #973c009c;
+  border-radius: 8px 0px 0px 8px;
+}
+.log::-webkit-scrollbar-thumb:hover {
+  background: #973c00;
+}

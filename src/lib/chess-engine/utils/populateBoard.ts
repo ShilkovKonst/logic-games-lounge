@@ -1,27 +1,21 @@
-import { CellType, Color, PieceType } from "../types";
+import { Color, PieceType } from "../types";
 import { getAllActiveMoveSets } from "../moveSets/getAllActiveMoveSets";
+import { BOARD } from "./createBoard";
 
-export const populateBoard: (
-  player: Color,
-  board: CellType[][]
-) => PieceType[] = (player, board) => {
+export function populateBoard(player: Color): PieceType[] {
   const pieces: PieceType[] = [];
   for (let col = 0; col < 8; col++) {
-    pieces.push(type(0, col, board));
-    pieces.push(type(1, col, board));
-    pieces.push(type(6, col, board));
-    pieces.push(type(7, col, board));
+    pieces.push(type(0, col));
+    pieces.push(type(1, col));
+    pieces.push(type(6, col));
+    pieces.push(type(7, col));
   }
-  getAllActiveMoveSets(player, pieces, board);
+  getAllActiveMoveSets(player, pieces);
   return pieces;
-};
+}
 
-const type: (row: number, col: number, board: CellType[][]) => PieceType = (
-  row,
-  col,
-  board
-) => {
-  const cell = board[row][col];
+function type(row: number, col: number): PieceType {
+  const cell = BOARD[row][col];
   const color = row === 0 ? "black" : "white";
 
   if (row === 0 || row === 7) {
@@ -116,4 +110,4 @@ const type: (row: number, col: number, board: CellType[][]) => PieceType = (
       hasMoved: false,
       canBeTakenEnPassant: false,
     };
-};
+}

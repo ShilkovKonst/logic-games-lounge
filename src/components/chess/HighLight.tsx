@@ -44,7 +44,7 @@ const HighLight: React.FC<HighLightProps> = ({
   const enPassantCell = () => {
     if (!selectedPiece || !piece) return undefined;
     for (const move of selectedPiece.moveSet) {
-      const moveCell = getCell(BOARD, move.id);
+      const moveCell = getCell(move.id);
       const rowEnPassant =
         moveCell.row === cell.row + (piece?.color === "white" ? +1 : -1);
       const sameCol = moveCell.col === cell.col;
@@ -63,7 +63,7 @@ const HighLight: React.FC<HighLightProps> = ({
       hasPieces &&
         isKingInitial(selectedPiece) &&
         isRookInitial(piece, selectedPiece) &&
-        hasInMoves(selectedPiece, piece, BOARD)
+        hasInMoves(selectedPiece, piece)
     );
     // inMoveSet && console.log(cell.id, cell.threats);
   }, [selectedPiece]);
@@ -97,15 +97,11 @@ const HighLight: React.FC<HighLightProps> = ({
 
 export default HighLight;
 
-function hasInMoves(
-  selected: PieceType,
-  piece: PieceType,
-  board: CellType[][]
-): boolean {
-  const selectedPieceCell = getCell(board, selected.cell.id);
-  const d = dir(piece, selected, board);
+function hasInMoves(selected: PieceType, piece: PieceType): boolean {
+  const selectedPieceCell = getCell(selected.cell.id);
+  const d = dir(piece, selected);
   const col = selectedPieceCell.col + d * 2;
-  const cell = board[selectedPieceCell.row][col];
+  const cell = BOARD[selectedPieceCell.row][col];
   return selected.moveSet.some((m) => m.id === cell?.id);
 }
 
@@ -119,13 +115,9 @@ function isRookInitial(piece: PieceType, selected: PieceType): boolean {
   return false;
 }
 
-function dir(
-  piece: PieceType,
-  selected: PieceType,
-  board: CellType[][]
-): number {
-  const selectedPieceCell = getCell(board, selected.cell.id);
-  const pieceCell = getCell(board, piece.cell.id);
+function dir(piece: PieceType, selected: PieceType): number {
+  const selectedPieceCell = getCell(selected.cell.id);
+  const pieceCell = getCell(piece.cell.id);
   return selectedPieceCell.col > pieceCell.col ? -1 : 1;
 }
 

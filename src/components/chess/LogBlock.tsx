@@ -3,7 +3,7 @@ import { UndoIcon } from "@/lib/chess-engine/constants/icons";
 import { getDisambiguation, getSAN } from "@/lib/chess-engine/constants/san";
 import { GameState, Pieces, TurnDetails } from "@/lib/chess-engine/types";
 import { GameAction } from "@/reducer/chessReducer";
-import { ActionDispatch } from "react";
+import { ActionDispatch, useEffect, useRef } from "react";
 
 type LogBlockProps = {
   state: GameState;
@@ -27,22 +27,24 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       checkmate,
       isExchange,
       isEnPassant,
-      isStalemate,
+      isDraw,
     } = turn;
 
     return `${turnNo} - ${curentPlayer} ${pieceToMove?.slice(
       0,
       -2
-    )} moves from ${fromCell} to ${toCell} ${
-      pieceToTake ? `takes ${pieceToTake?.slice(0, -2)}` : ""
-    } ${isEnPassant ? " en passant" : ""} ${
+    )} moves from ${fromCell} to ${toCell}${
+      pieceToTake ? ` takes ${pieceToTake?.slice(0, -2)}` : ""
+    }${isEnPassant ? " en passant" : ""}${
       castling ? ` ${castling} castling` : ""
-    } ${isExchange ? `exchange to ${pieceToExchange}` : ""}`;
+    }${isExchange ? ` exchange to ${pieceToExchange}` : ""}${
+      check && !checkmate ? ` check to ${check}` : ""
+    }${checkmate ? ` checkmate to ${checkmate}` : ""}${isDraw ? ` draw` : ""}`;
   };
 
   const san = (turn: TurnDetails) => {
     const {
-      isStalemate,
+      isDraw,
       isExchange,
       castling,
       isEnPassant,
@@ -61,7 +63,7 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       fromCell && ambiguity && getDisambiguation(fromCell, ambiguity);
 
     let sanString = "";
-    if (isStalemate) return "1/2 - 1/2";
+    if (isDraw) return "1/2 - 1/2";
     else if (castling) sanString = castling === "long" ? "O-O-O" : "O-O";
     else if (isExchange) {
       const exchangeSAN = pieceToExchange && getSAN(pieceToExchange);
@@ -71,11 +73,13 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
     } else {
       sanString = `${pieceSAN}${disambiguation}${
         pieceToTake ? (pieceSAN ? "x" : `${fromCell?.charAt(0)}x`) : ""
-      }${toCell} ${pieceToTake && isEnPassant ? "e.p." : ""}`;
+      }${toCell}`;
     }
 
-    if (check) sanString += "+";
+    if (check && !checkmate) sanString += "+";
     else if (checkmate) sanString += "#";
+
+    if (pieceToTake && isEnPassant) sanString += " e.p.";
     return sanString;
   };
 
@@ -101,26 +105,43 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       },
     });
   };
+  const logRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (logRef.current) {
+      logRef.current.scrollTo({
+        top: logRef.current.scrollHeight,
+        behavior: "smooth",
+      });
+    }
+  }, [log]);
 
   return (
     <div
-      className="flex flex-col justify-start items-start gap-3 order-3 border-amber-950 bg-amber-150 border-b-4 border-r-4 overflow-y-auto
+      ref={logRef}
+      className="log overflow-x-hidden pr-[10px] flex flex-col justify-start items-start order-3 border-amber-950 bg-amber-150 border-b-4 border-r-4 overflow-y-auto
                 w-[298px] h-[448px] border-t-0
-                md:w-[220px] md:h-[508px] md:order-2 md:border-t-4"
+                md:w-[250px] md:h-[508px] md:order-2 md:border-t-4"
     >
       {log.map((turns, i) => (
-        <div key={i} className="flex flex-row gap-5">
+        <div
+          key={i}
+          className="flex justify-between w-[294px] md:w-[236px] mt-2"
+        >
           {turns.map((turn, j) => (
-            <div key={j} className="flex justify-start items-center w-[84px] h-10">
+            <div
+              key={j}
+              className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition ease-in-out duration-150"
+            >
               <button
                 onClick={() => handleClick(turn)}
-                className="cursor-pointer "
+                className={`cursor-pointer rounded-full bg-amber-700 hover:bg-[#ffd230] transition ease-in-out duration-150 inset-shadow-log-amberdark`}
               >
                 <UndoIcon color={turn.curentPlayer} />
               </button>
 
-              <button title={title(turn)} onTouchStart={() => {}}>
-                <p className="cursor-default w-full text-center text-sm">
+              <button title={title(turn)} onTouchStart={() => {}} className="">
+                <p className="cursor-default w-full text-start text-sm">
                   {san(turn)}
                 </p>
               </button>

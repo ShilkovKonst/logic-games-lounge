@@ -1,3 +1,5 @@
+@import "../styles/shadows.css";
+@import "../styles/scrollbars.css";
 @import "tailwindcss";
 
 :root {
@@ -16,7 +18,6 @@
   --color-amber-150: #e3b35d;
   --spacing-18: 4.5rem;
   --spacing-70: 17.5rem;
-  /* --inset-shadow-cell: inset 5 5px 5px #00a63e */
   --animate-scale-pulse: scale_pulse 3s ease-in-out infinite;
   --animate-ring-pulse: ring_pulse 3s ease-in-out infinite;
   @keyframes scale_pulse {
@@ -42,51 +43,4 @@ body {
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   min-width: 640px;
-}
-
-.inset-shadow-cell-amberdark {
-  box-shadow: 
-    4px 4px 4px #973c00 inset,
-    -4px -4px 4px #973c00 inset;
-}
-.inset-shadow-cell-amberlight {
-  box-shadow: 
-    4px 4px 4px #fef3c6  inset,
-    -4px -4px 4px #fef3c6  inset;
-}
-.inset-shadow-cell-ambermedium {
-  box-shadow: 
-    4px 4px 4px #ffd230  inset,
-    -4px -4px 4px #ffd230  inset;
-}
-
-.inset-shadow-move-green {
-  box-shadow: 
-    4px 4px 1px #009689 inset,
-    -4px -4px 1px #009689 inset;
-}
-.inset-shadow-move-red {
-  box-shadow: 
-    4px 4px 1px #c800de inset,
-    -4px -4px 1px #c800de inset;
-}
-.inset-shadow-move-orange {
-  box-shadow: 
-    4px 4px 1px #ff6900 inset,
-    -4px -4px 1px #ff6900 inset;
-}
-.inset-shadow-move-lightgreen {
-  box-shadow: 
-    4px 4px 1px #7bf1a8  inset,
-    -4px -4px 1px #7bf1a8  inset;
-}
-.inset-shadow-move-lime {
-  box-shadow: 
-    4px 4px 1px #7ccf00  inset,
-    -4px -4px 1px #7ccf00  inset;
-}
-.inset-shadow-move-gray {
-  box-shadow: 
-    4px 4px 1px #99a1af inset,
-    -4px -4px 1px #99a1af inset;
 }

@@ -38,7 +38,7 @@ export interface TurnDetails {
   checkmate?: Color;
   isExchange?: boolean;
   isEnPassant?: boolean;
-  isStalemate?: boolean;
+  isDraw?: boolean;
 }
 
 export interface GameState {

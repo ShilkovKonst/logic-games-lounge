@@ -1,17 +1,16 @@
-import { CellType, MoveType, PieceType } from "../types";
+import { MoveType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
 
 export function updateFlagsAndPosition(
   moveTo: MoveType,
   selectedPiece: PieceType,
-  pieces: PieceType[],
-  board: CellType[][]
+  pieces: PieceType[]
 ): void {
   pieces.forEach((p) => {
     if (p.type === "pawn") p.canBeTakenEnPassant = false;
   });
-  const currentPieceCell = getCell(board, selectedPiece.cell.id);
-  const moveToCell = getCell(board, moveTo.id);
+  const currentPieceCell = getCell(selectedPiece.cell.id);
+  const moveToCell = getCell(moveTo.id);
   const step = Math.abs(moveToCell.row - currentPieceCell.row);
   if (selectedPiece.type === "pawn" && step === 2) {
     selectedPiece.canBeTakenEnPassant = true;

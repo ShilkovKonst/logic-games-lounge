@@ -4,7 +4,6 @@ import {
   PieceType,
   TurnDetails,
 } from "@/lib/chess-engine/types";
-import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 
 export type GameAction =
@@ -44,7 +43,7 @@ export const blankTurn = (turnNo: number, cur: Color): TurnDetails => ({
   checkmate: undefined,
   isExchange: false,
   isEnPassant: false,
-  isStalemate: false,
+  isDraw: false,
 });
 
 export function createInitialState(
@@ -54,8 +53,7 @@ export function createInitialState(
   log: TurnDetails[][]
 ): GameState {
   return {
-    currentBoardState:
-      pieces.length === 0 ? populateBoard("white", BOARD) : pieces,
+    currentBoardState: pieces.length === 0 ? populateBoard("white") : pieces,
     currentTurnNo: turnNo,
     currentTurn,
     turnDetails: blankTurn(turnNo, currentTurn),
@@ -105,19 +103,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
     case "END_TURN": {
       const { currentTurn, currentTurnNo, turnDetails, log } = state;
       const justMoved = currentTurn;
-      const completed: TurnDetails = {
+      const completedTurn: TurnDetails = {
         ...turnDetails,
         ...(action.payload.turnPatch ?? {}),
         curentPlayer: justMoved,
         boardState: [...turnDetails.boardState],
       };
 
-      const fullTurnIndex = completed.turnNo - 1;
+      const fullTurnIndex = completedTurn.turnNo - 1;
       const newLog = [...log];
       if (newLog[fullTurnIndex]) {
-        newLog[fullTurnIndex] = [...newLog[fullTurnIndex], completed];
+        newLog[fullTurnIndex] = [...newLog[fullTurnIndex], completedTurn];
       } else {
-        newLog[fullTurnIndex] = [completed];
+        newLog[fullTurnIndex] = [completedTurn];
       }
 
       const nextTurnNo =

@@ -5,15 +5,27 @@ import { usePlayerState } from "@/context/PlayerStateContext";
 import Cell from "./Cell";
 import RowCount from "./RowCount";
 import ColCount from "./ColCount";
-import { Castling, GameState, GameType } from "@/lib/chess-engine/types";
+import {
+  Castling,
+  Color,
+  GameState,
+  GameType,
+  PieceType,
+  TurnDetails,
+} from "@/lib/chess-engine/types";
 import { getCell } from "@/lib/chess-engine/utils/cellUtil";
-import { isPieces } from "@/lib/chess-engine/utils/pieceUtils";
+import { getActivePieces, isPieces } from "@/lib/chess-engine/utils/pieceUtils";
 import {
   handleMoveClick,
   handlePieceClick,
 } from "@/lib/chess-engine/moveHandler/moveHandler";
-import { GameAction } from "@/reducer/chessReducer";
+import { flip, GameAction } from "@/reducer/chessReducer";
 import { BOARD } from "@/lib/chess-engine/utils/createBoard";
+import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
+import {
+  checkIsEnoughPieces,
+  checkRepetition,
+} from "@/lib/chess-engine/drawChecker/drawChecker";
 
 type BoardProps = {
   gameType: GameType;
@@ -24,8 +36,14 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
 
-  const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
-    state;
+  const {
+    selectedPiece,
+    currentBoardState,
+    currentTurn,
+    isExchange,
+    log,
+    turnDetails,
+  } = state;
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -42,6 +60,23 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           payload: { isExchange: true, pieceToExchange: exchangeType },
         });
         dispatch({ type: "END_EXCHANGE" });
+
+        const { foeColor, check, checkmate, isDraw } = calcFoeState(
+          currentTurn,
+          currentBoardState,
+          log,
+          turnDetails
+        );
+
+        dispatch({
+          type: "PATCH_TURN",
+          payload: {
+            check: check ? foeColor : undefined,
+            checkmate: checkmate ? foeColor : undefined,
+            isDraw: isDraw,
+          },
+        });
+
         dispatch({
           type: "END_TURN",
           payload: {
@@ -79,21 +114,14 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           }
           return acc;
         }, []);
-        
         dispatch({
           type: "PATCH_TURN",
           payload: { toCell: move.id, ambiguity: ambiguity },
         });
 
-        handleMoveClick(
-          move,
-          selectedPiece,
-          currentBoardState,
-          BOARD,
-          dispatch
-        );
+        handleMoveClick(move, selectedPiece, currentBoardState, dispatch);
 
-        const moveCell = getCell(BOARD, moveId);
+        const moveCell = getCell(moveId);
         const needsPromotion =
           selectedPiece.type === "pawn" &&
           ((selectedPiece.color === "white" && moveCell.row === 0) ||
@@ -102,6 +130,22 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           dispatch({ type: "START_EXCHANGE" });
           return;
         }
+
+        const { foeColor, check, checkmate, isDraw } = calcFoeState(
+          currentTurn,
+          currentBoardState,
+          log,
+          turnDetails
+        );
+        dispatch({
+          type: "PATCH_TURN",
+          payload: {
+            check: check ? foeColor : undefined,
+            checkmate: checkmate ? foeColor : undefined,
+            isDraw: isDraw,
+          },
+        });
+
         dispatch({
           type: "END_TURN",
           payload: {
@@ -116,12 +160,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
       const pieceId = pieceEl.getAttribute("data-piece-id");
       if (pieceId) {
         if (isExchange) return;
-        const piece = handlePieceClick(
-          pieceId,
-          currentBoardState,
-          currentTurn,
-          BOARD
-        );
+        const piece = handlePieceClick(pieceId, currentBoardState, currentTurn);
         dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
         dispatch({
           type: "PATCH_TURN",
@@ -147,7 +186,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
         })),
       },
     });
-    console.log("turn");
   }, [currentTurn, log.length]);
 
   return (
@@ -187,4 +225,35 @@ export default Board;
 
 function getClosest(target: HTMLElement, selector: string): Element | null {
   return target.closest(selector);
+}
+
+function checkMovesAllowed(activePieces: PieceType[]): boolean {
+  return activePieces.some((p) => p.moveSet.length > 0);
+}
+
+function calcFoeState(
+  currentTurn: Color,
+  currentBoardState: PieceType[],
+  log: TurnDetails[][],
+  turnDetails: TurnDetails
+) {
+  const foeColor = flip(currentTurn);
+  const foeKing = getAllActiveMoveSets(foeColor, currentBoardState);
+  const activeFoePieces = getActivePieces(foeColor, currentBoardState);
+  const isMovesAllowed = checkMovesAllowed(activeFoePieces);
+  const { threefold } = checkRepetition(log, turnDetails);
+  const pawnsCanMove = !activeFoePieces
+    .filter((p) => p.type === "pawn")
+    .every((p) => p.moveSet.length === 0);
+
+  const isStalemate = !foeKing.isInDanger && !isMovesAllowed;
+  const isInsufficientMaterial = checkIsEnoughPieces(activeFoePieces);
+  const isRepetition = !pawnsCanMove && threefold;
+
+  return {
+    foeColor,
+    check: foeKing.isInDanger && isMovesAllowed,
+    checkmate: foeKing.isInDanger && !isMovesAllowed,
+    isDraw: isStalemate || isInsufficientMaterial || isRepetition,
+  };
 }

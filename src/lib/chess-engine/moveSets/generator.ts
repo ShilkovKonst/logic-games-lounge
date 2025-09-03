@@ -1,16 +1,16 @@
-import { CellType, MoveType, PieceType } from "../types";
+import { MoveType, PieceType } from "../types";
 import { getCell } from "../utils/cellUtil";
+import { BOARD } from "../utils/createBoard";
 import { getPieceAt } from "../utils/pieceUtils";
 
 export function moveGenerator(
   piece: PieceType,
   pieces: PieceType[],
-  board: CellType[][],
   dirs: number[][],
   maxStep: number
 ): MoveType[] {
   const moves: MoveType[] = [];
-  const pieceCell = getCell(board, piece.cell.id);
+  const pieceCell = getCell(piece.cell.id);
   const r = pieceCell.row;
   const c = pieceCell.col;
 
@@ -19,7 +19,7 @@ export function moveGenerator(
     let tC = c + dc;
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
-      const cell = board[tR][tC];
+      const cell = BOARD[tR][tC];
       const target = getPieceAt(cell.id, pieces);
 
       if (target) {
@@ -40,12 +40,11 @@ export function attackGenerator(
   current: PieceType,
   pieceToCheck: PieceType,
   pieces: PieceType[],
-  board: CellType[][],
   dirs: number[][],
   maxStep: number
 ): string[] {
   const attacks: string[] = [];
-  const pieceToCheckCell = getCell(board, pieceToCheck.cell.id);
+  const pieceToCheckCell = getCell(pieceToCheck.cell.id);
   const r = pieceToCheckCell.row;
   const c = pieceToCheckCell.col;
 
@@ -54,7 +53,7 @@ export function attackGenerator(
     let tC = c + dc;
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
-      const cell = board[tR][tC];
+      const cell = BOARD[tR][tC];
       const target = getPieceAt(cell.id, pieces);
 
       if (target && target.id !== current.id) {

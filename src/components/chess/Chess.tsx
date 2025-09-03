@@ -14,7 +14,6 @@ import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMo
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import LogBlock from "./LogBlock";
 import { blankTurn, gameReducer } from "@/reducer/chessReducer";
-import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 
 type ChessProps = {
   gameType: GameType;
@@ -44,8 +43,8 @@ const Chess: React.FC<ChessProps> = ({
 
   useEffect(() => {
     if (state.currentBoardState.length > 0)
-      getAllActiveMoveSets(state.currentTurn, state.currentBoardState, BOARD);
-  }, [state.currentTurn, state.log.length]);
+      getAllActiveMoveSets(state.currentTurn, state.currentBoardState);
+  }, [state.log.flat().length]);
 
   return (
     <>
@@ -73,7 +72,7 @@ const Chess: React.FC<ChessProps> = ({
                 type: "INIT",
                 payload: {
                   currentTurn: "white",
-                  pieces: populateBoard("white", BOARD),
+                  pieces: populateBoard("white"),
                 },
               });
             }}

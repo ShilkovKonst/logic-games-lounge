@@ -12,7 +12,7 @@ const TakenPiecesBlock: React.FC<TakenPiecesBlockProps> = ({ state }) => {
     <div
       className="flex justify-between border-b-4 border-l-4 border-amber-950 bg-amber-150
                 order-2 h-[448px] flex-row w-[150px] border-r-4
-                md:order-3 md:flex-col md:w-[728px] md:h-[96px] md:border-r-4
+                md:order-3 md:flex-col md:w-[758px] md:h-[96px] md:border-r-4
                 lg:flex-row lg:order-1 lg:h-[508px] lg:w-[96px] lg:border-t-4 lg:border-r-0 "
     >
       <TakenPieces pieces={currentBoardState} player="black" />
