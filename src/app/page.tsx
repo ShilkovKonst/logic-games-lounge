@@ -6,14 +6,13 @@ import {
   GameType,
   PieceType,
 } from "@/lib/chess-engine/types";
-import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 
 export default async function Home() {
   const gameType: GameType = "hotseat";
   const currentTurn: Color = "white";
   const currentTurnNo: number = 1;
-  const pieces: PieceType[] = populateBoard("white", BOARD);
+  const pieces: PieceType[] = populateBoard("white");
   const playerState: PlayerState | null = null;
 
   return (
