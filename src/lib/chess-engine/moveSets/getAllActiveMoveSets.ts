@@ -3,7 +3,7 @@ import { filterAllValidMoves } from "./filterAllValidMoves";
 import { getAttackTrajectory } from "./getAttackTrajectory";
 import { Color, King, PieceType } from "../types";
 import { checkPieceFinalMoves } from "./checkPieceFinalMoves";
-import { getCell } from "../utils/cellUtil";
+import { notToRC } from "../utils/cellUtil";
 import { getActivePieces, getPiece } from "../utils/pieceUtils";
 
 export function getAllActiveMoveSets(player: Color, pieces: PieceType[]): King {
@@ -20,7 +20,7 @@ export function getAllActiveMoveSets(player: Color, pieces: PieceType[]): King {
 
     for (const attackerId of king.cell.threats) {
       const attacker = getPiece(attackerId, pieces);
-      const kingCell = getCell(king.cell.id);
+      const kingCell = notToRC(king.cell.id);
       const trajectory = getAttackTrajectory(kingCell, attacker);
       filterAllValidMoves(p, trajectory);
     }

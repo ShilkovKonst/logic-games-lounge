@@ -1,25 +1,24 @@
-import { CellType, PieceType } from "../types";
-import { getCell } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { PieceType } from "../types";
+import { notToRC, rcToNot } from "../utils/cellUtil";
 
 export function getAttackTrajectory(
-  kingCell: CellType,
+  kingRC: { row: number; col: number },
   attacker: PieceType
 ): string[] {
   const trajectory: string[] = [attacker.cell.id];
-  const attackerCell = getCell(attacker.cell.id);
+  const attackerCell = notToRC(attacker.cell.id);
 
-  const dr = Math.sign(attackerCell.row - kingCell.row);
-  const dc = Math.sign(attackerCell.col - kingCell.col);
+  const dr = Math.sign(attackerCell.row - kingRC.row);
+  const dc = Math.sign(attackerCell.col - kingRC.col);
 
   if (attacker.type === "knight" || attacker.type === "pawn") {
     return trajectory;
   }
 
-  let r = kingCell.row + dr;
-  let c = kingCell.col + dc;
+  let r = kingRC.row + dr;
+  let c = kingRC.col + dc;
   while (r !== attackerCell.row || c !== attackerCell.col) {
-    trajectory.push(BOARD[r][c].id);
+    trajectory.push(rcToNot(r, c));
     r += dr;
     c += dc;
   }

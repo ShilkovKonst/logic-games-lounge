@@ -1,5 +1,5 @@
 import { MoveType, PieceType } from "../types";
-import { getCell } from "../utils/cellUtil";
+import { notToRC } from "../utils/cellUtil";
 
 export function updateFlagsAndPosition(
   moveTo: MoveType,
@@ -9,8 +9,8 @@ export function updateFlagsAndPosition(
   pieces.forEach((p) => {
     if (p.type === "pawn") p.canBeTakenEnPassant = false;
   });
-  const currentPieceCell = getCell(selectedPiece.cell.id);
-  const moveToCell = getCell(moveTo.id);
+  const currentPieceCell = notToRC(selectedPiece.cell.id);
+  const moveToCell = notToRC(moveTo.id);
   const step = Math.abs(moveToCell.row - currentPieceCell.row);
   if (selectedPiece.type === "pawn" && step === 2) {
     selectedPiece.canBeTakenEnPassant = true;

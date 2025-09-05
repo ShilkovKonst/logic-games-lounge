@@ -7,12 +7,7 @@ import {
 import Piece from "./Piece";
 import PiecesToExchange from "./PiecesToExchange";
 import { checkMoveSet, getPieceAt } from "@/lib/chess-engine/utils/pieceUtils";
-import {
-  colToNot,
-  notToCol,
-  notToRow,
-} from "@/lib/chess-engine/constants/board";
-import { rcToNotation } from "@/lib/chess-engine/utils/cellUtil";
+import { notToRC, rcToNot } from "@/lib/chess-engine/utils/cellUtil";
 
 type CellProps = {
   cell: CellType;
@@ -50,30 +45,6 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
     ? "inset-shadow-piece-castling"
     : "";
 
-  // const cellShadowPieceStyle = `${
-  //   !!selectedPiece && selectedPiece?.id === piece?.id
-  //     ? `inset-ring-4 ${
-  //         selectedPiece.cell.threats.size === 0
-  //           ? "inset-ring-amber-400"
-  //           : "inset-ring-red-500"
-  //       }`
-  //     : ""
-  // }`;
-  // const cellShadowMoveStyle = `${
-  //   !!thisMove
-  //     ? canMove &&
-  //       `inset-ring-4 ${
-  //         isInDanger ? "inset-ring-red-700/75" : "inset-ring-green-700/75"
-  //       }`
-  //     : ""
-  // }`;
-  // const cellShadowEpMove = canBeTakenEnPassant(selectedPiece, piece)
-  //   ? "inset-ring-4 inset-ring-rose-500"
-  //   : "";
-  // const cellShadowCastlingMove = canCastle(selectedPiece, piece)
-  //   ? "inset-ring-4 inset-ring-lime-500"
-  //   : "";
-
   const cellShadowBaseStyle =
     (cell.row + cell.col) % 2 === 1
       ? "inset-shadow-cell-amberdark"
@@ -100,9 +71,12 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
   return (
     <div
       data-cell-id={cell.id}
-      className={`${
-        !!thisMove ? "move cursor-pointer" : ""
-      } ${piece && piece.color === currentTurn && piece.id !== selectedPiece?.id && "hover:inset-shadow-select-hover"} relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-200 ease-in-out`}
+      className={`${!!thisMove ? "move cursor-pointer" : ""} ${
+        piece &&
+        piece.color === currentTurn &&
+        piece.id !== selectedPiece?.id &&
+        "hover:inset-shadow-select-hover"
+      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-200 ease-in-out`}
     >
       {isExchange && selectedPiece?.cell.id === cell.id && (
         <PiecesToExchange state={state} />
@@ -131,9 +105,9 @@ function canBeTakenEnPassant(
   )
     return false;
   return selectedPiece.moveSet.some((m) => {
-    const mCol = notToCol[m.id[0]];
-    const epRow = notToRow[m.id[1]] - (piece.color === "white" ? 1 : -1);
-    const epCell = rcToNotation(epRow, mCol);
+    const { row, col } = notToRC(m.id);
+    const epRow = row - (piece.color === "white" ? 1 : -1);
+    const epCell = rcToNot(epRow, col);
     return piece.cell.id === epCell;
   });
 }
@@ -152,8 +126,10 @@ function canCastle(
     selectedPiece.hasMoved
   )
     return false;
-  const d = selectedPiece.cell.id[0] > piece.cell.id[0] ? -1 : 1;
-  const col = notToCol[selectedPiece.cell.id[0]] + d * 2;
-  const cell = colToNot[col] + selectedPiece.cell.id[1];
+  const sCell = notToRC(selectedPiece.cell.id);
+  const pCell = notToRC(piece.cell.id);
+  const d = sCell.col > pCell.col ? -1 : 1;
+  const col = sCell.col + d * 2;
+  const cell = rcToNot(sCell.row, col);
   return selectedPiece.moveSet.some((m) => m.id === cell);
 }

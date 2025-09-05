@@ -1,5 +1,5 @@
 import { PieceType, TurnDetails } from "../types";
-import { getCell } from "../utils/cellUtil";
+import { notToRC } from "../utils/cellUtil";
 
 export function checkIsEnoughPieces(activePieces: PieceType[]): boolean {
   const nonKings = activePieces.filter((p) => p.type !== "king");
@@ -11,7 +11,7 @@ export function checkIsEnoughPieces(activePieces: PieceType[]): boolean {
 
   const onlyBishops = nonKings.every((p) => p.type === "bishop");
   if (onlyBishops) {
-    const nonKingsCells = nonKings.map((p) => getCell(p.cell.id));
+    const nonKingsCells = nonKings.map((p) => notToRC(p.cell.id));
     const colors = new Set(nonKingsCells.map((c) => (c.row + c.col) % 2));
     return colors.size === 1;
   }

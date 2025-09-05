@@ -1,6 +1,5 @@
 import { MoveType, PieceType } from "../types";
-import { getCell } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { notToRC, rcToNot } from "../utils/cellUtil";
 import { getPiece } from "../utils/pieceUtils";
 
 export function handleCastling(
@@ -13,12 +12,12 @@ export function handleCastling(
 
   const rookId = moveTo.special.rookId;
   const rookToCastle = getPiece(rookId, pieces);
-  const moveToCell = getCell(moveTo.id);
-  const kingCell = getCell(selectedPiece.cell.id);
+  const moveToCell = notToRC(moveTo.id);
+  const kingCell = notToRC(selectedPiece.cell.id);
   if (rookToCastle && rookToCastle.type === "rook") {
     const dir = kingCell.col > moveToCell.col ? 1 : -1;
-    const rookMove = BOARD[kingCell.row][moveToCell.col + dir];
-    rookToCastle.cell.id = rookMove.id;
+    const rookMove = rcToNot(kingCell.row, moveToCell.col + dir);
+    rookToCastle.cell.id = rookMove;
     rookToCastle.hasMoved = true;
   }
 }

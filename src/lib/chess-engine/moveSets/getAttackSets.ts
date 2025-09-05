@@ -10,14 +10,13 @@ import {
   Queen,
   Rook,
 } from "../types";
-import { getCell } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { notToRC, rcToNot } from "../utils/cellUtil";
 
 export function checkThreats(
   current: PieceType,
   cellId: string,
   pieces: PieceType[],
-  currentPlayer: Color,
+  currentPlayer: Color
 ): string[] {
   const foes = pieces.filter((p) => !p.isTaken && p.color !== currentPlayer);
   const threatenedBy: string[] = [];
@@ -55,15 +54,15 @@ function getAttackSet(
 
 function pawnAttacks(pawn: Pawn): string[] {
   const res: string[] = [];
-  const cell = getCell(pawn.cell.id);
+  const cell = notToRC(pawn.cell.id);
   const dir = pawn.color === "white" ? -1 : 1;
   const nextRow = cell.row + dir;
   const col = cell.col;
 
   if (nextRow < 0 || nextRow >= 8) return res;
 
-  if (col - 1 >= 0) res.push(BOARD[nextRow][col - 1].id);
-  if (col + 1 < 8) res.push(BOARD[nextRow][col + 1].id);
+  if (col - 1 >= 0) res.push(rcToNot(nextRow, col - 1));
+  if (col + 1 < 8) res.push(rcToNot(nextRow, col + 1));
 
   return res;
 }

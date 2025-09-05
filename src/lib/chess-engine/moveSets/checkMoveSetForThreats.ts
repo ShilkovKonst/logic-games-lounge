@@ -1,5 +1,5 @@
 import { CellType, Color, King, MoveType, Pawn, PieceType } from "../types";
-import { getCell } from "../utils/cellUtil";
+import { notToRC } from "../utils/cellUtil";
 import { BOARD } from "../utils/createBoard";
 import { checkThreats } from "./getAttackSets";
 
@@ -56,7 +56,7 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
   const cMoves: MoveType[] = [];
   if (king.isInDanger || king.hasMoved) return cMoves;
 
-  const kingCell = getCell(king.cell.id);
+  const kingCell = notToRC(king.cell.id);
   const rooks = pieces.filter(
     (p) =>
       p.type === "rook" && p.color === king.color && !p.hasMoved && !p.isTaken
@@ -64,7 +64,7 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
   for (const r of rooks) {
     if (r.type !== "rook") continue;
 
-    const rookCell = getCell(r.cell.id);
+    const rookCell = notToRC(r.cell.id);
     const row = kingCell.row;
     const dir = rookCell.col > kingCell.col ? 1 : -1;
     let col = kingCell.col + dir;

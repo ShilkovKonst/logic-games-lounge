@@ -6,7 +6,7 @@ export function cellToNotation(cell: CellType): string {
   return `${colToNot[cell.col]}${rowToNot[cell.row]}`;
 }
 
-export function notToRowCol(id: string): { row: number; col: number } {
+export function notToRC(id: string): { row: number; col: number } {
   const col = notToCol[id[0]];
   const row = notToRow[id[1]];
   if (!inBounds(row, col))
@@ -17,7 +17,7 @@ export function notToRowCol(id: string): { row: number; col: number } {
   };
 }
 
-export function rcToNotation(row: number, col: number): string {
+export function rcToNot(row: number, col: number): string {
   return `${colToNot[col]}${rowToNot[row]}`;
 }
 

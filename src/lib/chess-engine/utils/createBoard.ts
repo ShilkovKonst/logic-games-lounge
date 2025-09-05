@@ -1,5 +1,5 @@
 import { CellType } from "../types";
-import { rcToNotation } from "./cellUtil";
+import { rcToNot } from "./cellUtil";
 
 export const BOARD = createBoard();
 
@@ -9,7 +9,7 @@ function createBoard(): CellType[][] {
     const row: CellType[] = [];
     for (let j = 0; j < 8; j++) {
       const cell: CellType = {
-        id: rcToNotation(i, j),
+        id: rcToNot(i, j),
         row: i,
         col: j,
       };

@@ -7,7 +7,6 @@ export function checkKingSafety(
   currentPlayer: Color,
 ): King {
   const king = getKing(pieces, currentPlayer);
-  king.cell.threats.clear();
   const threats = checkThreats(
     king,
     king.cell.id,

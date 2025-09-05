@@ -1,6 +1,5 @@
 import { MoveType, PieceType } from "../types";
-import { getCell } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { notToRC, rcToNot } from "../utils/cellUtil";
 import { getPieceAt } from "../utils/pieceUtils";
 
 export function moveGenerator(
@@ -10,7 +9,7 @@ export function moveGenerator(
   maxStep: number
 ): MoveType[] {
   const moves: MoveType[] = [];
-  const pieceCell = getCell(piece.cell.id);
+  const pieceCell = notToRC(piece.cell.id);
   const r = pieceCell.row;
   const c = pieceCell.col;
 
@@ -19,15 +18,15 @@ export function moveGenerator(
     let tC = c + dc;
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
-      const cell = BOARD[tR][tC];
-      const target = getPieceAt(cell.id, pieces);
+      const cell = rcToNot(tR, tC);
+      const target = getPieceAt(cell, pieces);
 
       if (target) {
         if (target.color !== piece.color)
-          moves.push({ id: cell.id, threats: new Set() });
+          moves.push({ id: cell, threats: new Set() });
         break;
       }
-      moves.push({ id: cell.id, threats: new Set() });
+      moves.push({ id: cell, threats: new Set() });
       tR += dr;
       tC += dc;
       step++;
@@ -44,7 +43,7 @@ export function attackGenerator(
   maxStep: number
 ): string[] {
   const attacks: string[] = [];
-  const pieceToCheckCell = getCell(pieceToCheck.cell.id);
+  const pieceToCheckCell = notToRC(pieceToCheck.cell.id);
   const r = pieceToCheckCell.row;
   const c = pieceToCheckCell.col;
 
@@ -53,15 +52,15 @@ export function attackGenerator(
     let tC = c + dc;
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
-      const cell = BOARD[tR][tC];
-      const target = getPieceAt(cell.id, pieces);
+      const cell = rcToNot(tR, tC);
+      const target = getPieceAt(cell, pieces);
 
       if (target && target.id !== current.id) {
-        attacks.push(cell.id);
+        attacks.push(cell);
         break;
       }
 
-      attacks.push(cell.id);
+      attacks.push(cell);
       tR += dr;
       tC += dc;
       step++;

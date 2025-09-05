@@ -1,5 +1,5 @@
 import { PieceType } from "../types";
-import { inBounds, notToRowCol } from "../utils/cellUtil";
+import { inBounds, notToRC } from "../utils/cellUtil";
 import { BOARD } from "../utils/createBoard";
 import { getPieceAt } from "../utils/pieceUtils";
 
@@ -9,8 +9,8 @@ export function checkPinPiece(
   pieces: PieceType[]
 ): string[] {
   if (currentPiece.type === "king") return [];
-  const selectedPieceCell = notToRowCol(currentPiece.cell.id);
-  const kingCell = notToRowCol(kingCellId);
+  const selectedPieceCell = notToRC(currentPiece.cell.id);
+  const kingCell = notToRC(kingCellId);
   if (!isAligned(selectedPieceCell, kingCell)) return [];
 
   const dr = dir(selectedPieceCell.row - kingCell.row);
