@@ -1,4 +1,4 @@
-export const rowToNot: Record<number, string> = {
+export const colToNot: Record<number, string> = {
   0: "a",
   1: "b",
   2: "c",
@@ -9,7 +9,7 @@ export const rowToNot: Record<number, string> = {
   7: "h",
 };
 
-export const notToRow: Record<string, number> = {
+export const notToCol: Record<string, number> = {
   a: 0,
   b: 1,
   c: 2,
@@ -18,4 +18,26 @@ export const notToRow: Record<string, number> = {
   f: 5,
   g: 6,
   h: 7,
+};
+
+export const notToRow: Record<string, number> = {
+  8: 0,
+  7: 1,
+  6: 2,
+  5: 3,
+  4: 4,
+  3: 5,
+  2: 6,
+  1: 7,
+};
+
+export const rowToNot: Record<string, number> = {
+  0: 8,
+  1: 7,
+  2: 6,
+  3: 5,
+  4: 4,
+  5: 3,
+  6: 2,
+  7: 1,
 };

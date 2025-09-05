@@ -1,5 +1,5 @@
 import { piecesSet } from "../constants/pieceTypes";
-import { Color, King, Pieces, PieceType } from "../types";
+import { CellType, Color, King, MoveType, Pieces, PieceType } from "../types";
 
 export function getKing(pieces: PieceType[], currentPlayer: Color): King {
   const king = pieces.find(
@@ -30,4 +30,11 @@ export function getActivePieces(
   pieces: PieceType[]
 ): PieceType[] {
   return pieces.filter((p) => !p.isTaken && p.color === player);
+}
+
+export function checkMoveSet(
+  piece: PieceType | undefined,
+  cell: CellType
+): MoveType | undefined {
+  if (piece) return piece.moveSet.find((m) => m.id === cell.id);
 }

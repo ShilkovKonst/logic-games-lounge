@@ -158,7 +158,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
 
     if (pieceEl) {
       const pieceId = pieceEl.getAttribute("data-piece-id");
-      if (pieceId) {
+      if (pieceId && pieceId !== selectedPiece?.id) {
         if (isExchange) return;
         const piece = handlePieceClick(pieceId, currentBoardState, currentTurn);
         dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
@@ -187,6 +187,10 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
       },
     });
   }, [currentTurn, log.length]);
+
+  useEffect(() => {
+    console.log(selectedPiece);
+  }, [selectedPiece]);
 
   return (
     <div

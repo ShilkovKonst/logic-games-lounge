@@ -57,7 +57,6 @@ export function attackGenerator(
       const target = getPieceAt(cell.id, pieces);
 
       if (target && target.id !== current.id) {
-        // if (target) {
         attacks.push(cell.id);
         break;
       }

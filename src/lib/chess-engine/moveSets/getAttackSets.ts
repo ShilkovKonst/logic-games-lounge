@@ -2,7 +2,6 @@ import { bDir, kDir, qDir, rDir } from "../constants/dirs";
 import { attackGenerator } from "./generator";
 import {
   PieceType,
-  CellType,
   Bishop,
   Color,
   King,

@@ -119,14 +119,14 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
   return (
     <div
       ref={logRef}
-      className="log overflow-x-hidden pr-[10px] flex flex-col justify-start items-start order-3 border-amber-950 bg-amber-150 border-b-4 border-r-4 overflow-y-auto
-                w-[298px] h-[448px] border-t-0
+      className="log overflow-x-hidden pr-[10px] flex flex-col justify-start items-start order-3 bg-amber-150 border-amber-950 border-b-4 border-r-4 overflow-y-auto
+                w-[298px] h-[454px] border-t-0
                 md:w-[250px] md:h-[508px] md:order-2 md:border-t-4"
     >
       {log.map((turns, i) => (
         <div
           key={i}
-          className="flex justify-between w-[294px] md:w-[236px] mt-2"
+          className="flex justify-between w-[294px] md:w-[236px] my-[5px]"
         >
           {turns.map((turn, j) => (
             <div
@@ -135,7 +135,7 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
             >
               <button
                 onClick={() => handleClick(turn)}
-                className={`cursor-pointer rounded-full bg-amber-700 hover:bg-[#ffd230] transition ease-in-out duration-150 inset-shadow-log-amberdark`}
+                className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition ease-in-out duration-150 inset-shadow-log-amberdark`}
               >
                 <UndoIcon color={turn.curentPlayer} />
               </button>

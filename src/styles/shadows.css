@@ -1,64 +1,46 @@
 .inset-shadow-cell-amberdark {
-  box-shadow: 
-    4px 4px 4px #973c00 inset,
-    -4px -4px 4px #973c00 inset;
+  box-shadow: 4px 4px 4px #973c00 inset, -4px -4px 4px #973c00 inset;
 }
 .inset-shadow-cell-amberlight {
-  box-shadow: 
-    4px 4px 4px #fef3c6  inset,
-    -4px -4px 4px #fef3c6  inset;
+  box-shadow: 4px 4px 4px #fef3c6 inset, -4px -4px 4px #fef3c6 inset;
 }
 .inset-shadow-cell-ambermedium {
-  box-shadow: 
-    4px 4px 4px #ffd230  inset,
-    -4px -4px 4px #ffd230  inset;
+  box-shadow: 4px 4px 4px #ffd230 inset, -4px -4px 4px #ffd230 inset;
 }
 
 .inset-shadow-log-amberdark {
-  box-shadow: 
-    2px 2px 2px #973c00 inset,
-    -2px -2px 2px #973c00 inset;
+  box-shadow: 2px 2px 2px #973c00 inset, -2px -2px 2px #973c00 inset;
 }
 .inset-shadow-log-amberlight {
-  box-shadow: 
-    2px 2px 2px #fef3c6  inset,
-    -2px -2px 2px #fef3c6  inset;
+  box-shadow: 2px 2px 2px #fef3c6 inset, -2px -2px 2px #fef3c6 inset;
 }
 .inset-shadow-log-ambermedium {
-  box-shadow: 
-    2px 2px 2px #ffd230  inset,
-    -2px -2px 2px #ffd230  inset;
+  box-shadow: 2px 2px 2px #ffd230 inset, -2px -2px 2px #ffd230 inset;
+}
+
+.inset-shadow-select-safe {
+  box-shadow: 4px 4px 1px #ffb900 inset, -4px -4px 1px #ffb900 inset;
+}
+.inset-shadow-select-danger {
+  box-shadow: 4px 4px 1px #fb2c36bf inset, -4px -4px 1px #fb2c36bf inset;
+}
+.inset-shadow-move-safe {
+  box-shadow: 4px 4px 1px #00c950bf inset, -4px -4px 1px #00c950bf inset;
+}
+.inset-shadow-move-danger {
+  box-shadow: 4px 4px 1px #c10007bf inset, -4px -4px 1px #c10007bf inset;
+}
+.inset-shadow-move-ep {
+  box-shadow: 4px 4px 1px #c6005bbf inset, -4px -4px 1px #c6005bbf inset;
 }
 
 
-/*unused styles*/
-.inset-shadow-move-green {
-  box-shadow: 
-    4px 4px 1px #009689 inset,
-    -4px -4px 1px #009689 inset;
-}
-.inset-shadow-move-red {
-  box-shadow: 
-    4px 4px 1px #c800de inset,
-    -4px -4px 1px #c800de inset;
-}
-.inset-shadow-move-orange {
-  box-shadow: 
-    4px 4px 1px #ff6900 inset,
-    -4px -4px 1px #ff6900 inset;
-}
 .inset-shadow-move-lightgreen {
-  box-shadow: 
-    4px 4px 1px #7bf1a8  inset,
-    -4px -4px 1px #7bf1a8  inset;
+  box-shadow: 4px 4px 1px #7bf1a8 inset, -4px -4px 1px #7bf1a8 inset;
 }
 .inset-shadow-move-lime {
-  box-shadow: 
-    4px 4px 1px #7ccf00  inset,
-    -4px -4px 1px #7ccf00  inset;
+  box-shadow: 4px 4px 1px #7ccf00 inset, -4px -4px 1px #7ccf00 inset;
 }
 .inset-shadow-move-gray {
-  box-shadow: 
-    4px 4px 1px #99a1af inset,
-    -4px -4px 1px #99a1af inset;
+  box-shadow: 4px 4px 1px #99a1af inset, -4px -4px 1px #99a1af inset;
 }

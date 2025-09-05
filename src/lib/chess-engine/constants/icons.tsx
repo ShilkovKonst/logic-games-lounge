@@ -18,7 +18,7 @@ export const PieceIcon: React.FC<IconProps> = ({ color, isTaken, type }) => {
   return (
     <svg
       className={`${
-        isTaken ? " w-6 h-6 md:w-8 md:h-8 " : " w-10 h-10 md:w-12 md:h-12"
+        isTaken ? " w-6 h-6 md:w-8 md:h-8 " : " w-10 h-10 md:w-11 md:h-11"
       }`}
       viewBox="0 0 512 512"
       xmlns="http://www.w3.org/2000/svg"

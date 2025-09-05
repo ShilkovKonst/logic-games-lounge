@@ -1,34 +1,94 @@
-@import "../styles/shadows.css";
+/* @import "../styles/shadows.css"; */
 @import "../styles/scrollbars.css";
 @import "tailwindcss";
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --blur-radius: 1px;
+  --blur-radius-cell: 4px;
+  --offset-x-pos: 4px;
+  --offset-y-pos: 4px;
+  --offset-x-neg: -4px;
+  --offset-y-neg: -4px;
+}
+@media (max-width: 767px) {
+  :root {
+    --background: #ffffff;
+    --foreground: #171717;
+    --blur-radius: 0px;
+    --blur-radius-cell: 2px;
+    --offset-x-pos: 2px;
+    --offset-y-pos: 2px;
+    --offset-x-neg: -2px;
+    --offset-y-neg: -2px;
+  }
 }
 
-@theme inline {
+/* @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
+} */
 
 @theme {
-  --color-amber-150: #e3b35d;
+  --color-amber-150: #fecd77;
   --spacing-18: 4.5rem;
   --spacing-70: 17.5rem;
-  --animate-scale-pulse: scale_pulse 3s ease-in-out infinite;
-  --animate-ring-pulse: ring_pulse 3s ease-in-out infinite;
-  @keyframes scale_pulse {
-    0%,
-    100% {
-      scale: 1.1;
-    }
-    50% {
-      scale: 1;
-    }
-  }
+
+  --inset-shadow-cell-amberdark: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-800),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-800);
+  --inset-shadow-cell-ambermedium: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-400);
+  --inset-shadow-cell-amberlight: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-150),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-150);
+
+  --inset-shadow-log-amberdark: inset 2px 2px 2px var(--color-amber-800),
+    inset -2px -2px 2px var(--color-amber-800);
+  --inset-shadow-log-ambermedium: inset 2px 2px 2px var(--color-amber-400),
+    inset -2px -2px 2px var(--color-amber-400);
+  --inset-shadow-log-amberlight: inset 2px 2px 2px var(--color-amber-150),
+    inset -2px -2px 2px var(--color-amber-150);
+
+  --inset-shadow-select-safe: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-amber-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-amber-400);
+  --inset-shadow-select-danger: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-red-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-red-500);
+  --inset-shadow-select-hover: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-gray-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-gray-400);
+
+  --inset-shadow-move-safe: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius)
+      color-mix(in oklab, var(--color-green-700) 80%, transparent),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      color-mix(in oklab, var(--color-green-700) 80%, transparent);
+  --inset-shadow-move-danger: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius)
+      color-mix(in oklab, var(--color-red-700) 80%, transparent),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      color-mix(in oklab, var(--color-red-700) 80%, transparent);
+
+  --inset-shadow-piece-ep: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-rose-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-rose-400);
+  --inset-shadow-piece-castling: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-lime-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-lime-400);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -39,8 +99,174 @@
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
   min-width: 640px;
+}
+
+/* .cell::before {
+  content: "";
+  width: inherit;
+  height: inherit;
+  position: absolute;
+  background: repeating-linear-gradient(
+      45deg,
+      rgba(212, 175, 55, 0.2) 0 6px,
+      transparent 6px 12px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      rgba(139, 69, 19, 0.2) 0 8px,
+      transparent 8px 16px
+    );
+  filter: blur(5px);
+  z-index: 5;
+} */
+
+.bg-hexagon {
+  background: radial-gradient(
+      ellipse at 30% 70%,
+      rgba(212, 175, 55, 0.09) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      ellipse at 70% 30%,
+      rgba(139, 69, 19, 0.09) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 90% 90%,
+      rgba(244, 228, 188, 0.4) 0%,
+      transparent 60%
+    ),
+    repeating-conic-gradient(
+      from 30deg at 50% 50%,
+      transparent 0deg,
+      rgba(212, 175, 55, 0.02) 60deg,
+      transparent 120deg
+    ),
+    repeating-linear-gradient(
+      90deg,
+      transparent,
+      transparent 30px,
+      rgba(254, 243, 198, 0.02) 30px,
+      rgba(254, 243, 198, 0.02) 60px
+    ),
+    repeating-linear-gradient(
+      150deg,
+      transparent,
+      transparent 30px,
+      rgba(254, 243, 198, 0.02) 30px,
+      rgba(254, 243, 198, 0.02) 60px
+    ),
+    repeating-linear-gradient(
+      210deg,
+      transparent,
+      transparent 30px,
+      rgba(254, 230, 133, 0.02) 30px,
+      rgba(254, 230, 133, 0.02) 60px
+    ),
+    linear-gradient(135deg, #f4e4bc 0%, #8b4513 100%);
+}
+
+.bg-squares-small {
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(212, 175, 55, 0.2) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(139, 69, 19, 0.2) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(244, 228, 188, 0.2) 0%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 10px,
+      rgba(254, 243, 198, 0.05) 10px,
+      rgba(254, 243, 198, 0.05) 20px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 15px,
+      rgba(254, 230, 133, 0.05) 15px,
+      rgba(254, 230, 133, 0.05) 30px
+    ),
+    linear-gradient(135deg, #e3b35d 0%, #e3b35d 100%);
+}
+
+.bg-squares-medium {
+  background: radial-gradient(
+      circle at 20% 80%,
+      rgba(212, 175, 55, 0.2) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 80% 20%,
+      rgba(139, 69, 19, 0.2) 0%,
+      transparent 50%
+    ),
+    radial-gradient(
+      circle at 40% 40%,
+      rgba(244, 228, 188, 0.2) 0%,
+      transparent 50%
+    ),
+    repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 15px,
+      rgba(254, 243, 198, 0.05) 15px,
+      rgba(254, 243, 198, 0.05) 30px
+    ),
+    repeating-linear-gradient(
+      -45deg,
+      transparent,
+      transparent 20px,
+      rgba(254, 230, 133, 0.05) 20px,
+      rgba(254, 230, 133, 0.05) 40px
+    ),
+    linear-gradient(135deg, #e3b35d 0%, #e3b35d 100%);
+}
+
+.bg-circles {
+  background: radial-gradient(
+      circle at 15% 25%,
+      rgba(212, 175, 55, 0.2) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 85% 75%,
+      rgba(139, 69, 19, 0.2) 0%,
+      transparent 40%
+    ),
+    radial-gradient(
+      circle at 60% 10%,
+      rgba(244, 228, 188, 0.2) 0%,
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 30% 90%,
+      rgba(212, 175, 55, 0.2) 0%,
+      transparent 45%
+    ),
+    repeating-conic-gradient(
+      from 0deg at 50% 50%,
+      transparent 0deg,
+      rgba(139, 69, 19, 0.05) 15deg,
+      transparent 30deg
+    ),
+    repeating-radial-gradient(
+      circle at 25% 25%,
+      transparent 0px,
+      rgba(212, 175, 55, 0.05) 50px,
+      transparent 100px
+    ),
+    linear-gradient(135deg, #f4e4bc 0%, #8b4513 100%);
 }

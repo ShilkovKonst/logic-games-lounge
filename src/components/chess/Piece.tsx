@@ -43,11 +43,9 @@ const Piece: React.FC<PieceProps> = ({ cell, piece, state, gameType }) => {
           !isExchange &&
           (isSelected ? "cursor-grabbing" : "cursor-grab")
         } ${!isCurrentPlayer && inMoveSet && "cursor-crosshair"}
-          ${
-            isCurrentPlayer && "hover:scale-110"
-          } bg-transparent transform ease-in-out duration-150 ${
-          playerState.color === "white" ? "rotate-0" : "rotate-180"
-        }`}
+           bg-transparent transform ease-in-out duration-150 ${
+             playerState.color === "white" ? "rotate-0" : "rotate-180"
+           }`}
       >
         <PieceIcon color={color} type={type} />
       </button>

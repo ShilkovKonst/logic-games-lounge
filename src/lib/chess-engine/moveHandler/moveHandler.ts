@@ -13,6 +13,7 @@ export function handlePieceClick(
   currentTurn: Color
 ): PieceType {
   const piece = getPiece(pieceId, pieces);
+  piece.cell.threats.clear();
   for (const move of piece.moveSet) move.threats.clear();
   checkMoveSetForThreats(piece, pieces, currentTurn);
   return piece;

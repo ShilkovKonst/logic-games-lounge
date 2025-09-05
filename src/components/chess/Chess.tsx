@@ -48,7 +48,7 @@ const Chess: React.FC<ChessProps> = ({
 
   return (
     <>
-      <div className="w-full flex justify-between">
+      <div className="w-full flex justify-between inset-shadow-select-safe">
         <div>
           <div>{state.currentTurn}</div>
           <button

@@ -16,7 +16,7 @@ export default async function Home() {
   const playerState: PlayerState | null = null;
 
   return (
-    <div className="font-sans grid items-center justify-items-center min-h-screen p-1">
+    <div className="font-sans grid items-center justify-items-center min-h-screen">
       <main className="flex flex-col items-center sm:items-start">
         <AppProviders>
           <Chess
