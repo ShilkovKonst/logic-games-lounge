@@ -50,7 +50,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
       ? "inset-shadow-cell-amberdark"
       : "inset-shadow-cell-amberlight";
   const cellBgStyle = `${
-    (cell.row + cell.col) % 2 === 1 ? "bg-amber-700" : "bg-amber-50"
+    (cell.row + cell.col) % 2 === 1 ? "bg-amber-600" : "bg-amber-100"
   }`;
   const borderStyle = `${cell.row === 0 ? `border-t-2` : ""}${
     cell.row === 7 ? "border-b-2" : ""
@@ -67,7 +67,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
     : cellShadowPieceStyle
     ? cellShadowPieceStyle
     : cellShadowBaseStyle;
-
+    
   return (
     <div
       data-cell-id={cell.id}
@@ -76,7 +76,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
         piece.color === currentTurn &&
         piece.id !== selectedPiece?.id &&
         "hover:inset-shadow-select-hover"
-      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-200 ease-in-out`}
+      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-100 ease-in-out`}
     >
       {isExchange && selectedPiece?.cell.id === cell.id && (
         <PiecesToExchange state={state} />

@@ -14,72 +14,54 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
   const { log } = state;
 
   const title = (turn: TurnDetails) => {
-    const {
-      turnNo,
-      curentPlayer,
-      castling,
-      fromCell,
-      toCell,
-      pieceToMove,
-      pieceToTake,
-      pieceToExchange,
-      check,
-      checkmate,
-      isExchange,
-      isEnPassant,
-      isDraw,
-    } = turn;
-
-    return `${turnNo} - ${curentPlayer} ${pieceToMove?.slice(
+    return `${turn.turnNo} - ${turn.curentPlayer} ${turn.pieceToMove?.slice(
       0,
       -2
-    )} moves from ${fromCell} to ${toCell}${
-      pieceToTake ? ` takes ${pieceToTake?.slice(0, -2)}` : ""
-    }${isEnPassant ? " en passant" : ""}${
-      castling ? ` ${castling} castling` : ""
-    }${isExchange ? ` exchange to ${pieceToExchange}` : ""}${
-      check && !checkmate ? ` check to ${check}` : ""
-    }${checkmate ? ` checkmate to ${checkmate}` : ""}${isDraw ? ` draw` : ""}`;
+    )} moves from ${turn.fromCell} to ${turn.toCell}${
+      turn.pieceToTake ? ` takes ${turn.pieceToTake?.slice(0, -2)}` : ""
+    }${turn.isEnPassant ? " en passant" : ""}${
+      turn.castling ? ` ${turn.castling} castling` : ""
+    }${turn.isExchange ? ` exchange to ${turn.pieceToExchange}` : ""}${
+      turn.check && !turn.checkmate ? ` check to ${turn.check}` : ""
+    }${turn.checkmate ? ` checkmate to ${turn.checkmate}` : ""}${
+      turn.isDraw ? ` draw` : ""
+    }`;
   };
 
   const san = (turn: TurnDetails) => {
-    const {
-      isDraw,
-      isExchange,
-      castling,
-      isEnPassant,
-      fromCell,
-      toCell,
-      pieceToMove,
-      pieceToTake,
-      pieceToExchange,
-      check,
-      checkmate,
-      ambiguity,
-    } = turn;
-    const pieceType: Pieces | undefined = pieceToMove?.slice(0, -2) as Pieces;
+    const pieceType: Pieces | undefined = turn.pieceToMove?.slice(
+      0,
+      -2
+    ) as Pieces;
     const pieceSAN = getSAN(pieceType);
     const disambiguation =
-      fromCell && ambiguity && getDisambiguation(fromCell, ambiguity);
+      turn.fromCell &&
+      turn.ambiguity &&
+      getDisambiguation(turn.fromCell, turn.ambiguity);
 
     let sanString = "";
-    if (isDraw) return "1/2 - 1/2";
-    else if (castling) sanString = castling === "long" ? "O-O-O" : "O-O";
-    else if (isExchange) {
-      const exchangeSAN = pieceToExchange && getSAN(pieceToExchange);
-      sanString = pieceToTake
-        ? `${pieceSAN}${fromCell?.charAt(0)}x${toCell}=${exchangeSAN}`
-        : `${pieceSAN}${toCell}=${exchangeSAN}`;
+    if (turn.isDraw) return "1/2 - 1/2";
+    else if (turn.castling)
+      sanString = turn.castling === "long" ? "O-O-O" : "O-O";
+    else if (turn.isExchange) {
+      const exchangeSAN = turn.pieceToExchange && getSAN(turn.pieceToExchange);
+      sanString = turn.pieceToTake
+        ? `${pieceSAN}${turn.fromCell?.charAt(0)}x${turn.toCell}=${exchangeSAN}`
+        : `${pieceSAN}${turn.toCell}=${exchangeSAN}`;
     } else {
       sanString = `${pieceSAN}${disambiguation}${
-        pieceToTake ? (pieceSAN ? "x" : `${fromCell?.charAt(0)}x`) : ""
-      }${toCell}`;
+        turn.pieceToTake
+          ? pieceSAN
+            ? "x"
+            : `${turn.fromCell?.charAt(0)}x`
+          : ""
+      }${turn.toCell}`;
     }
 
-    if (check && !checkmate) sanString += "+";
-    else if (checkmate) sanString += "#";
+    if (turn.check && !turn.checkmate) sanString += "+";
+    else if (turn.checkmate) sanString += "#";
 
-    if (pieceToTake && isEnPassant) sanString += " e.p.";
+    if (turn.pieceToTake && turn.isEnPassant) sanString += " e.p.";
     return sanString;
   };
 
@@ -120,7 +102,7 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
     <div
       ref={logRef}
       className="log overflow-x-hidden pr-[10px] flex flex-col justify-start items-start order-3 bg-amber-150 border-amber-950 border-b-4 border-r-4 overflow-y-auto
-                w-[298px] h-[454px] border-t-0
+                w-[290px] h-[454px] border-t-0
                 md:w-[250px] md:h-[508px] md:order-2 md:border-t-4"
     >
       {log.map((turns, i) => (

@@ -16,21 +16,14 @@
   :root {
     --background: #ffffff;
     --foreground: #171717;
-    --blur-radius: 0px;
-    --blur-radius-cell: 2px;
-    --offset-x-pos: 2px;
-    --offset-y-pos: 2px;
-    --offset-x-neg: -2px;
-    --offset-y-neg: -2px;
+    --blur-radius: 1px;
+    --blur-radius-cell: 3px;
+    --offset-x-pos: 3px;
+    --offset-y-pos: 3px;
+    --offset-x-neg: -3px;
+    --offset-y-neg: -3px;
   }
 }
-
-/* @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-} */
 
 @theme {
   --color-amber-150: #fecd77;
@@ -38,17 +31,17 @@
   --spacing-70: 17.5rem;
 
   --inset-shadow-cell-amberdark: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius-cell) var(--color-amber-800),
+      var(--blur-radius-cell) var(--color-amber-700),
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
-      var(--color-amber-800);
+      var(--color-amber-700);
   --inset-shadow-cell-ambermedium: inset var(--offset-x-pos) var(--offset-y-pos)
       var(--blur-radius-cell) var(--color-amber-400),
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
       var(--color-amber-400);
   --inset-shadow-cell-amberlight: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius-cell) var(--color-amber-150),
+      var(--blur-radius-cell) var(--color-amber-200),
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
-      var(--color-amber-150);
+      var(--color-amber-200);
 
   --inset-shadow-log-amberdark: inset 2px 2px 2px var(--color-amber-800),
     inset -2px -2px 2px var(--color-amber-800);
@@ -62,7 +55,7 @@
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
       var(--color-amber-400);
   --inset-shadow-select-danger: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-red-400),
+      var(--blur-radius) var(--color-red-500),
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
       var(--color-red-500);
   --inset-shadow-select-hover: inset var(--offset-x-pos) var(--offset-y-pos)
@@ -103,25 +96,6 @@ body {
   font-family: Arial, Helvetica, sans-serif;
   min-width: 640px;
 }
-
-/* .cell::before {
-  content: "";
-  width: inherit;
-  height: inherit;
-  position: absolute;
-  background: repeating-linear-gradient(
-      45deg,
-      rgba(212, 175, 55, 0.2) 0 6px,
-      transparent 6px 12px
-    ),
-    repeating-linear-gradient(
-      -45deg,
-      rgba(139, 69, 19, 0.2) 0 8px,
-      transparent 8px 16px
-    );
-  filter: blur(5px);
-  z-index: 5;
-} */
 
 .bg-hexagon {
   background: radial-gradient(
