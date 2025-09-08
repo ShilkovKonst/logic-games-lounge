@@ -1,6 +1,5 @@
-import { CellType, Color, King, MoveType, Pawn, PieceType } from "../types";
-import { notToRC } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { Color, King, MoveType, Pawn, PieceType } from "../types";
+import { notToRC, rcToNot } from "../utils/cellUtil";
 import { checkThreats } from "./getAttackSets";
 
 export function checkMoveSetForThreats(
@@ -70,10 +69,10 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
     let col = kingCell.col + dir;
     let blocked = false;
     while (col !== rookCell.col) {
-      const cell = BOARD[row][col];
+      const cell = rcToNot(row, col);
       const threats =
         Math.abs(kingCell.col - col) < 3
-          ? checkThreats(king, cell.id, pieces, king.color)
+          ? checkThreats(king, cell, pieces, king.color)
           : [];
       if (isOcupied(pieces, cell) || threats.length > 0) {
         blocked = true;
@@ -85,7 +84,7 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
     if (blocked) continue;
 
     const cMove: MoveType = {
-      id: BOARD[row][kingCell.col + dir * 2].id,
+      id: rcToNot(row, kingCell.col + dir * 2),
       threats: new Set<string>(),
       special: {
         type: "castling",
@@ -98,6 +97,6 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
   return cMoves;
 }
 
-function isOcupied(pieces: PieceType[], cell: CellType): boolean {
-  return pieces.some((p) => cell.id === p.cell.id);
+function isOcupied(pieces: PieceType[], cell: string): boolean {
+  return pieces.some((p) => cell === p.cell.id);
 }

@@ -1,6 +1,5 @@
 import { colToNot, notToCol, notToRow, rowToNot } from "../constants/board";
 import { CellType } from "../types";
-import { BOARD } from "./createBoard";
 
 export function cellToNotation(cell: CellType): string {
   return `${colToNot[cell.col]}${rowToNot[cell.row]}`;
@@ -19,12 +18,6 @@ export function notToRC(id: string): { row: number; col: number } {
 
 export function rcToNot(row: number, col: number): string {
   return `${colToNot[col]}${rowToNot[row]}`;
-}
-
-export function getCell(cellId: string) {
-  const cell = BOARD.flat().find((c) => c.id === cellId);
-  if (!cell) throw new Error(`Cell with id "${cellId}" not found`);
-  return cell;
 }
 
 export function inBounds(row: number, col: number): boolean {

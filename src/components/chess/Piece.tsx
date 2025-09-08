@@ -1,14 +1,9 @@
-import {
-  CellType,
-  GameState,
-  GameType,
-  PieceType,
-} from "@/lib/chess-engine/types";
+import { GameState, GameType, PieceType } from "@/lib/chess-engine/types";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { usePlayerState } from "@/context/PlayerStateContext";
 
 type PieceProps = {
-  cell: CellType;
+  cell: string;
   piece: PieceType;
   state: GameState;
   gameType: GameType;
@@ -20,9 +15,9 @@ const Piece: React.FC<PieceProps> = ({ cell, piece, state, gameType }) => {
   const { type, color } = piece;
   const { selectedPiece, currentTurn, isExchange } = state;
 
-  const isSelected = selectedPiece?.cell.id === cell.id;
+  const isSelected = selectedPiece?.cell.id === cell;
   const inMoveSet =
-    selectedPiece && selectedPiece.moveSet.some((m) => m.id === cell.id);
+    selectedPiece && selectedPiece.moveSet.some((m) => m.id === cell);
   const isCurrentPlayer =
     color === currentTurn &&
     (gameType === "hotseat" || currentTurn === playerState.color);

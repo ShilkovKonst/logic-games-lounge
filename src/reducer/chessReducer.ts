@@ -48,7 +48,7 @@ export const blankTurn = (
   checkmate: undefined,
   isExchange: false,
   isEnPassant: false,
-  isDraw: false,
+  draw: "",
   hash: getPositionHashInit(boardState, currentTurn, undefined, false),
 });
 

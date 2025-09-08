@@ -1,6 +1,5 @@
 import { PieceType } from "../types";
-import { inBounds, notToRC } from "../utils/cellUtil";
-import { BOARD } from "../utils/createBoard";
+import { inBounds, notToRC, rcToNot } from "../utils/cellUtil";
 import { getPieceAt } from "../utils/pieceUtils";
 
 export function checkPinPiece(
@@ -21,7 +20,7 @@ export function checkPinPiece(
   const toKing: string[] = [];
   while (r !== selectedPieceCell.row || c !== selectedPieceCell.col) {
     if (!inBounds(r, c)) return [];
-    const id = BOARD[r][c].id;
+    const id = rcToNot(r, c);
     const piece = getPieceAt(id, pieces);
     if (piece && id !== currentPiece.cell.id) {
       return [];
@@ -35,7 +34,7 @@ export function checkPinPiece(
   c = selectedPieceCell.col + dc;
   const toAttacker: string[] = [];
   while (inBounds(r, c)) {
-    const id = BOARD[r][c].id;
+    const id = rcToNot(r, c);
     const attacker = getPieceAt(id, pieces);
     toAttacker.push(id);
     if (attacker) {

@@ -1,23 +1,19 @@
-import {
-  CellType,
-  GameState,
-  GameType,
-  PieceType,
-} from "@/lib/chess-engine/types";
+import { GameState, GameType, PieceType } from "@/lib/chess-engine/types";
 import Piece from "./Piece";
 import PiecesToExchange from "./PiecesToExchange";
 import { checkMoveSet, getPieceAt } from "@/lib/chess-engine/utils/pieceUtils";
 import { notToRC, rcToNot } from "@/lib/chess-engine/utils/cellUtil";
 
 type CellProps = {
-  cell: CellType;
+  cell: string;
   gameType: GameType;
   state: GameState;
 };
 
 const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
   const { selectedPiece, currentBoardState, isExchange, currentTurn } = state;
-  const piece = getPieceAt(cell.id, currentBoardState);
+  const piece = getPieceAt(cell, currentBoardState);
+  const { row, col } = notToRC(cell);
 
   const canMove =
     selectedPiece?.color === currentTurn && gameType === "hotseat"; // TODO: add logic for online mode
@@ -46,17 +42,15 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
     : "";
 
   const cellShadowBaseStyle =
-    (cell.row + cell.col) % 2 === 1
+    (row + col) % 2 === 1
       ? "inset-shadow-cell-amberdark"
       : "inset-shadow-cell-amberlight";
   const cellBgStyle = `${
-    (cell.row + cell.col) % 2 === 1 ? "bg-amber-600" : "bg-amber-100"
+    (row + col) % 2 === 1 ? "bg-amber-600" : "bg-amber-100"
   }`;
-  const borderStyle = `${cell.row === 0 ? `border-t-2` : ""}${
-    cell.row === 7 ? "border-b-2" : ""
-  }${cell.col === 0 ? " border-l-2" : ""}${
-    cell.col === 7 ? " border-r-2" : ""
-  }`;
+  const borderStyle = `${row === 0 ? `border-t-2` : ""}${
+    row === 7 ? "border-b-2" : ""
+  }${col === 0 ? " border-l-2" : ""}${col === 7 ? " border-r-2" : ""}`;
 
   const finaShadowlStyle = cellShadowCastlingMove
     ? cellShadowCastlingMove
@@ -67,10 +61,10 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
     : cellShadowPieceStyle
     ? cellShadowPieceStyle
     : cellShadowBaseStyle;
-    
+
   return (
     <div
-      data-cell-id={cell.id}
+      data-cell-id={cell}
       className={`${!!thisMove ? "move cursor-pointer" : ""} ${
         piece &&
         piece.color === currentTurn &&
@@ -78,7 +72,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
         "hover:inset-shadow-select-hover"
       } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-100 ease-in-out`}
     >
-      {isExchange && selectedPiece?.cell.id === cell.id && (
+      {isExchange && selectedPiece?.cell.id === cell && (
         <PiecesToExchange state={state} />
       )}
       {piece && (

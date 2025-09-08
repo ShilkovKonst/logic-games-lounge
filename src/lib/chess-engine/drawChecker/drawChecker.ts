@@ -1,4 +1,4 @@
-import { PieceType, TurnDetails } from "../types";
+import { Color, PieceType, TurnDetails } from "../types";
 import { notToRC } from "../utils/cellUtil";
 
 export function checkIsEnoughPieces(activePieces: PieceType[]): boolean {
@@ -23,19 +23,17 @@ export function checkRepetition(
   log: TurnDetails[][],
   current: TurnDetails
 ): { threefold: boolean; fivefold: boolean } {
-  const hash = getPositionHash(current);
+  const hash = getPositionHashTurn(current);
   let count = 0;
   for (const fullTurn of log) {
     for (const halfTurn of fullTurn) {
-      if (getPositionHash(halfTurn) === hash) {
-        count++;
-      }
+      if (halfTurn.hash === hash) count++;
     }
   }
   return { threefold: count >= 2, fivefold: count >= 4 };
 }
 
-function getPositionHash(turn: TurnDetails): string {
+export function getPositionHashTurn(turn: TurnDetails): string {
   const pieces = turn.boardState
     .filter((p) => !p.isTaken)
     .map((p) => `${p.type}${p.color}${p.cell.id}`)
@@ -45,4 +43,19 @@ function getPositionHash(turn: TurnDetails): string {
   return `${turn.curentPlayer}|${turn.castling ?? ""}|${
     turn.isEnPassant ?? false
   }|${pieces}`;
+}
+
+export function getPositionHashInit(
+  boardState: PieceType[],
+  curentPlayer: Color,
+  castling: string | undefined,
+  isEnPassant: boolean | undefined
+): string {
+  const pieces = boardState
+    .filter((p) => !p.isTaken)
+    .map((p) => `${p.type}${p.color}${p.cell.id}`)
+    .sort()
+    .join("|");
+
+  return `${curentPlayer}|${castling ?? ""}|${isEnPassant ?? false}|${pieces}`;
 }

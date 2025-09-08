@@ -8,14 +8,14 @@ import { getActivePieces, getPiece } from "../utils/pieceUtils";
 
 export function getAllActiveMoveSets(player: Color, pieces: PieceType[]): King {
   const king = checkKingSafety(pieces, player);
+  const doubleCheck = king.cell.threats.size > 1;
   const activePieces = getActivePieces(player, pieces);
   for (const p of activePieces) {
     p.moveSet.length = 0;
     if (p.color !== player) continue;
-    // double check case, only king can move
-    if (king.cell.threats.size > 1 && p.id !== king.id) continue;
+    if (doubleCheck && p.id !== king.id) continue;
     const moveSet = checkPieceFinalMoves(p, pieces, player, king);
-    p.moveSet.push(...moveSet);
+    p.moveSet = moveSet;
     if (!king.isInDanger || p.id === king.id) continue;
 
     for (const attackerId of king.cell.threats) {

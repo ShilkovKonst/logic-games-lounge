@@ -1,6 +1,6 @@
 import { Color, PieceType } from "../types";
 import { getAllActiveMoveSets } from "../moveSets/getAllActiveMoveSets";
-import { BOARD } from "./createBoard";
+import { rcToNot } from "./cellUtil";
 
 export function populateBoard(player: Color): PieceType[] {
   const pieces: PieceType[] = [];
@@ -15,7 +15,7 @@ export function populateBoard(player: Color): PieceType[] {
 }
 
 function type(row: number, col: number): PieceType {
-  const cell = BOARD[row][col];
+  const cell = rcToNot(row, col);
   const color = row === 0 ? "black" : "white";
 
   if (row === 0 || row === 7) {
@@ -23,7 +23,7 @@ function type(row: number, col: number): PieceType {
       case 0:
         return {
           id: `rook${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -33,7 +33,7 @@ function type(row: number, col: number): PieceType {
       case 1:
         return {
           id: `knight${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -42,7 +42,7 @@ function type(row: number, col: number): PieceType {
       case 2:
         return {
           id: `bishop${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -51,7 +51,7 @@ function type(row: number, col: number): PieceType {
       case 3:
         return {
           id: `queen${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -60,7 +60,7 @@ function type(row: number, col: number): PieceType {
       case 4:
         return {
           id: `king${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -71,7 +71,7 @@ function type(row: number, col: number): PieceType {
       case 5:
         return {
           id: `bishop${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -80,7 +80,7 @@ function type(row: number, col: number): PieceType {
       case 6:
         return {
           id: `knight${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -89,7 +89,7 @@ function type(row: number, col: number): PieceType {
       case 7:
         return {
           id: `rook${row}${col}`,
-          cell: { id: cell.id, threats: new Set() },
+          cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
           moveSet: [],
@@ -102,7 +102,7 @@ function type(row: number, col: number): PieceType {
   } else
     return {
       id: `pawn${row}${col}`,
-      cell: { id: cell.id, threats: new Set() },
+      cell: { id: cell, threats: new Set() },
       color: row === 1 ? "black" : "white",
       isTaken: false,
       moveSet: [],

@@ -21,10 +21,10 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       turn.pieceToTake ? ` takes ${turn.pieceToTake?.slice(0, -2)}` : ""
     }${turn.isEnPassant ? " en passant" : ""}${
       turn.castling ? ` ${turn.castling} castling` : ""
-    }${turn.isExchange ? ` exchange to ${turn.pieceToExchange}` : ""}${
-      turn.check && !turn.checkmate ? ` check to ${turn.check}` : ""
-    }${turn.checkmate ? ` checkmate to ${turn.checkmate}` : ""}${
-      turn.isDraw ? ` draw` : ""
+    }${turn.isExchange ? ` promotes to ${turn.pieceToExchange}` : ""}${
+      turn.check && !turn.checkmate ? `; check to ${turn.check}` : ""
+    }${turn.checkmate ? `; checkmate to ${turn.checkmate}` : ""}${
+      turn.draw ? `; ${turn.draw}` : ""
     }`;
   };
 
@@ -40,7 +40,7 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       getDisambiguation(turn.fromCell, turn.ambiguity);
 
     let sanString = "";
-    if (turn.isDraw) return "1/2 - 1/2";
+    if (turn.draw) return "1/2 - 1/2";
     else if (turn.castling)
       sanString = turn.castling === "long" ? "O-O-O" : "O-O";
     else if (turn.isExchange) {
@@ -122,7 +122,11 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
                 <UndoIcon color={turn.curentPlayer} />
               </button>
 
-              <button title={title(turn)} onTouchStart={() => {}} className="">
+              <button
+                title={title(turn)}
+                onTouchStart={() => {}}
+                className="w-full h-full"
+              >
                 <p className="cursor-default w-full text-start text-sm">
                   {san(turn)}
                 </p>
