@@ -33,12 +33,13 @@ export interface TurnDetails {
   pieceToTake?: string;
   pieceToExchange?: Pieces;
   castling?: CastlingType;
+  draw?: string;
   ambiguity?: string[];
   check?: Color;
   checkmate?: Color;
   isExchange?: boolean;
   isEnPassant?: boolean;
-  isDraw?: boolean;
+  hash: string;
 }
 
 export interface GameState {

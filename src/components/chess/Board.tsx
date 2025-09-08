@@ -13,7 +13,7 @@ import {
   PieceType,
   TurnDetails,
 } from "@/lib/chess-engine/types";
-import { getCell } from "@/lib/chess-engine/utils/cellUtil";
+import { notToRC } from "@/lib/chess-engine/utils/cellUtil";
 import { getActivePieces, isPieces } from "@/lib/chess-engine/utils/pieceUtils";
 import {
   handleMoveClick,
@@ -36,140 +36,26 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
 
-  const {
-    selectedPiece,
-    currentBoardState,
-    currentTurn,
-    isExchange,
-    log,
-    turnDetails,
-  } = state;
+  const { selectedPiece, currentBoardState, currentTurn, log } = state;
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
-    const exchangeToEl = getClosest(target, ".exchange-to");
-    const moveEl = getClosest(target, ".move");
-    const pieceEl = getClosest(target, ".piece");
 
+    const exchangeToEl = target.closest(".exchange-to");
     if (exchangeToEl) {
-      const exchangeType = exchangeToEl.getAttribute("data-exchange-to");
-      if (exchangeType && isPieces(exchangeType) && selectedPiece) {
-        selectedPiece.type = exchangeType;
-        dispatch({
-          type: "PATCH_TURN",
-          payload: { isExchange: true, pieceToExchange: exchangeType },
-        });
-        dispatch({ type: "END_EXCHANGE" });
-
-        const { foeColor, check, checkmate, isDraw } = calcFoeState(
-          currentTurn,
-          currentBoardState,
-          log,
-          turnDetails
-        );
-
-        dispatch({
-          type: "PATCH_TURN",
-          payload: {
-            check: check ? foeColor : undefined,
-            checkmate: checkmate ? foeColor : undefined,
-            isDraw: isDraw,
-          },
-        });
-
-        dispatch({
-          type: "END_TURN",
-          payload: {
-            boardState: currentBoardState.map((p) => ({ ...p })),
-          },
-        });
-      }
+      produceExchange(selectedPiece, state, dispatch, exchangeToEl);
       return;
     }
 
+    const moveEl = target.closest(".move");
     if (moveEl) {
-      const moveId = moveEl.getAttribute("data-cell-id");
-      if (moveId && selectedPiece) {
-        const move = selectedPiece.moveSet.find((m) => m.id === moveId);
-        if (!move) return;
-        if (move?.special?.type === "castling") {
-          const castling = move.special as Castling;
-          dispatch({
-            type: "PATCH_TURN",
-            payload: { castling: castling.long ? "long" : "short" },
-          });
-        }
-        if (move?.special?.type === "enPassant") {
-          dispatch({ type: "PATCH_TURN", payload: { isEnPassant: true } });
-        }
-        const ambiguity = currentBoardState.reduce<string[]>((acc, p) => {
-          if (
-            !p.isTaken &&
-            p.color === currentTurn &&
-            p.type === selectedPiece.type &&
-            p.id !== selectedPiece.id
-          ) {
-            const move = p.moveSet.find((m) => m.id === moveId);
-            if (move) acc.push(p.cell.id);
-          }
-          return acc;
-        }, []);
-        dispatch({
-          type: "PATCH_TURN",
-          payload: { toCell: move.id, ambiguity: ambiguity },
-        });
-
-        handleMoveClick(move, selectedPiece, currentBoardState, dispatch);
-
-        const moveCell = getCell(moveId);
-        const needsPromotion =
-          selectedPiece.type === "pawn" &&
-          ((selectedPiece.color === "white" && moveCell.row === 0) ||
-            (selectedPiece.color === "black" && moveCell.row === 7));
-        if (needsPromotion) {
-          dispatch({ type: "START_EXCHANGE" });
-          return;
-        }
-
-        const { foeColor, check, checkmate, isDraw } = calcFoeState(
-          currentTurn,
-          currentBoardState,
-          log,
-          turnDetails
-        );
-        dispatch({
-          type: "PATCH_TURN",
-          payload: {
-            check: check ? foeColor : undefined,
-            checkmate: checkmate ? foeColor : undefined,
-            isDraw: isDraw,
-          },
-        });
-
-        dispatch({
-          type: "END_TURN",
-          payload: {
-            boardState: currentBoardState.map((p) => ({ ...p })),
-          },
-        });
-      }
+      produceMove(selectedPiece, state, dispatch, moveEl);
       return;
     }
 
+    const pieceEl = target.closest(".piece");
     if (pieceEl) {
-      const pieceId = pieceEl.getAttribute("data-piece-id");
-      if (pieceId && pieceId !== selectedPiece?.id) {
-        if (isExchange) return;
-        const piece = handlePieceClick(pieceId, currentBoardState, currentTurn);
-        dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
-        dispatch({
-          type: "PATCH_TURN",
-          payload: {
-            pieceToMove: piece.id,
-            fromCell: piece.cell.id,
-          },
-        });
-      }
+      produceSelection(selectedPiece, state, dispatch, pieceEl);
       return;
     }
   };
@@ -227,8 +113,143 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
 
 export default Board;
 
-function getClosest(target: HTMLElement, selector: string): Element | null {
-  return target.closest(selector);
+function produceExchange(
+  selectedPiece: PieceType | undefined,
+  state: GameState,
+  dispatch: ActionDispatch<[action: GameAction]>,
+  exchangeToEl: Element
+) {
+  const exchangeType = exchangeToEl.getAttribute("data-exchange-to");
+  if (exchangeType && isPieces(exchangeType) && selectedPiece) {
+    selectedPiece.type = exchangeType;
+    selectedPiece.id = `${exchangeType}${selectedPiece.id.slice(-2)}`;
+    dispatch({
+      type: "PATCH_TURN",
+      payload: { isExchange: true, pieceToExchange: exchangeType },
+    });
+    dispatch({ type: "END_EXCHANGE" });
+
+    const { foeColor, check, checkmate, draw } = calcFoeState(
+      state.currentTurn,
+      state.currentBoardState,
+      state.log,
+      state.turnDetails
+    );
+
+    dispatch({
+      type: "PATCH_TURN",
+      payload: {
+        check: check ? foeColor : undefined,
+        checkmate: checkmate ? foeColor : undefined,
+        draw: draw,
+      },
+    });
+
+    dispatch({
+      type: "END_TURN",
+      payload: {
+        boardState: state.currentBoardState.map((p) => ({ ...p })),
+      },
+    });
+  }
+}
+
+function produceMove(
+  selectedPiece: PieceType | undefined,
+  state: GameState,
+  dispatch: ActionDispatch<[action: GameAction]>,
+  moveEl: Element
+) {
+  const moveId = moveEl.getAttribute("data-cell-id");
+  if (moveId && selectedPiece) {
+    const move = selectedPiece.moveSet.find((m) => m.id === moveId);
+    if (!move) return;
+    if (move?.special?.type === "castling") {
+      const castling = move.special as Castling;
+      dispatch({
+        type: "PATCH_TURN",
+        payload: { castling: castling.long ? "long" : "short" },
+      });
+    }
+    if (move?.special?.type === "enPassant") {
+      dispatch({ type: "PATCH_TURN", payload: { isEnPassant: true } });
+    }
+    const ambiguity = state.currentBoardState.reduce<string[]>((acc, p) => {
+      if (
+        !p.isTaken &&
+        p.color === state.currentTurn &&
+        p.type === selectedPiece.type &&
+        p.id !== selectedPiece.id
+      ) {
+        const move = p.moveSet.find((m) => m.id === moveId);
+        if (move) acc.push(p.cell.id);
+      }
+      return acc;
+    }, []);
+    dispatch({
+      type: "PATCH_TURN",
+      payload: { toCell: move.id, ambiguity: ambiguity },
+    });
+
+    handleMoveClick(move, selectedPiece, state.currentBoardState, dispatch);
+
+    const moveCell = notToRC(moveId);
+    const needsPromotion =
+      selectedPiece.type === "pawn" &&
+      ((selectedPiece.color === "white" && moveCell.row === 0) ||
+        (selectedPiece.color === "black" && moveCell.row === 7));
+    if (needsPromotion) {
+      dispatch({ type: "START_EXCHANGE" });
+      return;
+    }
+
+    const { foeColor, check, checkmate, draw } = calcFoeState(
+      state.currentTurn,
+      state.currentBoardState,
+      state.log,
+      state.turnDetails
+    );
+    dispatch({
+      type: "PATCH_TURN",
+      payload: {
+        check: check ? foeColor : undefined,
+        checkmate: checkmate ? foeColor : undefined,
+        draw: draw,
+      },
+    });
+
+    dispatch({
+      type: "END_TURN",
+      payload: {
+        boardState: state.currentBoardState.map((p) => ({ ...p })),
+      },
+    });
+  }
+}
+
+function produceSelection(
+  selectedPiece: PieceType | undefined,
+  state: GameState,
+  dispatch: ActionDispatch<[action: GameAction]>,
+  pieceEl: Element
+) {
+  const pieceId = pieceEl.getAttribute("data-piece-id");
+  if (pieceId && pieceId !== selectedPiece?.id) {
+    if (state.isExchange) return;
+    const piece = handlePieceClick(
+      pieceId,
+      state.currentBoardState,
+      state.currentTurn
+    );
+    dispatch({ type: "SELECT_PIECE", payload: { selectedPiece: piece } });
+    dispatch({
+      type: "PATCH_TURN",
+      payload: {
+        pieceToMove: piece.id,
+        fromCell: piece.cell.id,
+      },
+    });
+  }
 }
 
 function checkMovesAllowed(activePieces: PieceType[]): boolean {
@@ -243,6 +264,7 @@ function calcFoeState(
 ) {
   const foeColor = flip(currentTurn);
   const foeKing = getAllActiveMoveSets(foeColor, currentBoardState);
+  const activePieces = getActivePieces(currentTurn, currentBoardState);
   const activeFoePieces = getActivePieces(foeColor, currentBoardState);
   const isMovesAllowed = checkMovesAllowed(activeFoePieces);
   const { threefold } = checkRepetition(log, turnDetails);
@@ -251,13 +273,20 @@ function calcFoeState(
     .every((p) => p.moveSet.length === 0);
 
   const isStalemate = !foeKing.isInDanger && !isMovesAllowed;
-  const isInsufficientMaterial = checkIsEnoughPieces(activeFoePieces);
+  const isInsufficientMaterial = checkIsEnoughPieces(activePieces);
+  const isInsufficientFoeMaterial = checkIsEnoughPieces(activeFoePieces);
   const isRepetition = !pawnsCanMove && threefold;
 
   return {
     foeColor,
     check: foeKing.isInDanger && isMovesAllowed,
     checkmate: foeKing.isInDanger && !isMovesAllowed,
-    isDraw: isStalemate || isInsufficientMaterial || isRepetition,
+    draw: isStalemate
+      ? "stalemate"
+      : (isInsufficientMaterial && isInsufficientFoeMaterial)
+      ? "insufficient material"
+      : isRepetition
+      ? "threefold repetition"
+      : "",
   };
 }

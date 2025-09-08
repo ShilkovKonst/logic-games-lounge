@@ -1,3 +1,4 @@
+import { getPositionHashInit } from "@/lib/chess-engine/drawChecker/drawChecker";
 import {
   Color,
   GameState,
@@ -34,16 +35,21 @@ export type GameAction =
 
 export const flip = (c: Color): Color => (c === "white" ? "black" : "white");
 
-export const blankTurn = (turnNo: number, cur: Color): TurnDetails => ({
+export const blankTurn = (
+  turnNo: number,
+  currentTurn: Color,
+  boardState: PieceType[]
+): TurnDetails => ({
   turnNo,
-  curentPlayer: cur,
-  boardState: [],
+  curentPlayer: currentTurn,
+  boardState,
   castling: undefined,
   check: undefined,
   checkmate: undefined,
   isExchange: false,
   isEnPassant: false,
   isDraw: false,
+  hash: getPositionHashInit(boardState, currentTurn, undefined, false),
 });
 
 export function createInitialState(
@@ -52,11 +58,12 @@ export function createInitialState(
   turnNo: number,
   log: TurnDetails[][]
 ): GameState {
+  const boardState = pieces.length === 0 ? populateBoard("white") : pieces;
   return {
-    currentBoardState: pieces.length === 0 ? populateBoard("white") : pieces,
+    currentBoardState: boardState,
     currentTurnNo: turnNo,
     currentTurn,
-    turnDetails: blankTurn(turnNo, currentTurn),
+    turnDetails: blankTurn(turnNo, currentTurn, boardState),
     log,
     selectedPiece: undefined,
     isExchange: false,
@@ -130,7 +137,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         currentTurnNo: nextTurnNo,
         selectedPiece: undefined,
         isExchange: false,
-        turnDetails: blankTurn(nextTurnNo, nextPlayer),
+        turnDetails: blankTurn(
+          nextTurnNo,
+          nextPlayer,
+          action.payload.boardState
+        ),
       };
     }
 

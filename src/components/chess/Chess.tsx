@@ -8,7 +8,7 @@ import {
 } from "@/lib/chess-engine/types";
 import Board from "./Board";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useEffect, useReducer, useState } from "react";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import TakenPiecesBlock from "./TakenPiecesBlock";
@@ -38,10 +38,11 @@ const Chess: React.FC<ChessProps> = ({
     currentBoardState: pieces,
     currentTurn: currentTurn,
     currentTurnNo: currentTurnNo,
-    turnDetails: blankTurn(1, "white"),
+    turnDetails: blankTurn(1, "white", pieces),
     log: [],
     selectedPiece: undefined,
     isExchange: false,
+
   });
 
   const handleClick = () => {
