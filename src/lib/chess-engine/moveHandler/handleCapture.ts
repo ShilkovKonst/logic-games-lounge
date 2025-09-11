@@ -1,6 +1,6 @@
 import { ActionDispatch } from "react";
 import { MoveType, PieceType } from "../types";
-import { GameAction } from "@/reducer/chessReducer";
+import { GameAction } from "@/lib/chess-engine/reducer/chessReducer";
 
 export function handleCapture(
   moveTo: MoveType,

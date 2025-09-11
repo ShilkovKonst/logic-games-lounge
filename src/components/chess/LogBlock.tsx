@@ -1,17 +1,37 @@
 "use client";
-import { UndoIcon } from "@/lib/chess-engine/constants/icons";
 import { getDisambiguation, getSAN } from "@/lib/chess-engine/constants/san";
-import { GameState, Pieces, TurnDetails } from "@/lib/chess-engine/types";
-import { GameAction } from "@/reducer/chessReducer";
-import { ActionDispatch, useEffect, useRef } from "react";
+import {
+  GameState,
+  Modal,
+  Pieces,
+  TurnDetails,
+} from "@/lib/chess-engine/types";
+import { GameAction } from "@/lib/chess-engine/reducer/chessReducer";
+import {
+  ActionDispatch,
+  Dispatch,
+  SetStateAction,
+  useEffect,
+  useRef,
+} from "react";
+import { useGlobalState } from "@/context/GlobalStateContext";
+import UndoIcon from "@/lib/icons/UndoIcon";
 
 type LogBlockProps = {
   state: GameState;
   dispatch: ActionDispatch<[action: GameAction]>;
+  setIsReset: Dispatch<SetStateAction<boolean>>;
+  setModal: Dispatch<SetStateAction<Modal | null>>;
 };
 
-const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
+const LogBlock: React.FC<LogBlockProps> = ({
+  state,
+  dispatch,
+  setIsReset,
+  setModal,
+}) => {
   const { log } = state;
+  const { t } = useGlobalState();
 
   const title = (turn: TurnDetails) => {
     return `${turn.turnNo} - ${turn.curentPlayer} ${turn.pieceToMove?.slice(
@@ -87,8 +107,8 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       },
     });
   };
-  const logRef = useRef<HTMLDivElement>(null);
 
+  const logRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (logRef.current) {
       logRef.current.scrollTo({
@@ -97,6 +117,18 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
       });
     }
   }, [log]);
+
+  const handleModalClick = (turn: TurnDetails) => {
+    setIsReset(true);
+    setModal({
+      turn,
+      title: t("chess.modal.undo.title"),
+      message: t("chess.modal.undo.message"),
+      confirmText: t("chess.modal.undo.confirm"),
+      cancelText: t("chess.modal.undo.cancel"),
+      handleClick,
+    });
+  };
 
   return (
     <div
@@ -116,7 +148,7 @@ const LogBlock: React.FC<LogBlockProps> = ({ state, dispatch }) => {
               className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition ease-in-out duration-150"
             >
               <button
-                onClick={() => handleClick(turn)}
+                onClick={() => handleModalClick(turn)}
                 className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition ease-in-out duration-150 inset-shadow-log-amberdark`}
               >
                 <UndoIcon color={turn.curentPlayer} />

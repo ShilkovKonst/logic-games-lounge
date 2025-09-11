@@ -3,6 +3,7 @@
 import {
   Color,
   GameType,
+  Modal,
   PieceType,
   PlayerState,
 } from "@/lib/chess-engine/types";
@@ -13,8 +14,13 @@ import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import LogBlock from "./LogBlock";
-import { blankTurn, gameReducer } from "@/reducer/chessReducer";
+import {
+  blankTurn,
+  gameReducer,
+} from "@/lib/chess-engine/reducer/chessReducer";
 import ConfirmationBox from "./ConfirmationBox";
+import { useGlobalState } from "@/context/GlobalStateContext";
+import ChessHeaderBlock from "./ChessHeaderBlock";
 
 type ChessProps = {
   gameType: GameType;
@@ -32,7 +38,9 @@ const Chess: React.FC<ChessProps> = ({
   plState,
 }) => {
   const { playerState, setPlayerState } = usePlayerState();
+  const { t } = useGlobalState();
   const [isReset, setIsReset] = useState<boolean>(false);
+  const [modal, setModal] = useState<Modal | null>(null);
 
   const [state, dispatch] = useReducer(gameReducer, {
     currentBoardState: pieces,
@@ -42,7 +50,6 @@ const Chess: React.FC<ChessProps> = ({
     log: [],
     selectedPiece: undefined,
     isExchange: false,
-
   });
 
   const handleClick = () => {
@@ -55,6 +62,18 @@ const Chess: React.FC<ChessProps> = ({
     });
   };
 
+  const handleModalClick = () => {
+    setIsReset(true);
+    setModal({
+      turn: state.turnDetails,
+      title: t("chess.modal.reset.title"),
+      message: t("chess.modal.reset.message"),
+      confirmText: t("chess.modal.reset.confirm"),
+      cancelText: t("chess.modal.reset.cancel"),
+      handleClick,
+    });
+  };
+
   useEffect(() => {
     if (state.currentBoardState.length > 0)
       getAllActiveMoveSets(state.currentTurn, state.currentBoardState);
@@ -63,71 +82,34 @@ const Chess: React.FC<ChessProps> = ({
   return (
     <>
       <div className="relative w-full flex justify-between bg-cell-dark">
-        {isReset && (
+        {isReset && modal && (
           <ConfirmationBox
             setIsReset={setIsReset}
-            turn={state.turnDetails}
-            confirmClick={handleClick}
-            title="Reset this game?"
-            message="All progress will be lost"
-            confirmText="Yes"
-            cancelText="No"
+            confirmClick={modal.handleClick}
+            turn={modal.turn}
+            title={modal.title}
+            message={modal.message}
+            confirmText={modal.confirmText}
+            cancelText={modal.cancelText}
           />
         )}
-        {/* <div>
-          <div>{state.currentTurn}</div>
-          <button
-            className="p-2 bg-amber-200"
-            onClick={() => {
-              dispatch({
-                type: "END_TURN",
-                payload: { boardState: state.currentBoardState },
-              });
-            }}
-          >
-            change turn
-          </button>
-        </div> */}
-        <div>
-          <div>RESTART GAME</div>
-          <button
-            className="p-2 bg-amber-200"
-            onClick={() => {
-              console.log("test");
-              setIsReset((prev) => !prev);
-              console.log(isReset);
-            }}
-          >
-            restart
-          </button>
-        </div>
-        {/* <div>
-          <div>{playerState.type}</div>
-          <button
-            className="p-2 bg-amber-200"
-            onClick={() => {
-              setPlayerState((prev) =>
-                prev.color === "white"
-                  ? { color: "black", status: prev.status, type: "guest" }
-                  : { color: "white", status: prev.status, type: "host" }
-              );
-            }}
-          >
-            change player
-          </button>
-        </div> */}
       </div>
-      <div className="w-full flex justify-center items-center">
-        Current player: {state.currentTurn}; current turn no:{" "}
-        {state.currentTurnNo}
-      </div>
-
+      <ChessHeaderBlock
+        currentTurn={state.currentTurn}
+        currentTurnNo={state.currentTurnNo}
+        handleModalClick={handleModalClick}
+      />
       <div
         className={`flex flex-row flex-wrap w-[440px] md:w-[760px] lg:w-auto lg:flex-nowrap`}
       >
         <TakenPiecesBlock state={state} />
         <Board state={state} dispatch={dispatch} gameType={gameType} />
-        <LogBlock state={state} dispatch={dispatch} />
+        <LogBlock
+          state={state}
+          dispatch={dispatch}
+          setIsReset={setIsReset}
+          setModal={setModal}
+        />
       </div>
     </>
   );

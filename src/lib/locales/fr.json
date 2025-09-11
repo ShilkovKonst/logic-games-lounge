@@ -1,0 +1,53 @@
+{
+  "currentTranslation": "Traduction actuelle",
+  "mainMenu": "Menu principal",
+  "chess": {
+    "glossary": {
+      "pieces": {
+        "pawn": "pion",
+        "rook": "tour",
+        "knight": "cavalier",
+        "bishop": "fou",
+        "queen": "dame",
+        "king": "roi"
+      },
+      "color": {
+        "white": "blanc",
+        "black": "noir"
+      },
+      "draw": {
+        "stalemate": "pat",
+        "insufficientMaterial": "matériel insuffisant",
+        "repetition": "triple répétition"
+      },
+      "castling": {
+        "short": "petit roque",
+        "long": "grand roque"
+      },
+      "enPassant": "prise en passant",
+      "promotion": "promotion",
+      "check": "échec",
+      "checkmate": "échec et mat"
+    },
+    "header": {
+      "currentTurn": "Joueur(se) actuel(le)",
+      "turnNo": "tour №",
+      "restartButton": "Recommencer",
+      "drawButton": "Proposer la nulle"
+    },
+    "modal": {
+      "reset": {
+        "title": "Réinitialiser la partie ?",
+        "message": "Tous les progrès seront effacés.",
+        "confirm": "Réinitialiser",
+        "cancel": "Annuler"
+      },
+      "undo": {
+        "title": "Annuler ce coup et tous les suivants ?",
+        "message": "Le plateau reviendra à l’état avant ce coup.",
+        "confirm": "Revenir en arrière",
+        "cancel": "Annuler"
+      }
+    }
+  }
+}

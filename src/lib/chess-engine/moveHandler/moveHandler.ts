@@ -5,7 +5,7 @@ import { checkMoveSetForThreats } from "../moveSets/checkMoveSetForThreats";
 import { handleCapture } from "./handleCapture";
 import { handleCastling } from "./handleCastling";
 import { updateFlagsAndPosition } from "./handlePieceState";
-import { GameAction } from "@/reducer/chessReducer";
+import { GameAction } from "@/lib/chess-engine/reducer/chessReducer";
 
 export function handlePieceClick(
   pieceId: string,

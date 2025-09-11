@@ -1,0 +1,53 @@
+{
+  "currentTranslation": "Current translation",
+  "mainMenu": "Main menu",
+  "chess": {
+    "glossary": {
+      "pieces": {
+        "pawn": "pawn",
+        "rook": "rook",
+        "knight": "knight",
+        "bishop": "bishop",
+        "queen": "queen",
+        "king": "king"
+      },
+      "color": {
+        "white": "white",
+        "black": "black"
+      },
+      "draw": {
+        "stalemate": "stalemate",
+        "insufficientMaterial": "insufficient material",
+        "repetition": "threefold"
+      },
+      "castling": {
+        "short": "castling kingside",
+        "long": "castling queenside"
+      },
+      "enPassant": "en passant",
+      "promotion": "promotion",
+      "check": "check",
+      "checkmate": "checkmate"
+    },
+    "header": {
+      "currentTurn": "Current player",
+      "turnNo": "turn №",
+      "restartButton": "Restart",
+      "drawButton": "Request draw"
+    },
+    "modal": {
+      "reset": {
+        "title": "Reset the game?",
+        "message": "All progress will be erased.",
+        "confirm": "Reset",
+        "cancel": "Cancel"
+      },
+      "undo": {
+        "title": "Undo this and all following turns?",
+        "message": "The board will revert to the state before this turn.",
+        "confirm": "Undo",
+        "cancel": "Cancel"
+      }
+    }
+  }
+}

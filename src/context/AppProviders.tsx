@@ -1,3 +1,4 @@
+import { GlobalProvider } from "./GlobalStateContext";
 import { PlayerProvider } from "./PlayerStateContext";
 
 export default function AppProviders({
@@ -5,5 +6,9 @@ export default function AppProviders({
 }: {
   children: React.ReactNode;
 }) {
-  return <PlayerProvider>{children}</PlayerProvider>;
+  return (
+    <GlobalProvider>
+      <PlayerProvider>{children}</PlayerProvider>
+    </GlobalProvider>
+  );
 }

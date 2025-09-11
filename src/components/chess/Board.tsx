@@ -19,7 +19,7 @@ import {
   handleMoveClick,
   handlePieceClick,
 } from "@/lib/chess-engine/moveHandler/moveHandler";
-import { flip, GameAction } from "@/reducer/chessReducer";
+import { flip, GameAction } from "@/lib/chess-engine/reducer/chessReducer";
 import { BOARD } from "@/lib/chess-engine/utils/createBoard";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import {

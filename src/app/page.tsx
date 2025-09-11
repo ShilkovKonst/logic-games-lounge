@@ -1,5 +1,4 @@
 import Chess from "@/components/chess/Chess";
-import AppProviders from "@/context/AppProviders";
 import {
   Color,
   PlayerState,
@@ -16,17 +15,15 @@ export default async function Home() {
   const playerState: PlayerState | null = null;
 
   return (
-    <div className="font-sans grid items-center justify-items-center min-h-screen">
-      <main className="flex flex-col items-center sm:items-start">
-        <AppProviders>
-          <Chess
-            pieces={pieces}
-            currentTurn={currentTurn}
-            currentTurnNo={currentTurnNo}
-            plState={playerState}
-            gameType={gameType}
-          />
-        </AppProviders>
+    <div className="font-sans flex items-center justify-center min-h-screen">
+      <main className="flex flex-col justify-center items-center">
+        <Chess
+          pieces={pieces}
+          currentTurn={currentTurn}
+          currentTurnNo={currentTurnNo}
+          plState={playerState}
+          gameType={gameType}
+        />
       </main>
     </div>
   );

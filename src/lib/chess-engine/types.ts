@@ -2,6 +2,15 @@ export type IncrementProps = {
   increment: number;
 };
 
+export type Modal = {
+  turn: TurnDetails;
+  title: string;
+  message: string;
+  confirmText: string;
+  cancelText: string;
+  handleClick: (() => void) | ((turn: TurnDetails) => void);
+};
+
 export type Player = "host" | "guest";
 
 export type GameType = "hotseat" | "online";

@@ -12,19 +12,19 @@ type ConfirmationBoxProps = {
 };
 
 const ConfirmationBox: React.FC<ConfirmationBoxProps> = ({
-  setIsReset,
   turn,
-  confirmClick,
   title,
   message,
   confirmText,
   cancelText,
+  setIsReset,
+  confirmClick,
 }) => {
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
     const foreground = target.closest("#foreground");
-    const cancel = target.closest("#cancel-button");
-    const confirm = target.closest("#confirm-button");
+    const cancel = target.closest("#cancel");
+    const confirm = target.closest("#confirm");
     const body = target.closest("#body");
 
     if (confirm) {
@@ -59,13 +59,13 @@ const ConfirmationBox: React.FC<ConfirmationBoxProps> = ({
         <p className="text-amber-800 mb-6">{message}</p>
         <div className="flex gap-4 justify-center">
           <button
-            id="confirm-button"
+            id="confirm"
             className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg"
           >
             {confirmText}
           </button>
           <button
-            id="cancel-button"
+            id="cancel"
             className="px-6 py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg"
           >
             {cancelText}

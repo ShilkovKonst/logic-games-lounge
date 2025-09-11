@@ -1,0 +1,53 @@
+{
+  "currentTranslation": "Текущий перевод",
+  "mainMenu": "Главное меню",
+  "chess": {
+    "glossary": {
+      "pieces": {
+        "pawn": "пешка",
+        "rook": "ладья",
+        "knight": "конь",
+        "bishop": "слон",
+        "queen": "ферзь",
+        "king": "король"
+      },
+      "color": {
+        "white": "белые",
+        "black": "чёрные"
+      },
+      "draw": {
+        "stalemate": "пат",
+        "insufficientMaterial": "недостаточно материала",
+        "repetition": "троекратное повторение"
+      },
+      "castling": {
+        "short": "рокировка в короткую сторону",
+        "long": "рокировка в длинную сторону"
+      },
+      "enPassant": "взятие на проходе",
+      "promotion": "превращение",
+      "check": "шах",
+      "checkmate": "мат"
+    },
+    "header": {
+      "currentTurn": "Текущий игрок",
+      "turnNo": "ход №",
+      "restartButton": "Начать заново",
+      "drawButton": "Предложить ничью"
+    },
+    "modal": {
+      "reset": {
+        "title": "Сбросить игру?",
+        "message": "Весь прогресс будет удалён.",
+        "confirm": "Сбросить",
+        "cancel": "Отмена"
+      },
+      "undo": {
+        "title": "Откатить этот и все последующие ходы?",
+        "message": "Доска вернётся к состоянию до этого хода",
+        "confirm": "Откатить",
+        "cancel": "Отмена"
+      }
+    }
+  }
+}
