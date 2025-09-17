@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-unused-expressions */
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {
@@ -75,6 +77,10 @@ const Chess: React.FC<ChessProps> = ({
   };
 
   useEffect(() => {
+    plState && setPlayerState(plState);
+  }, []);
+
+  useEffect(() => {
     if (state.currentBoardState.length > 0)
       getAllActiveMoveSets(state.currentTurn, state.currentBoardState);
   }, [state.log.flat().length]);
@@ -98,9 +104,10 @@ const Chess: React.FC<ChessProps> = ({
         currentTurn={state.currentTurn}
         currentTurnNo={state.currentTurnNo}
         handleModalClick={handleModalClick}
+        gameType={gameType}
       />
       <div
-        className={`flex flex-row flex-wrap w-[440px] md:w-[760px] lg:w-auto lg:flex-nowrap`}
+        className={`flex flex-row flex-wrap w-[404px] md:w-[708px] lg:w-auto lg:flex-nowrap`}
       >
         <TakenPiecesBlock state={state} />
         <Board state={state} dispatch={dispatch} gameType={gameType} />

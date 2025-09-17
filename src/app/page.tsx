@@ -12,7 +12,11 @@ export default async function Home() {
   const currentTurn: Color = "white";
   const currentTurnNo: number = 1;
   const pieces: PieceType[] = populateBoard("white");
-  const playerState: PlayerState | null = null;
+  const playerState: PlayerState | null = {
+    type: "guest",
+    color: "white",
+    status: "NORMAL",
+  };
 
   return (
     <div className="font-sans flex items-center justify-center min-h-screen">

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import LocaleBlock from "@/components/LocaleBlock";
 import AppProviders from "@/context/AppProviders";
+import TopLevelMenu from "@/components/TopLevelMenu";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,7 +30,7 @@ export default function RootLayout({
         className={`relative ${geistSans.variable} ${geistMono.variable} antialiased bg-hexagon`}
       >
         <AppProviders>
-          <LocaleBlock />
+          <TopLevelMenu />
           {children}
         </AppProviders>
       </body>

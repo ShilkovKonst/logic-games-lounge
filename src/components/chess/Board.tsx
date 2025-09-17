@@ -74,22 +74,18 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
     });
   }, [currentTurn, log.length]);
 
-  useEffect(() => {
-    console.log(selectedPiece);
-  }, [selectedPiece]);
-
   return (
     <div
-      className={`order-1 md:order-2 col-span-10 ${
-        playerState.color === "white" ? "rotate-0" : "rotate-180"
-      } border-4 border-amber-950 h-[448px] w-[448px] md:h-[508px] md:w-[508px] `}
+      className={`order-1 md:order-2 col-span-9  border-4 border-amber-950 h-[404px] w-[404px] md:h-[458px] md:w-[458px] `}
     >
-      <ColCount increment={0} />
-      <div className="grid grid-cols-10">
+      {/* <ColCount increment={0} /> */}
+      <div className="grid grid-cols-9">
         <RowCount increment={0} />
         <div
           onClick={(e) => handleClick(e)}
-          className="col-start-2 col-span-8 border-amber-950"
+          className={`col-start-2 col-span-8 ${
+            playerState.color === "white" ? "rotate-0" : "rotate-180"
+          } border-amber-950`}
         >
           {BOARD.map((r, i) => (
             <div key={i} className="flex">
@@ -104,7 +100,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
             </div>
           ))}
         </div>
-        <RowCount increment={1} />
+        {/* <RowCount increment={1} /> */}
       </div>
       <ColCount increment={1} />
     </div>
@@ -122,7 +118,6 @@ function produceExchange(
   const exchangeType = exchangeToEl.getAttribute("data-exchange-to");
   if (exchangeType && isPieces(exchangeType) && selectedPiece) {
     selectedPiece.type = exchangeType;
-    selectedPiece.id = `${exchangeType}${selectedPiece.id.slice(-2)}`;
     dispatch({
       type: "PATCH_TURN",
       payload: { isExchange: true, pieceToExchange: exchangeType },
@@ -245,7 +240,7 @@ function produceSelection(
     dispatch({
       type: "PATCH_TURN",
       payload: {
-        pieceToMove: piece.id,
+        pieceToMove: piece.type + piece.id,
         fromCell: piece.cell.id,
       },
     });
@@ -283,10 +278,10 @@ function calcFoeState(
     checkmate: foeKing.isInDanger && !isMovesAllowed,
     draw: isStalemate
       ? "stalemate"
-      : (isInsufficientMaterial && isInsufficientFoeMaterial)
-      ? "insufficient material"
+      : isInsufficientMaterial && isInsufficientFoeMaterial
+      ? "insufficientMaterial"
       : isRepetition
-      ? "threefold repetition"
+      ? "repetition"
       : "",
   };
 }

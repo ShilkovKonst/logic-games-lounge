@@ -1,22 +1,24 @@
 "use client";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import { Color } from "@/lib/chess-engine/types";
+import { Color, GameType } from "@/lib/chess-engine/types";
 
 type ChessHeaderType = {
   currentTurn: Color;
   currentTurnNo: number;
   handleModalClick: () => void;
+  gameType: GameType;
 };
 
 const ChessHeaderBlock: React.FC<ChessHeaderType> = ({
   currentTurn,
   currentTurnNo,
   handleModalClick,
+  gameType,
 }) => {
   const { t } = useGlobalState();
 
   return (
-    <div className="bg-white bg-opacity-90 rounded-2xl p-4 mb-4 backdrop-blur-lg shadow-lg">
+    <div className="bg-amber-150 p-4 backdrop-blur-lg w-[404px] md:w-[708px] lg:w-[804px] border-4 border-b-0 border-amber-950">
       <div className="flex flex-wrap justify-between items-center gap-4">
         <div className="flex items-center gap-6 flex-wrap">
           <p className="text-lg font-semibold text-amber-900">
@@ -36,9 +38,11 @@ const ChessHeaderBlock: React.FC<ChessHeaderType> = ({
           >
             {t("chess.header.restartButton")}
           </button>
-          <button className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transform hover:-translate-y-0.5 transition-all duration-300 shadow-md">
-            {t("chess.header.drawButton")}
-          </button>
+          {gameType !== "hotseat" && (
+            <button className="px-4 py-2 bg-gray-500 text-white rounded-lg font-medium hover:bg-gray-600 transform hover:-translate-y-0.5 transition-all duration-300 shadow-md">
+              {t("chess.header.drawButton")}
+            </button>
+          )}
         </div>
       </div>
     </div>

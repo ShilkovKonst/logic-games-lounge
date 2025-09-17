@@ -1,5 +1,5 @@
 {
-  "currentTranslation": "Текущий перевод",
+  "currentLanguage": "Русский",
   "mainMenu": "Главное меню",
   "chess": {
     "glossary": {
@@ -24,10 +24,18 @@
         "short": "рокировка в короткую сторону",
         "long": "рокировка в длинную сторону"
       },
-      "enPassant": "взятие на проходе",
+      "enPassant": "на проходе",
       "promotion": "превращение",
       "check": "шах",
       "checkmate": "мат"
+    },
+    "log": {
+      "moves": "ходит с {{fromCell}} на {{toCell}}",
+      "takes": "берёт \u2192 {{pieceToTake}}",
+      "promotes": "превращается в \u2192 {{pieceToExchange}}",
+      "checkTo": "шах \u2192 {{color}}",
+      "chekmateTo": "мат \u2192 {{color}}",
+      "draw": "ничья \u2192 {{draw}}"
     },
     "header": {
       "currentTurn": "Текущий игрок",

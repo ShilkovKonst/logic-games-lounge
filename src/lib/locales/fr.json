@@ -1,5 +1,5 @@
 {
-  "currentTranslation": "Traduction actuelle",
+  "currentLanguage": "Française",
   "mainMenu": "Menu principal",
   "chess": {
     "glossary": {
@@ -24,7 +24,7 @@
         "short": "petit roque",
         "long": "grand roque"
       },
-      "enPassant": "prise en passant",
+      "enPassant": "en passant",
       "promotion": "promotion",
       "check": "échec",
       "checkmate": "échec et mat"
@@ -34,6 +34,14 @@
       "turnNo": "tour №",
       "restartButton": "Recommencer",
       "drawButton": "Proposer la nulle"
+    },
+    "log": {
+      "moves": "déplace de {{fromCell}} à {{toCell}}",
+      "takes": "prend {{pieceToTake}}",
+      "promotes": "se promeut en {{pieceToExchange}}",
+      "checkTo": "échec aux {{color}}",
+      "chekmateTo": "échec et mat aux {{color}}",
+      "draw": "nulle par {{draw}}"
     },
     "modal": {
       "reset": {

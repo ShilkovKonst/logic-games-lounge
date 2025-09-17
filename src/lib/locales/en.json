@@ -1,5 +1,5 @@
 {
-  "currentTranslation": "Current translation",
+  "currentLanguage": "English",
   "mainMenu": "Main menu",
   "chess": {
     "glossary": {
@@ -28,6 +28,14 @@
       "promotion": "promotion",
       "check": "check",
       "checkmate": "checkmate"
+    },
+    "log": {
+      "moves": "moves from {{fromCell}} to {{toCell}}",
+      "takes": "takes {{pieceToTake}}",
+      "promotes": "promotes to {{pieceToExchange}}",
+      "checkTo": "check to {{color}}",
+      "chekmateTo": "chekmate to {{color}}",
+      "draw": "draw by {{draw}}"
     },
     "header": {
       "currentTurn": "Current player",

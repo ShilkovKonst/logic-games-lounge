@@ -1,10 +1,28 @@
 import { Locale } from "../locales/locale";
 
-type LocalePropsType = {
-  locale: Locale;
+export type LocalePropsType = {
+  locale?: Locale;
 };
 
-const LocaleIcon: React.FC<LocalePropsType> = ({ locale }) => {
+export const SwitchLanguageIcon: React.FC = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      fill="none"
+      stroke="#ffffff"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth="2"
+      viewBox="0 0 24 24"
+    >
+      <path d="m5 8 6 6m-7 0 6-6 2-3M2 5h12M7 2h1m14 20-5-10-5 10m2-4h6" />
+    </svg>
+  );
+};
+
+export const LocaleIcon: React.FC<LocalePropsType> = ({ locale }) => {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 480">
       {locale === "fr" && (
@@ -39,5 +57,3 @@ const LocaleIcon: React.FC<LocalePropsType> = ({ locale }) => {
     </svg>
   );
 };
-
-export default LocaleIcon;

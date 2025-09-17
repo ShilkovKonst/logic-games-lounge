@@ -22,5 +22,12 @@ export function handleCapture(
       pieceToTake.cell.id = `takenFrom${moveTo.id}`;
     }
   }
-  dispatch({ type: "PATCH_TURN", payload: { pieceToTake: pieceToTake?.id } });
+  dispatch({
+    type: "PATCH_TURN",
+    payload: {
+      pieceToTake: pieceToTake
+        ? `${pieceToTake?.type}${pieceToTake?.id}`
+        : undefined,
+    },
+  });
 }

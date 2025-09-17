@@ -48,7 +48,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
   const cellBgStyle = `${
     (row + col) % 2 === 1 ? "bg-amber-600" : "bg-amber-100"
   }`;
-  const borderStyle = `${row === 0 ? `border-t-2` : ""}${
+  const borderStyle = `border-amber-950 ${row === 0 ? `border-t-2` : ""}${
     row === 7 ? "border-b-2" : ""
   }${col === 0 ? " border-l-2" : ""}${col === 7 ? " border-r-2" : ""}`;
 
@@ -70,7 +70,7 @@ const Cell: React.FC<CellProps> = ({ cell, state, gameType }) => {
         piece.color === currentTurn &&
         piece.id !== selectedPiece?.id &&
         "hover:inset-shadow-select-hover"
-      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border border-amber-950 transition duration-100 ease-in-out`}
+      } relative flex justify-center items-center h-[44px] w-[44px] md:h-[50px] md:w-[50px] ${finaShadowlStyle} ${cellBgStyle} ${borderStyle} box-border transition duration-100 ease-in-out`}
     >
       {isExchange && selectedPiece?.cell.id === cell && (
         <PiecesToExchange state={state} />

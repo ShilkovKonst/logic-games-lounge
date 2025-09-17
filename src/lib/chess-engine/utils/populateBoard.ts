@@ -22,7 +22,7 @@ function type(row: number, col: number): PieceType {
     switch (col) {
       case 0:
         return {
-          id: `rook${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -32,7 +32,7 @@ function type(row: number, col: number): PieceType {
         };
       case 1:
         return {
-          id: `knight${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -41,7 +41,7 @@ function type(row: number, col: number): PieceType {
         };
       case 2:
         return {
-          id: `bishop${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -50,7 +50,7 @@ function type(row: number, col: number): PieceType {
         };
       case 3:
         return {
-          id: `queen${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -59,7 +59,7 @@ function type(row: number, col: number): PieceType {
         };
       case 4:
         return {
-          id: `king${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -70,7 +70,7 @@ function type(row: number, col: number): PieceType {
         };
       case 5:
         return {
-          id: `bishop${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -79,7 +79,7 @@ function type(row: number, col: number): PieceType {
         };
       case 6:
         return {
-          id: `knight${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -88,7 +88,7 @@ function type(row: number, col: number): PieceType {
         };
       case 7:
         return {
-          id: `rook${row}${col}`,
+          id: `${row}${col}`,
           cell: { id: cell, threats: new Set() },
           color: color,
           isTaken: false,
@@ -101,7 +101,7 @@ function type(row: number, col: number): PieceType {
     }
   } else
     return {
-      id: `pawn${row}${col}`,
+      id: `${row}${col}`,
       cell: { id: cell, threats: new Set() },
       color: row === 1 ? "black" : "white",
       isTaken: false,

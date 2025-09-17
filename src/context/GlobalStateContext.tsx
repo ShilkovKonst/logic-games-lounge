@@ -2,16 +2,15 @@
 import { Locale, translations } from "@/lib/locales/locale";
 import {
   createContext,
-  Dispatch,
   ReactNode,
-  SetStateAction,
   useContext,
+  useEffect,
   useState,
 } from "react";
 
 interface GlobalContextType {
   locale: Locale;
-  setLocale: Dispatch<SetStateAction<Locale>>;
+  setLocale: (newLocale: Locale) => void;
   t: (path: string, vars?: Record<string, string | number>) => string;
 }
 
@@ -20,7 +19,21 @@ export const GlobalStateContext = createContext<GlobalContextType | undefined>(
 );
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocale] = useState<Locale>("en");
+  const [locale, setLocaleState] = useState<Locale>("en");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("locale") as Locale | null;
+      if (saved) setLocaleState(saved);
+    }
+  }, []);
+
+  function setLocale(newLocale: Locale) {
+    setLocaleState(newLocale);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("locale", newLocale);
+    }
+  }
 
   function t(path: string, vars: Record<string, string | number> = {}): string {
     const keys = path.split(".");
@@ -30,14 +43,15 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
       if (typeof value === "object" && value !== null) {
         value = (value as Record<string, unknown>)[key];
       } else {
-        throw new Error(`Invalid translation path: '${path}' for locale: '${locale}'`);
+        throw new Error(
+          `Invalid translation path: '${path}' for locale: '${locale}'`
+        );
       }
     }
 
     if (typeof value !== "string") {
       throw new Error(`Translation key "${path}" is not a string`);
     }
-
     return value.replace(/\{\{(.*?)\}\}/g, (_, v) =>
       String(vars[v.trim()] ?? "")
     );
