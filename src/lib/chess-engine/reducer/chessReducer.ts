@@ -48,7 +48,7 @@ export const blankTurn = (
   checkmate: undefined,
   isExchange: false,
   isEnPassant: false,
-  draw: "",
+  draw: "none",
   hash: getPositionHashInit(boardState, currentTurn, undefined, false),
 });
 
@@ -63,6 +63,10 @@ export function createInitialState(
     currentBoardState: boardState,
     currentTurnNo: turnNo,
     currentTurn,
+    currentStatus: {
+      check: "NORMAL",
+      draw: "none",
+    },
     turnDetails: blankTurn(turnNo, currentTurn, boardState),
     log,
     selectedPiece: undefined,
@@ -80,7 +84,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         []
       );
     }
-
     case "RESET": {
       return createInitialState(
         action.payload.pieces,
@@ -89,24 +92,19 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         action.payload.log
       );
     }
-
     case "SELECT_PIECE": {
       return { ...state, selectedPiece: action.payload.selectedPiece };
     }
-
     case "PATCH_TURN": {
       return {
         ...state,
         turnDetails: { ...state.turnDetails, ...action.payload },
       };
     }
-
     case "START_EXCHANGE":
       return { ...state, isExchange: true };
-
     case "END_EXCHANGE":
       return { ...state, isExchange: false };
-
     case "END_TURN": {
       const { currentTurn, currentTurnNo, turnDetails, log } = state;
       const justMoved = currentTurn;
@@ -124,7 +122,6 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       } else {
         newLog[fullTurnIndex] = [completedTurn];
       }
-
       const nextTurnNo =
         justMoved === "black" ? currentTurnNo + 1 : currentTurnNo;
       const nextPlayer = flip(justMoved);
@@ -135,6 +132,15 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         currentBoardState: action.payload.boardState,
         currentTurn: nextPlayer,
         currentTurnNo: nextTurnNo,
+        currentStatus: {
+          check:
+            state.turnDetails.checkmate === nextPlayer
+              ? "CHECKMATE"
+              : state.turnDetails.check === nextPlayer
+              ? "CHECK"
+              : "NORMAL",
+          draw: state.turnDetails.draw,
+        },
         selectedPiece: undefined,
         isExchange: false,
         turnDetails: blankTurn(

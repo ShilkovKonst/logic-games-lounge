@@ -15,7 +15,12 @@ export type Player = "host" | "guest";
 
 export type GameType = "hotseat" | "online";
 
-export type Status = "CHECK" | "CHECKMATE" | "STALEMATE" | "NORMAL";
+export type Status = {
+  check: "CHECK" | "CHECKMATE" | "NORMAL";
+  draw: Draw;
+};
+
+export type Draw = "stalemate" | "insufficientMaterial" | "repetition" | "none";
 
 export type Color = "white" | "black";
 
@@ -42,7 +47,7 @@ export interface TurnDetails {
   pieceToTake?: string;
   pieceToExchange?: Pieces;
   castling?: CastlingType;
-  draw?: string;
+  draw: Draw;
   ambiguity?: string[];
   check?: Color;
   checkmate?: Color;
@@ -55,6 +60,7 @@ export interface GameState {
   currentBoardState: PieceType[];
   currentTurnNo: number;
   currentTurn: Color;
+  currentStatus: Status;
   turnDetails: TurnDetails;
   log: TurnDetails[][];
   selectedPiece?: PieceType;

@@ -28,14 +28,15 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
     ambiguity,
   } = turn;
 
-  console.log(turn);
-
   const title = () => {
     let title = `${turnNo} - ${t(`chess.glossary.color.${curentPlayer}`)}`;
     if (pieceToMove)
       title += ` : ${t(`chess.glossary.pieces.${pieceToMove?.slice(0, -2)}`)}`;
     if (fromCell && toCell)
-      title += ` ${t(`chess.log.moves`, { fromCell: fromCell, toCell: toCell })}`;
+      title += ` ${t(`chess.log.moves`, {
+        fromCell: fromCell,
+        toCell: toCell,
+      })}`;
     if (pieceToTake)
       title += `; ${t(`chess.log.takes`, {
         pieceToTake: t(`chess.glossary.pieces.${pieceToTake?.slice(0, -2)}`),
@@ -54,7 +55,7 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
       title += `; ${t(`chess.log.checkmateTo`, {
         color: t(`chess.glossary.color.${checkmate}`),
       })}`;
-    if (draw)
+    if (draw !== "none")
       title += `; ${t(`chess.log.draw`, {
         draw: t(`chess.glossary.draw.${draw}`),
       })}`;
@@ -69,7 +70,7 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
       fromCell && ambiguity && getDisambiguation(fromCell, ambiguity);
 
     let sanString = "";
-    if (draw) return "1/2 - 1/2";
+    if (draw !== "none") return "1/2 - 1/2";
     else if (castling) sanString = castling === "long" ? "O-O-O" : "O-O";
     else if (isExchange) {
       const exchangeSAN = pieceToExchange && getSAN(pieceToExchange);
@@ -90,10 +91,10 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
   };
 
   return (
-    <div className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition ease-in-out duration-150">
+    <div className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition ease-in-out duration-200">
       <button
-        onClick={handleClick}
-        className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition ease-in-out duration-150 inset-shadow-log-amberdark`}
+        onClick={() => handleClick()}
+        className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition ease-in-out duration-200 inset-shadow-log-amberdark`}
       >
         <UndoIcon color={turn.curentPlayer} />
       </button>

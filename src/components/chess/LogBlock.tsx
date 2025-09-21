@@ -10,6 +10,7 @@ import {
 } from "react";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import LogRecord from "./LogRecord";
+import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 
 type LogBlockProps = {
   state: GameState;
@@ -48,6 +49,7 @@ const LogBlock: React.FC<LogBlockProps> = ({
         log: oldLog,
       },
     });
+    getAllActiveMoveSets(turn.curentPlayer, turn.boardState);
   };
 
   const handleModalClick = (turn: TurnDetails) => {

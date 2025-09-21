@@ -9,20 +9,20 @@ import {
   PieceType,
   PlayerState,
 } from "@/lib/chess-engine/types";
-import Board from "./Board";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useEffect, useReducer, useState } from "react";
 import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
-import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
 import TakenPiecesBlock from "./TakenPiecesBlock";
+import ModalBlock from "./ModalBlock";
+import HeaderBlock from "./HeaderBlock";
 import LogBlock from "./LogBlock";
+import Board from "./Board";
 import {
   blankTurn,
+  flip,
   gameReducer,
 } from "@/lib/chess-engine/reducer/chessReducer";
-import ConfirmationBox from "./ConfirmationBox";
 import { useGlobalState } from "@/context/GlobalStateContext";
-import ChessHeaderBlock from "./ChessHeaderBlock";
 
 type ChessProps = {
   gameType: GameType;
@@ -48,6 +48,10 @@ const Chess: React.FC<ChessProps> = ({
     currentBoardState: pieces,
     currentTurn: currentTurn,
     currentTurnNo: currentTurnNo,
+    currentStatus: {
+      check: "NORMAL",
+      draw: "none",
+    },
     turnDetails: blankTurn(1, "white", pieces),
     log: [],
     selectedPiece: undefined,
@@ -77,19 +81,47 @@ const Chess: React.FC<ChessProps> = ({
   };
 
   useEffect(() => {
+    if (
+      state.currentStatus.check === "CHECKMATE" ||
+      state.currentStatus.draw !== "none"
+    ) {
+      setIsReset(true);
+      setModal({
+        turn: state.turnDetails,
+        title:
+          state.currentStatus.check === "CHECKMATE"
+            ? t("chess.modal.checkmate.title", {
+                player: t(`chess.glossary.color.${flip(state.currentTurn)}`),
+              })
+            : t("chess.modal.draw.title", {
+                draw:  t(`chess.glossary.draw.${state.currentStatus.draw}`),
+              }),
+        message:
+          state.currentStatus.check === "CHECKMATE"
+            ? t("chess.modal.checkmate.message")
+            : t("chess.modal.draw.message"),
+        confirmText:
+          state.currentStatus.check === "CHECKMATE"
+            ? t("chess.modal.checkmate.confirm")
+            : t("chess.modal.draw.confirm"),
+        cancelText:
+          state.currentStatus.check === "CHECKMATE"
+            ? t("chess.modal.checkmate.cancel")
+            : t("chess.modal.draw.cancel"),
+        handleClick,
+      });
+    }
+  }, [state.currentStatus]);
+
+  useEffect(() => {
     plState && setPlayerState(plState);
   }, []);
 
-  useEffect(() => {
-    if (state.currentBoardState.length > 0)
-      getAllActiveMoveSets(state.currentTurn, state.currentBoardState);
-  }, [state.log.flat().length]);
-
   return (
     <>
-      <div className="relative w-full flex justify-between bg-cell-dark">
+      <div className="relative w-full">
         {isReset && modal && (
-          <ConfirmationBox
+          <ModalBlock
             setIsReset={setIsReset}
             confirmClick={modal.handleClick}
             turn={modal.turn}
@@ -100,9 +132,8 @@ const Chess: React.FC<ChessProps> = ({
           />
         )}
       </div>
-      <ChessHeaderBlock
-        currentTurn={state.currentTurn}
-        currentTurnNo={state.currentTurnNo}
+      <HeaderBlock
+        state={state}
         handleModalClick={handleModalClick}
         gameType={gameType}
       />
