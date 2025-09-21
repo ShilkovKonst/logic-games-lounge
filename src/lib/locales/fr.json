@@ -30,7 +30,8 @@
       "checkmate": "échec et mat"
     },
     "header": {
-      "currentTurn": "Joueur(se) actuel(le)",
+      "currentTurn": "Joueur actuel",
+      "status": "situation",
       "turnNo": "tour №",
       "restartButton": "Recommencer",
       "drawButton": "Proposer la nulle"
@@ -40,7 +41,7 @@
       "takes": "prend {{pieceToTake}}",
       "promotes": "se promeut en {{pieceToExchange}}",
       "checkTo": "échec aux {{color}}",
-      "chekmateTo": "échec et mat aux {{color}}",
+      "checkmateTo": "échec et mat aux {{color}}",
       "draw": "nulle par {{draw}}"
     },
     "modal": {
@@ -49,6 +50,18 @@
         "message": "Tous les progrès seront effacés.",
         "confirm": "Réinitialiser",
         "cancel": "Annuler"
+      },
+      "checkmate": {
+        "title": "{{player}} a gagné la partie, recommencer une nouvelle partie ?",
+        "message": "",
+        "confirm": "Recommencer",
+        "cancel": "Retour"
+      },
+      "draw": {
+        "title": "Partie nulle — {{draw}}",
+        "message": "La partie est bloquée.",
+        "confirm": "Recommencer",
+        "cancel": "Retour"
       },
       "undo": {
         "title": "Annuler ce coup et tous les suivants ?",

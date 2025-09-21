@@ -34,21 +34,34 @@
       "takes": "takes {{pieceToTake}}",
       "promotes": "promotes to {{pieceToExchange}}",
       "checkTo": "check to {{color}}",
-      "chekmateTo": "chekmate to {{color}}",
+      "checkmateTo": "chekmate to {{color}}",
       "draw": "draw by {{draw}}"
     },
     "header": {
       "currentTurn": "Current player",
+      "status": "status",
       "turnNo": "turn №",
       "restartButton": "Restart",
       "drawButton": "Request draw"
     },
     "modal": {
       "reset": {
-        "title": "Reset the game?",
+        "title": "Restart the game?",
         "message": "All progress will be erased.",
-        "confirm": "Reset",
+        "confirm": "Restart",
         "cancel": "Cancel"
+      },
+      "checkmate": {
+        "title": "{{player}} win the game, restart new game?",
+        "message": "",
+        "confirm": "Restart",
+        "cancel": "Return"
+      },
+      "draw": {
+        "title": "Draw - {{draw}}",
+        "message": "The patry is stalled.",
+        "confirm": "Restart",
+        "cancel": "Return"
       },
       "undo": {
         "title": "Undo this and all following turns?",

@@ -34,11 +34,12 @@
       "takes": "берёт \u2192 {{pieceToTake}}",
       "promotes": "превращается в \u2192 {{pieceToExchange}}",
       "checkTo": "шах \u2192 {{color}}",
-      "chekmateTo": "мат \u2192 {{color}}",
+      "checkmateTo": "мат \u2192 {{color}}",
       "draw": "ничья \u2192 {{draw}}"
     },
     "header": {
       "currentTurn": "Текущий игрок",
+      "status": "статус",
       "turnNo": "ход №",
       "restartButton": "Начать заново",
       "drawButton": "Предложить ничью"
@@ -49,6 +50,18 @@
         "message": "Весь прогресс будет удалён.",
         "confirm": "Сбросить",
         "cancel": "Отмена"
+      },
+      "checkmate": {
+        "title": "{{player}} победили, начать новую партию?",
+        "message": "",
+        "confirm": "Начать заново",
+        "cancel": "Вернуться"
+      },
+      "draw": {
+        "title": "Ничья — {{draw}}",
+        "message": "Партия завершилась вничью.",
+        "confirm": "Начать заново",
+        "cancel": "Вернуться"
       },
       "undo": {
         "title": "Откатить этот и все последующие ходы?",
