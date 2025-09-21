@@ -15,7 +15,7 @@ export default async function Home() {
   const playerState: PlayerState | null = {
     type: "guest",
     color: "white",
-    status: "NORMAL",
+    status: { check: "NORMAL", draw: "none" },
   };
 
   return (
