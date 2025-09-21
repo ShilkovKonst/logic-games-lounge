@@ -22,7 +22,7 @@ export function PlayerProvider({ children }: { children: ReactNode }) {
   const [playerState, setPlayerState] = useState<PlayerState>({
     type: "host",
     color: "white",
-    status: "NORMAL",
+    status: { check: "NORMAL", draw: "none" },
   });
 
   return (
