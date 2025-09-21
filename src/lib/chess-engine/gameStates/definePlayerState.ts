@@ -10,10 +10,16 @@ export function definePlayerState(
     (p) => p.color === currentPlayer && p.moveSet.length > 0
   );
   if (king.isInDanger && piecesCanMove)
-    return { color: currentPlayer, status: "CHECK" };
+    return { color: currentPlayer, status: { check: "CHECK", draw: "none" } };
   if (king.isInDanger && !piecesCanMove)
-    return { color: currentPlayer, status: "CHECKMATE" };
+    return {
+      color: currentPlayer,
+      status: { check: "CHECKMATE", draw: "none" },
+    };
   if (!king.isInDanger && !piecesCanMove)
-    return { color: currentPlayer, status: "STALEMATE" };
-  return { color: currentPlayer, status: "NORMAL" };
+    return {
+      color: currentPlayer,
+      status: { check: "NORMAL", draw: "stalemate" },
+    };
+  return { color: currentPlayer, status: { check: "NORMAL", draw: "none" } };
 }
