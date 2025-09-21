@@ -1,4 +1,3 @@
-import React from "react";
 import { Color } from "../chess-engine/types";
 
 export type UndoProps = {

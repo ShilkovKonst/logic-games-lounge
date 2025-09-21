@@ -1,7 +1,8 @@
 import { TurnDetails } from "@/lib/chess-engine/types";
 import { Dispatch, MouseEvent, SetStateAction, TouchEvent } from "react";
+import HeaderButton from "./HeaderButton";
 
-type ConfirmationBoxProps = {
+type ConfirmationBlockProps = {
   setIsReset: Dispatch<SetStateAction<boolean>>;
   turn: TurnDetails;
   confirmClick: (turn: TurnDetails) => void;
@@ -11,7 +12,7 @@ type ConfirmationBoxProps = {
   cancelText: string;
 };
 
-const ConfirmationBox: React.FC<ConfirmationBoxProps> = ({
+const ModalBlock: React.FC<ConfirmationBlockProps> = ({
   turn,
   title,
   message,
@@ -58,22 +59,20 @@ const ConfirmationBox: React.FC<ConfirmationBoxProps> = ({
         <h3 className="text-xl font-semibold text-amber-900 mb-4">{title}</h3>
         <p className="text-amber-800 mb-6">{message}</p>
         <div className="flex gap-4 justify-center">
-          <button
+          <HeaderButton
             id="confirm"
-            className="px-6 py-3 bg-red-600 text-white rounded-xl font-semibold hover:bg-red-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg"
-          >
-            {confirmText}
-          </button>
-          <button
+            title={confirmText}
+            style="bg-red-500 hover:bg-red-600"
+          />
+          <HeaderButton
             id="cancel"
-            className="px-6 py-3 bg-gray-600 text-white rounded-xl font-semibold hover:bg-gray-700 transform hover:-translate-y-1 transition-all duration-300 shadow-lg"
-          >
-            {cancelText}
-          </button>
+            title={cancelText}
+            style="bg-gray-500 hover:bg-gray-600"
+          />
         </div>
       </div>
     </div>
   );
 };
 
-export default ConfirmationBox;
+export default ModalBlock;

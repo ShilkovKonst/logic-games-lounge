@@ -8,6 +8,7 @@ import ColCount from "./ColCount";
 import {
   Castling,
   Color,
+  Draw,
   GameState,
   GameType,
   PieceType,
@@ -251,12 +252,19 @@ function checkMovesAllowed(activePieces: PieceType[]): boolean {
   return activePieces.some((p) => p.moveSet.length > 0);
 }
 
+type CalcFoeReturn = {
+  foeColor: Color;
+  check: boolean;
+  checkmate: boolean;
+  draw: Draw;
+};
+
 function calcFoeState(
   currentTurn: Color,
   currentBoardState: PieceType[],
   log: TurnDetails[][],
   turnDetails: TurnDetails
-) {
+): CalcFoeReturn {
   const foeColor = flip(currentTurn);
   const foeKing = getAllActiveMoveSets(foeColor, currentBoardState);
   const activePieces = getActivePieces(currentTurn, currentBoardState);
@@ -282,6 +290,6 @@ function calcFoeState(
       ? "insufficientMaterial"
       : isRepetition
       ? "repetition"
-      : "",
+      : "none",
   };
 }

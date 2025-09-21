@@ -21,8 +21,8 @@ const TopLevelButton: React.FC<TopLevelButtonProps> = ({
       {withText ? (
         <button
           onClick={handleClick}
-          className={`bg-amber-700 text-white hover:bg-amber-900 
-           h-12 w-12 md:h-8 md:w-32 py-1 px-2 gap-1 flex justify-center items-center rounded-lg cursor-pointer transition duration-100 ease-in-out`}
+          className={`bg-amber-700 hover:bg-amber-600 text-amber-50 hover:text-amber-950 inset-shadow-log-amberdark
+           h-12 w-12 md:h-8 md:w-32 py-1 px-2 gap-1 flex justify-center items-center rounded-lg cursor-pointer transition duration-200 ease-in-out`}
         >
           <div
             className={`flex justify-center items-center h-10 w-10 md:w-6 md:h-6 ${
@@ -36,8 +36,8 @@ const TopLevelButton: React.FC<TopLevelButtonProps> = ({
       ) : (
         <button
           onClick={handleClick}
-          className={`bg-amber-900 text-white 
-           h-12 w-6 md:h-8 md:w-6 py-1 px-2 gap-1 flex justify-center items-center rounded-l-lg cursor-pointer transition duration-100 ease-in-out`}
+          className={`bg-amber-900 text-amber-50 
+           h-12 w-6 md:h-8 md:w-6 py-1 px-2 gap-1 flex justify-center items-center rounded-l-lg cursor-pointer transition duration-200 ease-in-out`}
         >
           <div
             className={`flex justify-center items-center h-10 w-10 md:w-6 md:h-6`}

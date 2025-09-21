@@ -11,7 +11,7 @@ export const SwitchLanguageIcon: React.FC = () => {
       width="24"
       height="24"
       fill="none"
-      stroke="#ffffff"
+      stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
       strokeWidth="2"
