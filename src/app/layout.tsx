@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Play, chill, enjoy",
+  title: "Tic-tac-chess: play, chill, enjoy",
   description: "Frendly-designed games for newbies and amateurs",
 };
 
