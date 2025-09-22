@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Play, chill, enjoy",
-  description: "Frendly-designed games for newbies or amateurs",
+  description: "Frendly-designed games for newbies and amateurs",
 };
 
 export default function RootLayout({
