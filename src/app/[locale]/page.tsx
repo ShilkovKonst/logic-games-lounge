@@ -19,8 +19,8 @@ export default async function Home() {
   };
 
   return (
-    <div className="font-sans flex items-center justify-center min-h-screen">
-      <main className="flex flex-col justify-center items-center">
+    <main className="font-sans flex items-center justify-center min-h-screen">
+      <div className="flex flex-col justify-center items-center">
         <Chess
           pieces={pieces}
           currentTurn={currentTurn}
@@ -28,7 +28,7 @@ export default async function Home() {
           plState={playerState}
           gameType={gameType}
         />
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }

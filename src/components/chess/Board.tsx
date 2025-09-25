@@ -79,7 +79,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
     <div
       className={`order-1 md:order-2 col-span-9  border-4 border-amber-950 h-[404px] w-[404px] md:h-[458px] md:w-[458px] `}
     >
-      {/* <ColCount increment={0} /> */}
       <div className="grid grid-cols-9">
         <RowCount increment={0} />
         <div
@@ -101,7 +100,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
             </div>
           ))}
         </div>
-        {/* <RowCount increment={1} /> */}
       </div>
       <ColCount increment={1} />
     </div>

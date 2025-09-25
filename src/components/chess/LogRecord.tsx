@@ -1,7 +1,8 @@
-import { useGlobalState } from "@/context/GlobalStateContext";
 import { getDisambiguation, getSAN } from "@/lib/chess-engine/constants/san";
 import { Pieces, TurnDetails } from "@/lib/chess-engine/types";
 import UndoIcon from "@/lib/icons/UndoIcon";
+import { Locale, t } from "@/lib/locales/locale";
+import { useParams } from "next/navigation";
 
 type LogRecordProps = {
   turn: TurnDetails;
@@ -9,7 +10,7 @@ type LogRecordProps = {
 };
 
 const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
-  const { t } = useGlobalState();
+  const { locale } = useParams<{ locale: Locale }>();
 
   const {
     turnNo,
@@ -29,35 +30,45 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
   } = turn;
 
   const title = () => {
-    let title = `${turnNo} - ${t(`chess.glossary.color.${curentPlayer}`)}`;
+    let title = `${turnNo} - ${t(
+      locale,
+      `chess.glossary.color.${curentPlayer}`
+    )}`;
     if (pieceToMove)
-      title += ` : ${t(`chess.glossary.pieces.${pieceToMove?.slice(0, -2)}`)}`;
+      title += ` : ${t(
+        locale,
+        `chess.glossary.pieces.${pieceToMove?.slice(0, -2)}`
+      )}`;
     if (fromCell && toCell)
-      title += ` ${t(`chess.log.moves`, {
+      title += ` ${t(locale, `chess.log.moves`, {
         fromCell: fromCell,
         toCell: toCell,
       })}`;
     if (pieceToTake)
-      title += `; ${t(`chess.log.takes`, {
-        pieceToTake: t(`chess.glossary.pieces.${pieceToTake?.slice(0, -2)}`),
+      title += `; ${t(locale, `chess.log.takes`, {
+        pieceToTake: t(
+          locale,
+          `chess.glossary.pieces.${pieceToTake?.slice(0, -2)}`
+        ),
       })}`;
-    if (isEnPassant) title += ` ${t(`chess.glossary.enPassant`)}`;
-    if (castling) title += `; ${t(`chess.glossary.castling.${castling}`)}`;
+    if (isEnPassant) title += ` ${t(locale, `chess.glossary.enPassant`)}`;
+    if (castling)
+      title += `; ${t(locale, `chess.glossary.castling.${castling}`)}`;
     if (isExchange && pieceToExchange)
-      title += `; ${t(`chess.log.promotes`, {
-        pieceToExchange: t(`chess.glossary.pieces.${pieceToExchange}`),
+      title += `; ${t(locale, `chess.log.promotes`, {
+        pieceToExchange: t(locale, `chess.glossary.pieces.${pieceToExchange}`),
       })}`;
     if (check && !checkmate)
-      title += `; ${t(`chess.log.checkTo`, {
-        color: t(`chess.glossary.color.${check}`),
+      title += `; ${t(locale, `chess.log.checkTo`, {
+        color: t(locale, `chess.glossary.color.${check}`),
       })}`;
     if (checkmate)
-      title += `; ${t(`chess.log.checkmateTo`, {
-        color: t(`chess.glossary.color.${checkmate}`),
+      title += `; ${t(locale, `chess.log.checkmateTo`, {
+        color: t(locale, `chess.glossary.color.${checkmate}`),
       })}`;
     if (draw !== "none")
-      title += `; ${t(`chess.log.draw`, {
-        draw: t(`chess.glossary.draw.${draw}`),
+      title += `; ${t(locale, `chess.log.draw`, {
+        draw: t(locale, `chess.glossary.draw.${draw}`),
       })}`;
 
     return title;

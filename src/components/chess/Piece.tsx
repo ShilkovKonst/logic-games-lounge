@@ -1,7 +1,8 @@
 import { GameState, GameType, PieceType } from "@/lib/chess-engine/types";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useGlobalState } from "@/context/GlobalStateContext";
+import { useParams } from "next/navigation";
+import { Locale, t } from "@/lib/locales/locale";
 
 type PieceProps = {
   cell: string;
@@ -12,7 +13,7 @@ type PieceProps = {
 
 const Piece: React.FC<PieceProps> = ({ cell, piece, state, gameType }) => {
   const { playerState } = usePlayerState();
-    const { t } = useGlobalState();
+  const { locale } = useParams<{ locale: Locale }>();
 
   const { type, color } = piece;
   const { selectedPiece, currentTurn, isExchange } = state;
@@ -25,7 +26,7 @@ const Piece: React.FC<PieceProps> = ({ cell, piece, state, gameType }) => {
     (gameType === "hotseat" || currentTurn === playerState.color);
   return (
     <div
-      title={t(`chess.glossary.pieces.${piece.type}`) + piece.id}
+      title={t(locale, `chess.glossary.pieces.${piece.type}`) + piece.id}
       className={`${
         piece.color === currentTurn ? "piece" : ""
       } relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}

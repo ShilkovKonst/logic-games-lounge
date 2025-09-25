@@ -1,4 +1,9 @@
 {
+  "meta": {
+    "titleFull": "Logic Games Lounge: Réfléchis. Joue. Détends-toi.",
+    "titleShort": "LGL",
+    "description": "Une approche décontractée des jeux de logique classiques — facile à commencer, amusant à jouer."
+  },
   "currentLanguage": "Française",
   "mainMenu": "Menu principal",
   "chess": {

@@ -1,18 +1,28 @@
 /* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client";
-import { useGlobalState } from "@/context/GlobalStateContext";
 import { LocaleIcon, SwitchLanguageIcon } from "@/lib/icons/LocaleIcon";
-import { Locale } from "@/lib/locales/locale";
+import { Locale, t } from "@/lib/locales/locale";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import TopLevelButton from "../TopLevelButton";
+import { useParams, usePathname, useRouter } from "next/navigation";
 
 type LocaleProps = {
   isMenuOpen: boolean;
 };
 
 const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
-  const { locale, setLocale, t } = useGlobalState();
+  const router = useRouter();
+  const pathname = usePathname();
+  const { locale } = useParams();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
+
+  function setLocale(newLocale: Locale) {
+    const segments = pathname.split("/");
+    segments[1] = newLocale;
+    router.push(segments.join("/"));
+    return router.push(segments.join("/"));
+  }
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -35,7 +45,7 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
     <>
       <TopLevelButton
         Icon={SwitchLanguageIcon}
-        title={`${t("currentLanguage")}`}
+        title={`${t(locale as Locale, "currentLanguage")}`}
         handleClick={() => setIsOpen((prev) => !prev)}
         isMenuButton={false}
         withText

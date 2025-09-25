@@ -8,9 +8,10 @@ import {
   useEffect,
   useRef,
 } from "react";
-import { useGlobalState } from "@/context/GlobalStateContext";
 import LogRecord from "./LogRecord";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
+import { useParams } from "next/navigation";
+import { Locale, t } from "@/lib/locales/locale";
 
 type LogBlockProps = {
   state: GameState;
@@ -26,7 +27,7 @@ const LogBlock: React.FC<LogBlockProps> = ({
   setModal,
 }) => {
   const { log } = state;
-  const { t } = useGlobalState();
+  const { locale } = useParams<{ locale: Locale }>();
 
   const handleClick = (turn: TurnDetails) => {
     const fullTurnIndex = turn.turnNo - 1;
@@ -56,10 +57,10 @@ const LogBlock: React.FC<LogBlockProps> = ({
     setIsReset(true);
     setModal({
       turn,
-      title: t("chess.modal.undo.title"),
-      message: t("chess.modal.undo.message"),
-      confirmText: t("chess.modal.undo.confirm"),
-      cancelText: t("chess.modal.undo.cancel"),
+      title: t(locale, "chess.modal.undo.title"),
+      message: t(locale, "chess.modal.undo.message"),
+      confirmText: t(locale, "chess.modal.undo.confirm"),
+      cancelText: t(locale, "chess.modal.undo.cancel"),
       handleClick,
     });
   };

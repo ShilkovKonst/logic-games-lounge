@@ -1,4 +1,9 @@
 {
+  "meta": {
+    "titleFull": "Logic Games Lounge: Думай. Играй. Отдыхай.",
+    "titleShort": "LGL",
+    "description": "Классические логические игры в лёгкой подаче — легко начать, интересно играть."
+  },
   "currentLanguage": "Русский",
   "mainMenu": "Главное меню",
   "chess": {

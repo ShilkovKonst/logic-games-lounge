@@ -1,4 +1,9 @@
 {
+  "meta": {
+    "titleFull": "Logic Games Lounge: Think. Play. Chill.",
+    "titleShort": "LGL",
+    "description": "Casual takes on classic logic games — easy to start, fun to play."
+  },
   "currentLanguage": "English",
   "mainMenu": "Main menu",
   "chess": {
