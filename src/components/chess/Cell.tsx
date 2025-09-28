@@ -10,7 +10,7 @@ type CellProps = {
   piece: PieceType | undefined;
   currentTurn: Color;
   gameType: GameType;
-  highlights: CellHighlightType;
+  highlight: CellHighlightType;
   isExchange: boolean;
 };
 
@@ -20,7 +20,7 @@ const Cell = memo<CellProps>(function Cell({
   currentTurn,
   gameType,
   isExchange,
-  highlights,
+  highlight,
 }) {
   const { row, col } = notToRC(cell);
   const {
@@ -29,7 +29,7 @@ const Cell = memo<CellProps>(function Cell({
     isDanger,
     isCastling,
     isEnPassant,
-  } = highlights;
+  } = highlight;
 
   const cellShadowPieceStyle = `${
     isSelected

@@ -1,6 +1,12 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 "use client";
-import { ActionDispatch, MouseEvent, TouchEvent, useEffect } from "react";
+import {
+  ActionDispatch,
+  MouseEvent,
+  TouchEvent,
+  useEffect,
+  useMemo,
+} from "react";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import Cell from "./Cell";
 import RowCount from "./RowCount";
@@ -44,10 +50,10 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
     state;
 
-  // const highlights = useMemo(
-  //   () => computeHighlights(selectedPiece, ),
-  //   [selectedPiece]
-  // );
+  const highlights = useMemo(
+    () => computeHighlights(selectedPiece),
+    [selectedPiece]
+  );
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -97,7 +103,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
           {BOARD.map((r, i) =>
             r.map((cell, j) => {
               const piece = getPieceAt(cell, currentBoardState);
-              const highlights = computeHighlights(selectedPiece);
               return (
                 <Cell
                   key={i * 10 + j}
@@ -106,7 +111,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
                   currentTurn={currentTurn}
                   isExchange={isExchange}
                   gameType={gameType}
-                  highlights={highlights[cell] ?? {}}
+                  highlight={highlights[cell] ?? {}}
                 />
               );
             })
