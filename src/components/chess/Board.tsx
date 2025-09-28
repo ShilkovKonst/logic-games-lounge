@@ -15,7 +15,11 @@ import {
   TurnDetails,
 } from "@/lib/chess-engine/types";
 import { notToRC } from "@/lib/chess-engine/utils/cellUtil";
-import { getActivePieces, isPieces } from "@/lib/chess-engine/utils/pieceUtils";
+import {
+  getActivePieces,
+  getPieceAt,
+  isPieces,
+} from "@/lib/chess-engine/utils/pieceUtils";
 import {
   handleMoveClick,
   handlePieceClick,
@@ -27,7 +31,7 @@ import {
   checkIsEnoughPieces,
   checkRepetition,
 } from "@/lib/chess-engine/drawChecker/drawChecker";
-import { defineCellPropsNStyles } from "@/lib/chess-engine/utils/styleUtils";
+import { computeHighlights } from "@/lib/chess-engine/utils/styleUtils";
 
 type BoardProps = {
   gameType: GameType;
@@ -37,25 +41,26 @@ type BoardProps = {
 
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
-
   const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
     state;
 
+  // const highlights = useMemo(
+  //   () => computeHighlights(selectedPiece, ),
+  //   [selectedPiece]
+  // );
+
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
-
     const exchangeToEl = target.closest(".exchange-to");
     if (exchangeToEl) {
       produceExchange(selectedPiece, state, dispatch, exchangeToEl);
       return;
     }
-
     const moveEl = target.closest(".move");
     if (moveEl) {
       produceMove(selectedPiece, state, dispatch, moveEl);
       return;
     }
-
     const pieceEl = target.closest(".piece");
     if (pieceEl) {
       produceSelection(selectedPiece, state, dispatch, pieceEl);
@@ -91,37 +96,17 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
         >
           {BOARD.map((r, i) =>
             r.map((cell, j) => {
-              const {
-                shadowStyle,
-                borderStyle,
-                cellBgStyle,
-                hoverStyle,
-                isSelected,
-                moveStyle,
-                piece,
-                isInMoveSet,
-              } = defineCellPropsNStyles(
-                selectedPiece,
-                cell,
-                currentBoardState,
-                currentTurn,
-                gameType
-              );
+              const piece = getPieceAt(cell, currentBoardState);
+              const highlights = computeHighlights(selectedPiece);
               return (
                 <Cell
                   key={i * 10 + j}
                   cell={cell}
                   piece={piece}
                   currentTurn={currentTurn}
-                  gameType={gameType}
-                  shadowStyle={shadowStyle}
-                  borderStyle={borderStyle}
-                  cellBgStyle={cellBgStyle}
-                  hoverStyle={hoverStyle}
-                  moveStyle={moveStyle}
-                  isSelected={isSelected}
                   isExchange={isExchange}
-                  isInMoveSet={isInMoveSet}
+                  gameType={gameType}
+                  highlights={highlights[cell] ?? {}}
                 />
               );
             })

@@ -102,10 +102,10 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
   };
 
   return (
-    <div className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition ease-in-out duration-200">
+    <div className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition-colors ease-in-out duration-200">
       <button
         onClick={() => handleClick()}
-        className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition ease-in-out duration-200 inset-shadow-log-amberdark`}
+        className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition-colors ease-in-out duration-200 inset-shadow-log-amberdark`}
       >
         <UndoIcon color={turn.curentPlayer} />
       </button>
