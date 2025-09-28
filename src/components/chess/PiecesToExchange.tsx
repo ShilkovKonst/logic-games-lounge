@@ -1,13 +1,12 @@
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
-import { GameState, PieceType } from "@/lib/chess-engine/types";
+import { Color, PieceType } from "@/lib/chess-engine/types";
 
 type PtEProps = {
-  state: GameState;
+  currentTurn: Color;
 };
 
-const PiecesToExchange: React.FC<PtEProps> = ({ state }) => {
-  const { currentTurn } = state;
+const PiecesToExchange: React.FC<PtEProps> = ({ currentTurn }) => {
   const { playerState } = usePlayerState();
 
   const piecesToExchange: PieceType[] = [

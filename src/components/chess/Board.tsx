@@ -27,6 +27,7 @@ import {
   checkIsEnoughPieces,
   checkRepetition,
 } from "@/lib/chess-engine/drawChecker/drawChecker";
+import { defineCellPropsNStyles } from "@/lib/chess-engine/utils/styleUtils";
 
 type BoardProps = {
   gameType: GameType;
@@ -37,7 +38,8 @@ type BoardProps = {
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
 
-  const { selectedPiece, currentBoardState, currentTurn, log } = state;
+  const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
+    state;
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -77,28 +79,53 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
 
   return (
     <div
-      className={`order-1 md:order-2 col-span-9  border-4 border-amber-950 h-[404px] w-[404px] md:h-[458px] md:w-[458px] `}
+      className={`order-1 md:order-2 col-span-9 border-4 border-amber-950 h-[404px] w-[404px] md:h-[458px] md:w-[458px] `}
     >
       <div className="grid grid-cols-9">
         <RowCount increment={0} />
         <div
           onClick={(e) => handleClick(e)}
-          className={`col-start-2 col-span-8 ${
+          className={`col-start-2 col-span-8 grid grid-flow-row grid-cols-8 grid-rows-8 ${
             playerState.color === "white" ? "rotate-0" : "rotate-180"
           } border-amber-950`}
         >
-          {BOARD.map((r, i) => (
-            <div key={i} className="flex">
-              {r.map((cell, j) => (
+          {BOARD.map((r, i) =>
+            r.map((cell, j) => {
+              const {
+                shadowStyle,
+                borderStyle,
+                cellBgStyle,
+                hoverStyle,
+                isSelected,
+                moveStyle,
+                piece,
+                isInMoveSet,
+              } = defineCellPropsNStyles(
+                selectedPiece,
+                cell,
+                currentBoardState,
+                currentTurn,
+                gameType
+              );
+              return (
                 <Cell
                   key={i * 10 + j}
                   cell={cell}
-                  state={state}
+                  piece={piece}
+                  currentTurn={currentTurn}
                   gameType={gameType}
+                  shadowStyle={shadowStyle}
+                  borderStyle={borderStyle}
+                  cellBgStyle={cellBgStyle}
+                  hoverStyle={hoverStyle}
+                  moveStyle={moveStyle}
+                  isSelected={isSelected}
+                  isExchange={isExchange}
+                  isInMoveSet={isInMoveSet}
                 />
-              ))}
-            </div>
-          ))}
+              );
+            })
+          )}
         </div>
       </div>
       <ColCount increment={1} />
@@ -257,6 +284,7 @@ type CalcFoeReturn = {
   draw: Draw;
 };
 
+// calc states and movesets for foe pieces for next turn
 function calcFoeState(
   currentTurn: Color,
   currentBoardState: PieceType[],

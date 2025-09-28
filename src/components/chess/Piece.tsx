@@ -1,52 +1,64 @@
-import { GameState, GameType, PieceType } from "@/lib/chess-engine/types";
+import { Color, GameType, PieceType } from "@/lib/chess-engine/types";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useParams } from "next/navigation";
 import { Locale, t } from "@/lib/locales/locale";
 
 type PieceProps = {
-  cell: string;
   piece: PieceType;
-  state: GameState;
   gameType: GameType;
+  currentTurn: Color;
+  isSelected: boolean;
+  isInMoveSet: boolean;
+  isExchange: boolean;
 };
 
-const Piece: React.FC<PieceProps> = ({ cell, piece, state, gameType }) => {
+const Piece: React.FC<PieceProps> = ({
+  isSelected,
+  isInMoveSet,
+  piece,
+  currentTurn,
+  isExchange,
+  gameType,
+}) => {
   const { playerState } = usePlayerState();
   const { locale } = useParams<{ locale: Locale }>();
 
   const { type, color } = piece;
-  const { selectedPiece, currentTurn, isExchange } = state;
 
-  const isSelected = selectedPiece?.cell.id === cell;
-  const inMoveSet =
-    selectedPiece && selectedPiece.moveSet.some((m) => m.id === cell);
   const isCurrentPlayer =
     color === currentTurn &&
     (gameType === "hotseat" || currentTurn === playerState.color);
+
+  const pieceStyle =
+    piece.color === currentTurn
+      ? !isExchange
+        ? "piece"
+        : ""
+      : isInMoveSet
+      ? "to-take"
+      : "";
+
+  const grabStyle =
+    isCurrentPlayer && !isExchange
+      ? isSelected
+        ? "cursor-grabbing"
+        : "cursor-grab"
+      : "";
+  const canTakeStyle =
+    !isCurrentPlayer && isInMoveSet ? "cursor-crosshair" : "";
+
+  const orientationStyle =
+    playerState.color === "white" ? "rotate-0" : "rotate-180";
+
   return (
-    <div
+    <button
+      data-piece-id={piece.id}
       title={t(locale, `chess.glossary.pieces.${piece.type}`) + piece.id}
-      className={`${
-        piece.color === currentTurn ? "piece" : ""
-      } relative flex items-center justify-center text-amber-950 transform ease-in-out duration-300`}
+      className={`relative ${pieceStyle} ${grabStyle} ${canTakeStyle} ${orientationStyle} bg-transparent`}
     >
-      <button
-        data-piece-id={piece.id}
-        className={`${piece.color === currentTurn && !isExchange && "piece"} ${
-          piece.color !== currentTurn && inMoveSet && "to-take"
-        } relative scale-100 ${
-          isCurrentPlayer &&
-          !isExchange &&
-          (isSelected ? "cursor-grabbing" : "cursor-grab")
-        } ${!isCurrentPlayer && inMoveSet && "cursor-crosshair"}
-           bg-transparent transform ease-in-out duration-150 ${
-             playerState.color === "white" ? "rotate-0" : "rotate-180"
-           }`}
-      >
-        <PieceIcon color={color} type={type} />
-      </button>
-    </div>
+      <PieceIcon color={color} type={type} />
+    </button>
   );
 };
 
