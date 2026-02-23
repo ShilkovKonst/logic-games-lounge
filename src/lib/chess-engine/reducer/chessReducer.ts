@@ -14,7 +14,7 @@ export type GameAction =
       payload: { selectedPiece?: PieceType };
     }
   | { type: "PATCH_TURN"; payload: Partial<TurnDetails> }
-  | { type: "START_EXCHANGE" }
+  | { type: "START_EXCHANGE"; payload?: { boardState: PieceType[] } }
   | { type: "END_EXCHANGE" }
   | {
       type: "END_TURN";
@@ -41,7 +41,7 @@ export const blankTurn = (
   boardState: PieceType[]
 ): TurnDetails => ({
   turnNo,
-  curentPlayer: currentTurn,
+  currentPlayer: currentTurn,
   boardState,
   castling: undefined,
   check: undefined,
@@ -102,7 +102,13 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
     case "START_EXCHANGE":
-      return { ...state, isExchange: true };
+      return {
+        ...state,
+        isExchange: true,
+        ...(action.payload?.boardState
+          ? { currentBoardState: action.payload.boardState }
+          : {}),
+      };
     case "END_EXCHANGE":
       return { ...state, isExchange: false };
     case "END_TURN": {
@@ -111,7 +117,7 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       const completedTurn: TurnDetails = {
         ...turnDetails,
         ...(action.payload.turnPatch ?? {}),
-        curentPlayer: justMoved,
+        currentPlayer: justMoved,
         boardState: [...turnDetails.boardState],
       };
 
@@ -126,28 +132,33 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         justMoved === "black" ? currentTurnNo + 1 : currentTurnNo;
       const nextPlayer = flip(justMoved);
 
+      // Snapshot the board for the next turn: deep-copy cells, strip moveSets.
+      // This replaces the useEffect in Board.tsx that previously did the same.
+      const nextBoardSnapshot = action.payload.boardState.map((p) => ({
+        ...p,
+        cell: { ...p.cell },
+        moveSet: [],
+      }));
+
       return {
         ...state,
         log: newLog,
         currentBoardState: action.payload.boardState,
         currentTurn: nextPlayer,
         currentTurnNo: nextTurnNo,
+        // Read from completedTurn so turnPatch values are included.
         currentStatus: {
           check:
-            state.turnDetails.checkmate === nextPlayer
+            completedTurn.checkmate === nextPlayer
               ? "CHECKMATE"
-              : state.turnDetails.check === nextPlayer
+              : completedTurn.check === nextPlayer
               ? "CHECK"
               : "NORMAL",
-          draw: state.turnDetails.draw,
+          draw: completedTurn.draw,
         },
         selectedPiece: undefined,
         isExchange: false,
-        turnDetails: blankTurn(
-          nextTurnNo,
-          nextPlayer,
-          action.payload.boardState
-        ),
+        turnDetails: blankTurn(nextTurnNo, nextPlayer, nextBoardSnapshot),
       };
     }
 

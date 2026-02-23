@@ -1,10 +1,9 @@
 import { MoveType, PieceType } from "../types";
 import { notToRC, rcToNot } from "../utils/cellUtil";
-import { getPieceAt } from "../utils/pieceUtils";
 
 export function moveGenerator(
   piece: PieceType,
-  pieces: PieceType[],
+  boardMap: Map<string, PieceType>,
   dirs: number[][],
   maxStep: number
 ): MoveType[] {
@@ -19,7 +18,7 @@ export function moveGenerator(
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
       const cell = rcToNot(tR, tC);
-      const target = getPieceAt(cell, pieces);
+      const target = boardMap.get(cell);
 
       if (target) {
         if (target.color !== piece.color)
@@ -38,7 +37,7 @@ export function moveGenerator(
 export function attackGenerator(
   current: PieceType,
   pieceToCheck: PieceType,
-  pieces: PieceType[],
+  boardMap: Map<string, PieceType>,
   dirs: number[][],
   maxStep: number
 ): string[] {
@@ -53,7 +52,7 @@ export function attackGenerator(
     let step = 0;
     while (tR < 8 && tR >= 0 && tC < 8 && tC >= 0 && step < maxStep) {
       const cell = rcToNot(tR, tC);
-      const target = getPieceAt(cell, pieces);
+      const target = boardMap.get(cell);
 
       if (target && target.id !== current.id) {
         attacks.push(cell);

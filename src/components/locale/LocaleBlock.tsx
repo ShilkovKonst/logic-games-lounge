@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-unused-expressions */
 "use client";
 import { LocaleIcon, SwitchLanguageIcon } from "@/lib/icons/LocaleIcon";
-import { Locale, t } from "@/lib/locales/locale";
+import { Locale } from "@/lib/locales/locale";
 import { MouseEvent, TouchEvent, useEffect, useState } from "react";
 import TopLevelButton from "../TopLevelButton";
 import { useParams, usePathname, useRouter } from "next/navigation";
+import { useGlobalState } from "@/context/GlobalStateContext";
 
 type LocaleProps = {
   isMenuOpen: boolean;
@@ -14,14 +14,14 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
   const router = useRouter();
   const pathname = usePathname();
   const { locale } = useParams();
+  const { t } = useGlobalState();
 
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
-  function setLocale(newLocale: Locale) {
+  function switchLocale(newLocale: Locale) {
     const segments = pathname.split("/");
     segments[1] = newLocale;
     router.push(segments.join("/"));
-    return router.push(segments.join("/"));
   }
 
   const handleClick = (e: MouseEvent | TouchEvent) => {
@@ -31,9 +31,9 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
     const fr = target.closest("#fr");
     const ru = target.closest("#ru");
 
-    if (en && locale !== "en") setLocale("en");
-    if (fr && locale !== "fr") setLocale("fr");
-    if (ru && locale !== "ru") setLocale("ru");
+    if (en && locale !== "en") switchLocale("en");
+    if (fr && locale !== "fr") switchLocale("fr");
+    if (ru && locale !== "ru") switchLocale("ru");
     setIsOpen(false);
   };
 
@@ -45,7 +45,7 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
     <>
       <TopLevelButton
         Icon={SwitchLanguageIcon}
-        title={`${t(locale as Locale, "currentLanguage")}`}
+        title={t("currentLanguage")}
         handleClick={() => setIsOpen((prev) => !prev)}
         isMenuButton={false}
         withText

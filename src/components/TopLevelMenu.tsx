@@ -5,11 +5,10 @@ import { useState } from "react";
 import HomeIcon from "@/lib/icons/HomeIcon";
 import OpenIcon from "@/lib/icons/OpenIcon";
 import HideIcon from "@/lib/icons/HideIcon";
-import { useParams } from "next/navigation";
-import { Locale, t } from "@/lib/locales/locale";
+import { useGlobalState } from "@/context/GlobalStateContext";
 
 const TopLevelMenu = () => {
-  const { locale } = useParams<{ locale: Locale }>();
+  const { t } = useGlobalState();
   const [isOpen, setIsOpen] = useState<boolean>(false);
 
   return (
@@ -17,7 +16,7 @@ const TopLevelMenu = () => {
       <div className={`${isOpen ? "hidden" : "block"} md:hidden`}>
         <TopLevelButton
           Icon={OpenIcon}
-          title={t(locale, "mainMenu")}
+          title={t("mainMenu")}
           handleClick={() => setIsOpen(true)}
           isMenuButton={true}
           withText={false}
@@ -31,7 +30,7 @@ const TopLevelMenu = () => {
         <div className="relative flex justify-start items-center gap-2 font-semibold">
           <TopLevelButton
             Icon={HomeIcon}
-            title={t(locale, "mainMenu")}
+            title={t("mainMenu")}
             handleClick={() => {}}
             isMenuButton={true}
             withText
@@ -40,7 +39,7 @@ const TopLevelMenu = () => {
           <div className={`block md:hidden`}>
             <TopLevelButton
               Icon={HideIcon}
-              title={t(locale, "mainMenu")}
+              title={t("mainMenu")}
               handleClick={() => setIsOpen(false)}
               isMenuButton={true}
               withText={false}

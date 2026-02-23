@@ -1,16 +1,10 @@
 "use client";
 import { Locale, translations } from "@/lib/locales/locale";
-import {
-  createContext,
-  ReactNode,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import { createContext, ReactNode, useContext } from "react";
+import { useParams } from "next/navigation";
 
 interface GlobalContextType {
   locale: Locale;
-  setLocale: (newLocale: Locale) => void;
   t: (path: string, vars?: Record<string, string | number>) => string;
 }
 
@@ -19,21 +13,8 @@ export const GlobalStateContext = createContext<GlobalContextType | undefined>(
 );
 
 export function GlobalProvider({ children }: { children: ReactNode }) {
-  const [locale, setLocaleState] = useState<Locale>("en");
-
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      const saved = localStorage.getItem("locale") as Locale | null;
-      if (saved) setLocaleState(saved);
-    }
-  }, []);
-
-  function setLocale(newLocale: Locale) {
-    setLocaleState(newLocale);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("locale", newLocale);
-    }
-  }
+  const params = useParams();
+  const locale = (params?.locale as Locale) ?? "en";
 
   function t(path: string, vars: Record<string, string | number> = {}): string {
     const keys = path.split(".");
@@ -58,7 +39,7 @@ export function GlobalProvider({ children }: { children: ReactNode }) {
   }
 
   return (
-    <GlobalStateContext.Provider value={{ locale, setLocale, t }}>
+    <GlobalStateContext.Provider value={{ locale, t }}>
       {children}
     </GlobalStateContext.Provider>
   );

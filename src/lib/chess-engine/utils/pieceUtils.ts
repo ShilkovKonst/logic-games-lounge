@@ -1,6 +1,14 @@
 import { piecesSet } from "../constants/pieceTypes";
 import { Color, King, MoveType, Pieces, PieceType } from "../types";
 
+export function buildBoardMap(pieces: PieceType[]): Map<string, PieceType> {
+  const map = new Map<string, PieceType>();
+  for (const p of pieces) {
+    if (!p.isTaken) map.set(p.cell.id, p);
+  }
+  return map;
+}
+
 export function getKing(pieces: PieceType[], currentPlayer: Color): King {
   const king = pieces.find(
     (p) => p.type === "king" && p.color === currentPlayer

@@ -33,29 +33,34 @@ export function checkRepetition(
   return { threefold: count >= 2, fivefold: count >= 4 };
 }
 
-export function getPositionHashTurn(turn: TurnDetails): string {
-  const pieces = turn.boardState
-    .filter((p) => !p.isTaken)
-    .map((p) => `${p.type}${p.color}${p.cell.id}`)
-    .sort()
-    .join("|");
-
-  return `${turn.curentPlayer}|${turn.castling ?? ""}|${
-    turn.isEnPassant ?? false
-  }|${pieces}`;
-}
-
-export function getPositionHashInit(
+function buildPositionHash(
   boardState: PieceType[],
-  curentPlayer: Color,
+  currentPlayer: Color,
   castling: string | undefined,
-  isEnPassant: boolean | undefined
+  isEnPassant: boolean
 ): string {
   const pieces = boardState
     .filter((p) => !p.isTaken)
     .map((p) => `${p.type}${p.color}${p.cell.id}`)
     .sort()
     .join("|");
+  return `${currentPlayer}|${castling ?? ""}|${isEnPassant}|${pieces}`;
+}
 
-  return `${curentPlayer}|${castling ?? ""}|${isEnPassant ?? false}|${pieces}`;
+export function getPositionHashTurn(turn: TurnDetails): string {
+  return buildPositionHash(
+    turn.boardState,
+    turn.currentPlayer,
+    turn.castling,
+    turn.isEnPassant ?? false
+  );
+}
+
+export function getPositionHashInit(
+  boardState: PieceType[],
+  currentPlayer: Color,
+  castling: string | undefined,
+  isEnPassant: boolean | undefined
+): string {
+  return buildPositionHash(boardState, currentPlayer, castling, isEnPassant ?? false);
 }

@@ -7,6 +7,8 @@ export type CellHighlightType = {
   isCastling?: boolean;
   isEnPassant?: boolean;
 };
+
+export const EMPTY_HIGHLIGHT: CellHighlightType = {};
 export function computeHighlights(
   selectedPiece: PieceType | undefined
 ): Record<string, CellHighlightType> {

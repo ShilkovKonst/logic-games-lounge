@@ -1,11 +1,10 @@
 import { PieceType } from "../types";
 import { inBounds, notToRC, rcToNot } from "../utils/cellUtil";
-import { getPieceAt } from "../utils/pieceUtils";
 
 export function checkPinPiece(
   currentPiece: PieceType,
   kingCellId: string,
-  pieces: PieceType[]
+  boardMap: Map<string, PieceType>
 ): string[] {
   if (currentPiece.type === "king") return [];
   const selectedPieceCell = notToRC(currentPiece.cell.id);
@@ -21,7 +20,7 @@ export function checkPinPiece(
   while (r !== selectedPieceCell.row || c !== selectedPieceCell.col) {
     if (!inBounds(r, c)) return [];
     const id = rcToNot(r, c);
-    const piece = getPieceAt(id, pieces);
+    const piece = boardMap.get(id);
     if (piece && id !== currentPiece.cell.id) {
       return [];
     }
@@ -35,7 +34,7 @@ export function checkPinPiece(
   const toAttacker: string[] = [];
   while (inBounds(r, c)) {
     const id = rcToNot(r, c);
-    const attacker = getPieceAt(id, pieces);
+    const attacker = boardMap.get(id);
     toAttacker.push(id);
     if (attacker) {
       if (attacker.color === currentPiece.color) return [];

@@ -1,10 +1,8 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {
   ActionDispatch,
   MouseEvent,
   TouchEvent,
-  useEffect,
   useMemo,
 } from "react";
 import { usePlayerState } from "@/context/PlayerStateContext";
@@ -37,7 +35,7 @@ import {
   checkIsEnoughPieces,
   checkRepetition,
 } from "@/lib/chess-engine/drawChecker/drawChecker";
-import { computeHighlights } from "@/lib/chess-engine/utils/styleUtils";
+import { computeHighlights, EMPTY_HIGHLIGHT } from "@/lib/chess-engine/utils/styleUtils";
 
 type BoardProps = {
   gameType: GameType;
@@ -47,8 +45,7 @@ type BoardProps = {
 
 const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
   const { playerState } = usePlayerState();
-  const { selectedPiece, currentBoardState, currentTurn, isExchange, log } =
-    state;
+  const { selectedPiece, currentBoardState, currentTurn, isExchange } = state;
 
   const highlights = useMemo(
     () => computeHighlights(selectedPiece),
@@ -74,20 +71,6 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
     }
   };
 
-  useEffect(() => {
-    dispatch({
-      type: "PATCH_TURN",
-      payload: {
-        boardState: currentBoardState.map((p) => ({
-          ...p,
-          id: p.id,
-          cell: { ...p.cell },
-          moveSet: [],
-        })),
-      },
-    });
-  }, [currentTurn, log.length]);
-
   return (
     <div
       className={`order-1 md:order-2 col-span-9 border-4 border-amber-950 h-[404px] w-[404px] md:h-[458px] md:w-[458px] `}
@@ -111,7 +94,7 @@ const Board: React.FC<BoardProps> = ({ state, dispatch, gameType }) => {
                   currentTurn={currentTurn}
                   isExchange={isExchange}
                   gameType={gameType}
-                  highlight={highlights[cell] ?? {}}
+                  highlight={highlights[cell] ?? EMPTY_HIGHLIGHT}
                 />
               );
             })
@@ -132,37 +115,41 @@ function produceExchange(
   exchangeToEl: Element
 ) {
   const exchangeType = exchangeToEl.getAttribute("data-exchange-to");
-  if (exchangeType && isPieces(exchangeType) && selectedPiece) {
-    selectedPiece.type = exchangeType;
-    dispatch({
-      type: "PATCH_TURN",
-      payload: { isExchange: true, pieceToExchange: exchangeType },
-    });
-    dispatch({ type: "END_EXCHANGE" });
+  if (!exchangeType || !isPieces(exchangeType) || !selectedPiece) return;
 
-    const { foeColor, check, checkmate, draw } = calcFoeState(
-      state.currentTurn,
-      state.currentBoardState,
-      state.log,
-      state.turnDetails
-    );
+  // state.currentBoardState is already a working copy (set by START_EXCHANGE).
+  // Create another copy to apply the type mutation without touching live state.
+  const workingBoard: PieceType[] = state.currentBoardState.map((p) => ({
+    ...p,
+    cell: { ...p.cell },
+    moveSet: [],
+  }));
+  const workingPiece = workingBoard.find((p) => p.id === selectedPiece.id)!;
+  workingPiece.type = exchangeType;
 
-    dispatch({
-      type: "PATCH_TURN",
-      payload: {
+  const { foeColor, check, checkmate, draw } = calcFoeState(
+    state.currentTurn,
+    workingBoard,
+    state.log,
+    state.turnDetails
+  );
+
+  // Single END_TURN carries the full turn patch.
+  // The reducer resets isExchange: false as part of END_TURN, so no
+  // separate END_EXCHANGE dispatch is needed.
+  dispatch({
+    type: "END_TURN",
+    payload: {
+      turnPatch: {
+        isExchange: true,
+        pieceToExchange: exchangeType,
         check: check ? foeColor : undefined,
         checkmate: checkmate ? foeColor : undefined,
-        draw: draw,
+        draw,
       },
-    });
-
-    dispatch({
-      type: "END_TURN",
-      payload: {
-        boardState: state.currentBoardState.map((p) => ({ ...p })),
-      },
-    });
-  }
+      boardState: workingBoard,
+    },
+  });
 }
 
 function produceMove(
@@ -172,70 +159,82 @@ function produceMove(
   moveEl: Element
 ) {
   const moveId = moveEl.getAttribute("data-cell-id");
-  if (moveId && selectedPiece) {
-    const move = selectedPiece.moveSet.find((m) => m.id === moveId);
-    if (!move) return;
-    if (move?.special?.type === "castling") {
-      const castling = move.special as Castling;
-      dispatch({
-        type: "PATCH_TURN",
-        payload: { castling: castling.long ? "long" : "short" },
-      });
-    }
-    if (move?.special?.type === "enPassant") {
-      dispatch({ type: "PATCH_TURN", payload: { isEnPassant: true } });
-    }
-    const ambiguity = state.currentBoardState.reduce<string[]>((acc, p) => {
-      if (
-        !p.isTaken &&
-        p.color === state.currentTurn &&
-        p.type === selectedPiece.type &&
-        p.id !== selectedPiece.id
-      ) {
-        const move = p.moveSet.find((m) => m.id === moveId);
-        if (move) acc.push(p.cell.id);
-      }
-      return acc;
-    }, []);
-    dispatch({
-      type: "PATCH_TURN",
-      payload: { toCell: move.id, ambiguity: ambiguity },
-    });
+  if (!moveId || !selectedPiece) return;
 
-    handleMoveClick(move, selectedPiece, state.currentBoardState, dispatch);
+  const move = selectedPiece.moveSet.find((m) => m.id === moveId);
+  if (!move) return;
 
-    const moveCell = notToRC(moveId);
-    const needsPromotion =
-      selectedPiece.type === "pawn" &&
-      ((selectedPiece.color === "white" && moveCell.row === 0) ||
-        (selectedPiece.color === "black" && moveCell.row === 7));
-    if (needsPromotion) {
-      dispatch({ type: "START_EXCHANGE" });
-      return;
-    }
+  // Collect all turn metadata into one patch object — no dispatch yet.
+  const patch: Partial<TurnDetails> = {};
 
-    const { foeColor, check, checkmate, draw } = calcFoeState(
-      state.currentTurn,
-      state.currentBoardState,
-      state.log,
-      state.turnDetails
-    );
-    dispatch({
-      type: "PATCH_TURN",
-      payload: {
-        check: check ? foeColor : undefined,
-        checkmate: checkmate ? foeColor : undefined,
-        draw: draw,
-      },
-    });
-
-    dispatch({
-      type: "END_TURN",
-      payload: {
-        boardState: state.currentBoardState.map((p) => ({ ...p })),
-      },
-    });
+  if (move.special?.type === "castling") {
+    const castling = move.special as Castling;
+    patch.castling = castling.long ? "long" : "short";
   }
+  if (move.special?.type === "enPassant") {
+    patch.isEnPassant = true;
+  }
+
+  const ambiguity = state.currentBoardState.reduce<string[]>((acc, p) => {
+    if (
+      !p.isTaken &&
+      p.color === state.currentTurn &&
+      p.type === selectedPiece.type &&
+      p.id !== selectedPiece.id
+    ) {
+      const sameTarget = p.moveSet.find((m) => m.id === moveId);
+      if (sameTarget) acc.push(p.cell.id);
+    }
+    return acc;
+  }, []);
+
+  patch.toCell = move.id;
+  patch.ambiguity = ambiguity;
+
+  // Create working copies — mutations happen on copies, not on live state.
+  const workingBoard: PieceType[] = state.currentBoardState.map((p) => ({
+    ...p,
+    cell: { ...p.cell },
+    moveSet: [],
+  }));
+  const workingPiece = workingBoard.find((p) => p.id === selectedPiece.id)!;
+
+  const { pieceToTake } = handleMoveClick(move, workingPiece, workingBoard);
+  patch.pieceToTake = pieceToTake;
+
+  const moveCell = notToRC(moveId);
+  const needsPromotion =
+    selectedPiece.type === "pawn" &&
+    ((selectedPiece.color === "white" && moveCell.row === 0) ||
+      (selectedPiece.color === "black" && moveCell.row === 7));
+
+  if (needsPromotion) {
+    // Save collected patch and pass the working board to START_EXCHANGE so
+    // produceExchange sees the already-moved pawn in currentBoardState.
+    dispatch({ type: "PATCH_TURN", payload: patch });
+    dispatch({ type: "START_EXCHANGE", payload: { boardState: workingBoard } });
+    return;
+  }
+
+  const { foeColor, check, checkmate, draw } = calcFoeState(
+    state.currentTurn,
+    workingBoard,
+    state.log,
+    state.turnDetails
+  );
+
+  patch.check = check ? foeColor : undefined;
+  patch.checkmate = checkmate ? foeColor : undefined;
+  patch.draw = draw;
+
+  // Single dispatch for the entire turn.
+  dispatch({
+    type: "END_TURN",
+    payload: {
+      turnPatch: patch,
+      boardState: workingBoard,
+    },
+  });
 }
 
 function produceSelection(

@@ -10,8 +10,7 @@ import {
 } from "react";
 import LogRecord from "./LogRecord";
 import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
-import { useParams } from "next/navigation";
-import { Locale, t } from "@/lib/locales/locale";
+import { useGlobalState } from "@/context/GlobalStateContext";
 
 type LogBlockProps = {
   state: GameState;
@@ -27,13 +26,13 @@ const LogBlock: React.FC<LogBlockProps> = ({
   setModal,
 }) => {
   const { log } = state;
-  const { locale } = useParams<{ locale: Locale }>();
+  const { t } = useGlobalState();
 
   const handleClick = (turn: TurnDetails) => {
     const fullTurnIndex = turn.turnNo - 1;
     let oldLog: TurnDetails[][];
 
-    if (turn.curentPlayer === "white") {
+    if (turn.currentPlayer === "white") {
       oldLog = log.slice(0, fullTurnIndex);
     } else {
       oldLog = log.slice(0, fullTurnIndex);
@@ -44,23 +43,23 @@ const LogBlock: React.FC<LogBlockProps> = ({
     dispatch({
       type: "RESET",
       payload: {
-        currentTurn: turn.curentPlayer,
+        currentTurn: turn.currentPlayer,
         pieces: turn.boardState,
         turnNo: turn.turnNo,
         log: oldLog,
       },
     });
-    getAllActiveMoveSets(turn.curentPlayer, turn.boardState);
+    getAllActiveMoveSets(turn.currentPlayer, turn.boardState);
   };
 
   const handleModalClick = (turn: TurnDetails) => {
     setIsReset(true);
     setModal({
       turn,
-      title: t(locale, "chess.modal.undo.title"),
-      message: t(locale, "chess.modal.undo.message"),
-      confirmText: t(locale, "chess.modal.undo.confirm"),
-      cancelText: t(locale, "chess.modal.undo.cancel"),
+      title: t("chess.modal.undo.title"),
+      message: t("chess.modal.undo.message"),
+      confirmText: t("chess.modal.undo.confirm"),
+      cancelText: t("chess.modal.undo.cancel"),
       handleClick,
     });
   };

@@ -15,13 +15,14 @@ import { notToRC, rcToNot } from "../utils/cellUtil";
 export function checkThreats(
   current: PieceType,
   cellId: string,
-  pieces: PieceType[],
-  currentPlayer: Color
+  currentPlayer: Color,
+  boardMap: Map<string, PieceType>
 ): string[] {
-  const foes = pieces.filter((p) => !p.isTaken && p.color !== currentPlayer);
   const threatenedBy: string[] = [];
-  for (const foe of foes) {
-    const attacks = getAttackSet(current, foe, pieces);
+  // boardMap contains only non-taken pieces — no filter allocation needed.
+  for (const foe of boardMap.values()) {
+    if (foe.color === currentPlayer) continue;
+    const attacks = getAttackSet(current, foe, boardMap);
     if (attacks.some((id) => id === cellId)) {
       threatenedBy.push(foe.id);
     }
@@ -32,21 +33,21 @@ export function checkThreats(
 function getAttackSet(
   current: PieceType,
   pieceToCheck: PieceType,
-  pieces: PieceType[]
+  boardMap: Map<string, PieceType>
 ): string[] {
   switch (pieceToCheck.type) {
     case "pawn":
       return pawnAttacks(pieceToCheck as Pawn);
     case "rook":
-      return attackGenerator(current, pieceToCheck as Rook, pieces, rDir, 7);
+      return attackGenerator(current, pieceToCheck as Rook, boardMap, rDir, 7);
     case "bishop":
-      return attackGenerator(current, pieceToCheck as Bishop, pieces, bDir, 7);
+      return attackGenerator(current, pieceToCheck as Bishop, boardMap, bDir, 7);
     case "queen":
-      return attackGenerator(current, pieceToCheck as Queen, pieces, qDir, 7);
+      return attackGenerator(current, pieceToCheck as Queen, boardMap, qDir, 7);
     case "knight":
-      return attackGenerator(current, pieceToCheck as Knight, pieces, kDir, 1);
+      return attackGenerator(current, pieceToCheck as Knight, boardMap, kDir, 1);
     case "king":
-      return attackGenerator(current, pieceToCheck as King, pieces, qDir, 1);
+      return attackGenerator(current, pieceToCheck as King, boardMap, qDir, 1);
     default:
       return [];
   }

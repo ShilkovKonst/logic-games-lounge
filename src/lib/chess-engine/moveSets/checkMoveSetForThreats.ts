@@ -1,23 +1,25 @@
 import { Color, King, MoveType, Pawn, PieceType } from "../types";
 import { notToRC, rcToNot } from "../utils/cellUtil";
 import { checkThreats } from "./getAttackSets";
+import { buildBoardMap } from "../utils/pieceUtils";
 
 export function checkMoveSetForThreats(
   currentPiece: PieceType,
   pieces: PieceType[],
   playerColor: Color
 ): void {
+  const boardMap = buildBoardMap(pieces);
   const moveSet = currentPiece.moveSet;
-  assignThreats(currentPiece, currentPiece.cell, playerColor, pieces);
+  assignThreats(currentPiece, currentPiece.cell, playerColor, boardMap);
   for (const move of moveSet) {
-    assignThreats(currentPiece, move, playerColor, pieces);
+    assignThreats(currentPiece, move, playerColor, boardMap);
   }
   if (
     currentPiece.type === "king" &&
     currentPiece.color === playerColor &&
     !currentPiece.hasMoved
   ) {
-    const castlingMoves = getCastlingMoves(currentPiece, pieces);
+    const castlingMoves = getCastlingMoves(currentPiece, pieces, boardMap);
     currentPiece.moveSet = moveSet.concat(castlingMoves);
     return;
   }
@@ -31,9 +33,9 @@ function assignThreats(
   currentPiece: PieceType,
   move: MoveType,
   playerColor: Color,
-  pieces: PieceType[]
+  boardMap: Map<string, PieceType>
 ) {
-  const pieceThreats = checkThreats(currentPiece, move.id, pieces, playerColor);
+  const pieceThreats = checkThreats(currentPiece, move.id, playerColor, boardMap);
   for (const threat of pieceThreats) move.threats.add(threat);
 }
 
@@ -43,6 +45,7 @@ function assignPawnEnPasantThreat(
   currentPiece: Pawn,
   pieces: PieceType[]
 ): void {
+  // Lookup is by piece id (not cell id) — array scan is correct here.
   if (!currentPiece.hasMoved && enPassantMove.threats.size === 0) {
     for (const t of regularMove.threats) {
       const foe = pieces.find((f) => f.id === t);
@@ -51,7 +54,11 @@ function assignPawnEnPasantThreat(
   }
 }
 
-function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
+function getCastlingMoves(
+  king: King,
+  pieces: PieceType[],
+  boardMap: Map<string, PieceType>
+): MoveType[] {
   const cMoves: MoveType[] = [];
   if (king.isInDanger || king.hasMoved) return cMoves;
 
@@ -72,9 +79,9 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
       const cell = rcToNot(row, col);
       const threats =
         Math.abs(kingCell.col - col) < 3
-          ? checkThreats(king, cell, pieces, king.color)
+          ? checkThreats(king, cell, king.color, boardMap)
           : [];
-      if (isOcupied(pieces, cell) || threats.length > 0) {
+      if (boardMap.has(cell) || threats.length > 0) {
         blocked = true;
         break;
       }
@@ -95,8 +102,4 @@ function getCastlingMoves(king: King, pieces: PieceType[]): MoveType[] {
     cMoves.push(cMove);
   }
   return cMoves;
-}
-
-function isOcupied(pieces: PieceType[], cell: string): boolean {
-  return pieces.some((p) => cell === p.cell.id);
 }

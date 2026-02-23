@@ -1,8 +1,7 @@
 import { Color, GameType, PieceType } from "@/lib/chess-engine/types";
 import { PieceIcon } from "@/lib/chess-engine/constants/icons";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useParams } from "next/navigation";
-import { Locale, t } from "@/lib/locales/locale";
+import { useGlobalState } from "@/context/GlobalStateContext";
 
 type PieceProps = {
   piece: PieceType;
@@ -22,7 +21,7 @@ const Piece: React.FC<PieceProps> = ({
   gameType,
 }) => {
   const { playerState } = usePlayerState();
-  const { locale } = useParams<{ locale: Locale }>();
+  const { t } = useGlobalState();
 
   const { type, color } = piece;
 
@@ -54,7 +53,7 @@ const Piece: React.FC<PieceProps> = ({
   return (
     <button
       data-piece-id={piece.id}
-      title={t(locale, `chess.glossary.pieces.${piece.type}`) + piece.id}
+      title={t(`chess.glossary.pieces.${piece.type}`) + piece.id}
       className={`relative ${pieceStyle} ${grabStyle} ${canTakeStyle} ${orientationStyle} bg-transparent`}
     >
       <PieceIcon color={color} type={type} />

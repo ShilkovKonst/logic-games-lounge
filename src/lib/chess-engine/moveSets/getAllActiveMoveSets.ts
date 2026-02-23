@@ -4,17 +4,20 @@ import { getAttackTrajectory } from "./getAttackTrajectory";
 import { Color, King, PieceType } from "../types";
 import { checkPieceFinalMoves } from "./checkPieceFinalMoves";
 import { notToRC } from "../utils/cellUtil";
-import { getActivePieces, getPiece } from "../utils/pieceUtils";
+import { buildBoardMap, getActivePieces, getPiece } from "../utils/pieceUtils";
 
 export function getAllActiveMoveSets(player: Color, pieces: PieceType[]): King {
-  const king = checkKingSafety(pieces, player);
+  // Build once — O(n). All downstream lookups are O(1) via the map.
+  const boardMap = buildBoardMap(pieces);
+
+  const king = checkKingSafety(pieces, player, boardMap);
   const doubleCheck = king.cell.threats.size > 1;
   const activePieces = getActivePieces(player, pieces);
   for (const p of activePieces) {
     p.moveSet.length = 0;
     if (p.color !== player) continue;
     if (doubleCheck && p.id !== king.id) continue;
-    const moveSet = checkPieceFinalMoves(p, pieces, player, king);
+    const moveSet = checkPieceFinalMoves(p, player, king, boardMap);
     p.moveSet = moveSet;
     if (!king.isInDanger || p.id === king.id) continue;
 

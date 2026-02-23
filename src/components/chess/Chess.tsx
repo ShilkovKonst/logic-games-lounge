@@ -1,6 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
-/* eslint-disable @typescript-eslint/no-unused-expressions */
-/* eslint-disable react-hooks/exhaustive-deps */
 "use client";
 import {
   Color,
@@ -22,8 +19,7 @@ import {
   flip,
   gameReducer,
 } from "@/lib/chess-engine/reducer/chessReducer";
-import { Locale, t } from "@/lib/locales/locale";
-import { useParams } from "next/navigation";
+import { useGlobalState } from "@/context/GlobalStateContext";
 
 type ChessProps = {
   gameType: GameType;
@@ -40,7 +36,7 @@ const Chess: React.FC<ChessProps> = ({
   pieces,
   plState,
 }) => {
-  const { locale } = useParams<{locale: Locale}>();
+  const { t } = useGlobalState();
   const { playerState, setPlayerState } = usePlayerState();
   const [isReset, setIsReset] = useState<boolean>(false);
   const [modal, setModal] = useState<Modal | null>(null);
@@ -73,10 +69,10 @@ const Chess: React.FC<ChessProps> = ({
     setIsReset(true);
     setModal({
       turn: state.turnDetails,
-      title: t(locale, "chess.modal.reset.title"),
-      message: t(locale, "chess.modal.reset.message"),
-      confirmText: t(locale, "chess.modal.reset.confirm"),
-      cancelText: t(locale, "chess.modal.reset.cancel"),
+      title: t("chess.modal.reset.title"),
+      message: t("chess.modal.reset.message"),
+      confirmText: t("chess.modal.reset.confirm"),
+      cancelText: t("chess.modal.reset.cancel"),
       handleClick,
     });
   };
@@ -91,24 +87,24 @@ const Chess: React.FC<ChessProps> = ({
         turn: state.turnDetails,
         title:
           state.currentStatus.check === "CHECKMATE"
-            ? t(locale, "chess.modal.checkmate.title", {
-                player: t(locale, `chess.glossary.color.${flip(state.currentTurn)}`),
+            ? t("chess.modal.checkmate.title", {
+                player: t(`chess.glossary.color.${flip(state.currentTurn)}`),
               })
-            : t(locale, "chess.modal.draw.title", {
-                draw: t(locale, `chess.glossary.draw.${state.currentStatus.draw}`),
+            : t("chess.modal.draw.title", {
+                draw: t(`chess.glossary.draw.${state.currentStatus.draw}`),
               }),
         message:
           state.currentStatus.check === "CHECKMATE"
-            ? t(locale, "chess.modal.checkmate.message")
-            : t(locale, "chess.modal.draw.message"),
+            ? t("chess.modal.checkmate.message")
+            : t("chess.modal.draw.message"),
         confirmText:
           state.currentStatus.check === "CHECKMATE"
-            ? t(locale, "chess.modal.checkmate.confirm")
-            : t(locale, "chess.modal.draw.confirm"),
+            ? t("chess.modal.checkmate.confirm")
+            : t("chess.modal.draw.confirm"),
         cancelText:
           state.currentStatus.check === "CHECKMATE"
-            ? t(locale, "chess.modal.checkmate.cancel")
-            : t(locale, "chess.modal.draw.cancel"),
+            ? t("chess.modal.checkmate.cancel")
+            : t("chess.modal.draw.cancel"),
         handleClick,
       });
     }

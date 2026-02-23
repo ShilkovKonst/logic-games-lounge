@@ -39,7 +39,7 @@ type CastlingType = "short" | "long";
 
 export interface TurnDetails {
   turnNo: number;
-  curentPlayer: Color;
+  currentPlayer: Color;
   boardState: PieceType[];
   pieceToMove?: string;
   fromCell?: string;
