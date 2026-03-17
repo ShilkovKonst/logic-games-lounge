@@ -6,6 +6,41 @@
   },
   "currentLanguage": "English",
   "mainMenu": "Main menu",
+  "nav": {
+    "home": "Home"
+  },
+  "landing": {
+    "chooseMode": "Choose a mode",
+    "online": "Online",
+    "onlineDesc": "Play against a friend from anywhere",
+    "hotseat": "Hotseat",
+    "hotseatDesc": "Pass & play on the same device",
+    "chooseGame": "Choose a game",
+    "chess": "Chess",
+    "back": "Back"
+  },
+  "lobby": {
+    "title": "Online Lobby",
+    "selectGame": "Select a game to host",
+    "yourCode": "Your room code",
+    "copy": "Copy",
+    "copied": "Copied!",
+    "copyLink": "Copy link",
+    "linkCopied": "Link copied!",
+    "orShareLink": "Or share a link",
+    "gettingCode": "Getting room code…",
+    "asWhite": "You will play as White",
+    "asBlack": "You will play as Black",
+    "createGame": "Create a game",
+    "joinGame": "Join a game",
+    "enterCode": "Enter room code",
+    "join": "Join",
+    "connecting": "Connecting…",
+    "waiting": "Waiting for opponent…",
+    "connected": "Opponent connected! Starting…",
+    "error": "Connection error. Please reload the page.",
+    "start": "Start"
+  },
   "chess": {
     "glossary": {
       "pieces": {
@@ -47,7 +82,9 @@
       "status": "status",
       "turnNo": "turn №",
       "restartButton": "Restart",
-      "drawButton": "Request draw"
+      "drawButton": "Request draw",
+      "playingAs": "You play as {{color}}",
+      "waiting": "(waiting)"
     },
     "modal": {
       "reset": {
@@ -73,6 +110,20 @@
         "message": "The board will revert to the state before this turn.",
         "confirm": "Undo",
         "cancel": "Cancel"
+      }
+    },
+    "online": {
+      "leave": {
+        "title": "Leave game?",
+        "message": "Your opponent will be notified and the game will end.",
+        "confirm": "Leave",
+        "cancel": "Stay"
+      },
+      "disconnected": {
+        "host": "Host has disconnected.",
+        "guest": "Guest has disconnected.",
+        "lost": "Connection lost.",
+        "backToMenu": "Back to menu"
       }
     }
   }

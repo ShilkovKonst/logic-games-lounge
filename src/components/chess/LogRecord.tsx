@@ -1,14 +1,22 @@
-import { getDisambiguation, getSAN } from "@/lib/chess-engine/core/constants/san";
-import { Pieces, TurnDetails } from "@/lib/chess-engine/core/types";
+import {
+  getDisambiguation,
+  getSAN,
+} from "@/lib/chess-engine/core/constants/san";
+import { GameType, Pieces, TurnDetails } from "@/lib/chess-engine/core/types";
 import UndoIcon from "@/lib/icons/UndoIcon";
 import { useGlobalState } from "@/context/GlobalStateContext";
 
 type LogRecordProps = {
   turn: TurnDetails;
+  gameType: GameType;
   handleClick: () => void;
 };
 
-const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
+const LogRecord: React.FC<LogRecordProps> = ({
+  turn,
+  gameType,
+  handleClick,
+}) => {
   const { t } = useGlobalState();
 
   const {
@@ -42,8 +50,7 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
         pieceToTake: t(`chess.glossary.pieces.${pieceToTake?.slice(0, -2)}`),
       })}`;
     if (isEnPassant) title += ` ${t(`chess.glossary.enPassant`)}`;
-    if (castling)
-      title += `; ${t(`chess.glossary.castling.${castling}`)}`;
+    if (castling) title += `; ${t(`chess.glossary.castling.${castling}`)}`;
     if (isExchange && pieceToExchange)
       title += `; ${t(`chess.log.promotes`, {
         pieceToExchange: t(`chess.glossary.pieces.${pieceToExchange}`),
@@ -93,12 +100,20 @@ const LogRecord: React.FC<LogRecordProps> = ({ turn, handleClick }) => {
 
   return (
     <div className="flex justify-start items-center gap-1 w-[130px] md:w-[112px] h-10 rounded-full  mx-1 bg-linear-to-r from-amber-700 to-transparent hover:from-transparent hover:to-amber-700 transition-colors ease-in-out duration-200">
-      <button
-        onClick={() => handleClick()}
-        className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition-colors ease-in-out duration-200 inset-shadow-log-amberdark`}
-      >
-        <UndoIcon color={turn.currentPlayer} />
-      </button>
+      {gameType !== "online" ? (
+        <button
+          onClick={() => handleClick()}
+          className={`cursor-pointer rounded-full bg-amber-700 hover:bg-amber-500 transition-colors ease-in-out duration-200 inset-shadow-log-amberdark`}
+        >
+          <UndoIcon color={turn.currentPlayer} />
+        </button>
+      ) : (
+        <div
+          className={`rounded-full ${
+            turn.currentPlayer === "white" ? "bg-[#fef3c6]" : "bg-[#461901]"
+          } inset-shadow-log-amberdark w-9 h-9 flex items-center justify-center shrink-0`}
+        />
+      )}
       <button title={title()} onTouchStart={() => {}} className="w-full h-full">
         <p className="cursor-default w-full text-start text-sm">{san()}</p>
       </button>

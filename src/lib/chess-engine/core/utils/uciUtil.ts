@@ -1,3 +1,5 @@
+import { Pieces } from "../types";
+
 export function encodeMove(fromCell: string, toCell: string, promo?: string): string {
   return promo ? `${fromCell}${toCell}${promo}` : `${fromCell}${toCell}`;
 }
@@ -14,13 +16,25 @@ export function decodeMove(msg: string): {
   };
 }
 
-const UCI_PROMO_MAP: Record<string, string> = {
+const UCI_PROMO_MAP: Record<string, Pieces> = {
   q: "queen",
   r: "rook",
   b: "bishop",
   n: "knight",
 };
 
-export function uciPromoToType(char: string): string {
+const TYPE_TO_UCI_MAP: Partial<Record<Pieces, string>> = {
+  queen: "q",
+  rook: "r",
+  bishop: "b",
+  knight: "n",
+};
+
+export function uciPromoToType(char: string): Pieces {
   return UCI_PROMO_MAP[char] ?? "queen";
+}
+
+export function typeToUciPromo(type: Pieces | undefined): string | undefined {
+  if (!type) return undefined;
+  return TYPE_TO_UCI_MAP[type];
 }

@@ -6,6 +6,41 @@
   },
   "currentLanguage": "Русский",
   "mainMenu": "Главное меню",
+  "nav": {
+    "home": "На главную"
+  },
+  "landing": {
+    "chooseMode": "Выберите режим",
+    "online": "Онлайн",
+    "onlineDesc": "Игра с другом из любой точки мира",
+    "hotseat": "Hotseat",
+    "hotseatDesc": "Игра на одном устройстве по очереди",
+    "chooseGame": "Выберите игру",
+    "chess": "Шахматы",
+    "back": "Назад"
+  },
+  "lobby": {
+    "title": "Онлайн лобби",
+    "selectGame": "Выберите игру для хоста",
+    "yourCode": "Код вашей комнаты",
+    "copy": "Копировать",
+    "copied": "Скопировано!",
+    "copyLink": "Скопировать ссылку",
+    "linkCopied": "Ссылка скопирована!",
+    "orShareLink": "Или поделитесь ссылкой",
+    "gettingCode": "Получение кода…",
+    "asWhite": "Вы играете белыми",
+    "asBlack": "Вы играете чёрными",
+    "createGame": "Создать игру",
+    "joinGame": "Присоединиться к игре",
+    "enterCode": "Введите код комнаты",
+    "join": "Войти",
+    "connecting": "Подключение…",
+    "waiting": "Ожидание соперника…",
+    "connected": "Соперник подключился! Начинаем…",
+    "error": "Ошибка подключения. Перезагрузите страницу.",
+    "start": "Начать"
+  },
   "chess": {
     "glossary": {
       "pieces": {
@@ -36,18 +71,20 @@
     },
     "log": {
       "moves": "ходит с {{fromCell}} на {{toCell}}",
-      "takes": "берёт \u2192 {{pieceToTake}}",
-      "promotes": "превращается в \u2192 {{pieceToExchange}}",
-      "checkTo": "шах \u2192 {{color}}",
-      "checkmateTo": "мат \u2192 {{color}}",
-      "draw": "ничья \u2192 {{draw}}"
+      "takes": "берёт → {{pieceToTake}}",
+      "promotes": "превращается в → {{pieceToExchange}}",
+      "checkTo": "шах → {{color}}",
+      "checkmateTo": "мат → {{color}}",
+      "draw": "ничья → {{draw}}"
     },
     "header": {
       "currentTurn": "Текущий игрок",
       "status": "статус",
       "turnNo": "ход №",
       "restartButton": "Начать заново",
-      "drawButton": "Предложить ничью"
+      "drawButton": "Предложить ничью",
+      "playingAs": "Ваш цвет - {{color}}",
+      "waiting": "(ожидание)"
     },
     "modal": {
       "reset": {
@@ -73,6 +110,20 @@
         "message": "Доска вернётся к состоянию до этого хода",
         "confirm": "Откатить",
         "cancel": "Отмена"
+      }
+    },
+    "online": {
+      "leave": {
+        "title": "Покинуть игру?",
+        "message": "Соперник получит уведомление и игра завершится.",
+        "confirm": "Покинуть",
+        "cancel": "Остаться"
+      },
+      "disconnected": {
+        "host": "Хост отключился.",
+        "guest": "Гость отключился.",
+        "lost": "Соединение потеряно.",
+        "backToMenu": "На главную"
       }
     }
   }

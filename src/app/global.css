@@ -84,6 +84,13 @@
       var(--blur-radius) var(--color-lime-400),
     inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
       var(--color-lime-400);
+
+  --animate-hourglass: hourglass-flip 1.5s ease-in-out infinite alternate;
+}
+
+@keyframes hourglass-flip {
+  0%, 35%  { transform: rotate(0deg); }
+  65%, 100% { transform: rotate(180deg); }
 }
 
 @media (prefers-color-scheme: dark) {

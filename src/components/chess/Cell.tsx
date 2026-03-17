@@ -4,6 +4,7 @@ import PiecesToExchange from "./PiecesToExchange";
 import { memo } from "react";
 import { CellHighlightType } from "@/lib/chess-engine/core/utils/styleUtils";
 import { notToRC } from "@/lib/chess-engine/core/utils/cellUtil";
+import { usePlayerState } from "@/context/PlayerStateContext";
 
 type CellProps = {
   cell: string;
@@ -22,6 +23,9 @@ const Cell = memo<CellProps>(function Cell({
   isExchange,
   highlight,
 }) {
+  const { playerState } = usePlayerState();
+  const isMyTurn = gameType === "hotseat" || currentTurn === playerState.color;
+
   const { row, col } = notToRC(cell);
   const {
     isSelected,
@@ -69,7 +73,7 @@ const Cell = memo<CellProps>(function Cell({
   const borderStyle = `border-amber-950 ${row === 0 ? `border-t-2` : ""}${
     row === 7 ? "border-b-2" : ""
   }${col === 0 ? " border-l-2" : ""}${col === 7 ? " border-r-2" : ""}`;
-  const hoverStyle = piece && piece.color === currentTurn && !isSelected ? "hover:inset-shadow-select-hover" : "";
+  const hoverStyle = piece && piece.color === currentTurn && !isSelected && isMyTurn ? "hover:inset-shadow-select-hover" : "";
   const moveStyle = isMove ? "move cursor-pointer" : "";
 
   return (

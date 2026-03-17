@@ -6,6 +6,41 @@
   },
   "currentLanguage": "Française",
   "mainMenu": "Menu principal",
+  "nav": {
+    "home": "Accueil"
+  },
+  "landing": {
+    "chooseMode": "Choisissez un mode",
+    "online": "En ligne",
+    "onlineDesc": "Jouez contre un ami depuis n'importe où",
+    "hotseat": "Hotseat",
+    "hotseatDesc": "Jouez à tour de rôle sur le même appareil",
+    "chooseGame": "Choisissez un jeu",
+    "chess": "Échecs",
+    "back": "Retour"
+  },
+  "lobby": {
+    "title": "Lobby en ligne",
+    "selectGame": "Sélectionnez un jeu",
+    "yourCode": "Code de votre salle",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "copyLink": "Copier le lien",
+    "linkCopied": "Lien copié !",
+    "orShareLink": "Ou partagez un lien",
+    "gettingCode": "Obtention du code…",
+    "asWhite": "Vous jouez avec les blancs",
+    "asBlack": "Vous jouez avec les noirs",
+    "createGame": "Créer une partie",
+    "joinGame": "Rejoindre une partie",
+    "enterCode": "Entrez le code de la salle",
+    "join": "Rejoindre",
+    "connecting": "Connexion…",
+    "waiting": "En attente de l'adversaire…",
+    "connected": "Adversaire connecté ! Démarrage…",
+    "error": "Erreur de connexion. Veuillez recharger la page.",
+    "start": "Commencer"
+  },
   "chess": {
     "glossary": {
       "pieces": {
@@ -39,7 +74,9 @@
       "status": "situation",
       "turnNo": "tour №",
       "restartButton": "Recommencer",
-      "drawButton": "Proposer la nulle"
+      "drawButton": "Proposer la nulle",
+      "playingAs": "Vous jouez avec les {{color}}s",
+      "waiting": "(en attente)"
     },
     "log": {
       "moves": "déplace de {{fromCell}} à {{toCell}}",
@@ -70,9 +107,23 @@
       },
       "undo": {
         "title": "Annuler ce coup et tous les suivants ?",
-        "message": "Le plateau reviendra à l’état avant ce coup.",
+        "message": "Le plateau reviendra à l'état avant ce coup.",
         "confirm": "Revenir en arrière",
         "cancel": "Annuler"
+      }
+    },
+    "online": {
+      "leave": {
+        "title": "Quitter la partie ?",
+        "message": "Votre adversaire sera notifié et la partie se terminera.",
+        "confirm": "Quitter",
+        "cancel": "Rester"
+      },
+      "disconnected": {
+        "host": "L'hôte s'est déconnecté.",
+        "guest": "L'invité s'est déconnecté.",
+        "lost": "Connexion perdue.",
+        "backToMenu": "Retour au menu"
       }
     }
   }

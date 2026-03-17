@@ -98,6 +98,8 @@ export function produceMove(
   }, []);
 
   patch.toCell = move.id;
+  patch.fromCell = selectedPiece.cell.id;
+  patch.pieceToMove = selectedPiece.type + selectedPiece.id;
   patch.ambiguity = ambiguity;
 
   const workingBoard: PieceType[] = state.currentBoardState.map((p) => ({

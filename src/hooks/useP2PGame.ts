@@ -5,6 +5,7 @@ import type { DataConnection, Peer as PeerType } from "peerjs";
 export type P2PStatus = "idle" | "waiting" | "connected" | "error";
 
 type UseP2PGameOptions = {
+  enabled: boolean;
   onRemoteMove: (msg: string) => void;
 };
 
@@ -16,7 +17,7 @@ export type UseP2PGameReturn = {
   disconnect: () => void;
 };
 
-export function useP2PGame({ onRemoteMove }: UseP2PGameOptions): UseP2PGameReturn {
+export function useP2PGame({ enabled, onRemoteMove }: UseP2PGameOptions): UseP2PGameReturn {
   const [peerId, setPeerId] = useState<string | null>(null);
   const [status, setStatus] = useState<P2PStatus>("idle");
 
@@ -40,6 +41,7 @@ export function useP2PGame({ onRemoteMove }: UseP2PGameOptions): UseP2PGameRetur
   }, []);
 
   useEffect(() => {
+    if (!enabled) return;
     let peer: PeerType;
 
     import("peerjs").then(({ default: Peer }) => {
@@ -59,7 +61,7 @@ export function useP2PGame({ onRemoteMove }: UseP2PGameOptions): UseP2PGameRetur
       peerRef.current = null;
       connRef.current = null;
     };
-  }, [setupConnection]);
+  }, [enabled, setupConnection]);
 
   const connect = useCallback((remoteId: string) => {
     if (!peerRef.current) return;

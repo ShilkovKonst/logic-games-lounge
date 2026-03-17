@@ -50,7 +50,7 @@ const ModalBlock: React.FC<ConfirmationBlockProps> = ({
     <div
       id="foreground"
       onClick={(e) => handleClick(e)}
-      className="fixed inset-0 bg-black/10 backdrop-blur-sm z-50 flex items-center justify-center"
+      className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
     >
       <div
         id="body"

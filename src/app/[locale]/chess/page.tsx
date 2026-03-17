@@ -1,9 +1,34 @@
-import React from 'react'
+import Chess from "@/components/chess/Chess";
+import {
+  Color,
+  PlayerState,
+  GameType,
+  PieceType,
+} from "@/lib/chess-engine/core/types";
+import { populateBoard } from "@/lib/chess-engine/core/utils/populateBoard";
 
-const page = () => {
+export default function ChessHotseatPage() {
+  const gameType: GameType = "hotseat";
+  const currentTurn: Color = "white";
+  const currentTurnNo: number = 1;
+  const pieces: PieceType[] = populateBoard("white");
+  const playerState: PlayerState = {
+    type: "host",
+    color: "white",
+    status: { check: "NORMAL", draw: "none" },
+  };
+
   return (
-    <div>page</div>
-  )
+    <main className="font-sans flex items-center justify-center min-h-screen">
+      <div className="flex flex-col justify-center items-center">
+        <Chess
+          pieces={pieces}
+          currentTurn={currentTurn}
+          currentTurnNo={currentTurnNo}
+          plState={playerState}
+          gameType={gameType}
+        />
+      </div>
+    </main>
+  );
 }
-
-export default page

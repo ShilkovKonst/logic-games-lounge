@@ -7,7 +7,7 @@ import {
   PlayerState,
 } from "@/lib/chess-engine/core/types";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useEffect, useReducer, useState } from "react";
+import { useEffect, useReducer, useRef, useState } from "react";
 import { populateBoard } from "@/lib/chess-engine/core/utils/populateBoard";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import ModalBlock from "./ModalBlock";
@@ -20,6 +20,8 @@ import {
   gameReducer,
 } from "@/lib/chess-engine/local/reducer/chessReducer";
 import { useGlobalState } from "@/context/GlobalStateContext";
+import { applyRemoteMove } from "@/lib/chess-engine/online/applyRemoteMove";
+import { encodeMove, typeToUciPromo } from "@/lib/chess-engine/core/utils/uciUtil";
 
 type ChessProps = {
   gameType: GameType;
@@ -27,6 +29,8 @@ type ChessProps = {
   currentTurnNo: number;
   pieces: PieceType[];
   plState: PlayerState | null;
+  sendMove?: (msg: string) => void;
+  registerRemoteHandler?: (handler: (msg: string) => void) => void;
 };
 
 const Chess: React.FC<ChessProps> = ({
@@ -35,6 +39,8 @@ const Chess: React.FC<ChessProps> = ({
   currentTurnNo,
   pieces,
   plState,
+  sendMove,
+  registerRemoteHandler,
 }) => {
   const { t } = useGlobalState();
   const { playerState, setPlayerState } = usePlayerState();
@@ -54,6 +60,27 @@ const Chess: React.FC<ChessProps> = ({
     selectedPiece: undefined,
     isExchange: false,
   });
+
+  // Always-fresh state ref — used by the remote handler to avoid stale closures
+  const stateRef = useRef(state);
+  useEffect(() => { stateRef.current = state; });
+
+  // Register the incoming-move handler once on mount.
+  // Uses stateRef so the handler always sees the latest state.
+  useEffect(() => {
+    registerRemoteHandler?.(
+      (msg) => applyRemoteMove(msg, stateRef.current, dispatch)
+    );
+  }, [registerRemoteHandler]);
+
+  // Send our move to the opponent after every END_TURN
+  useEffect(() => {
+    if (gameType !== "online" || !sendMove) return;
+    const last = state.log.at(-1)?.at(-1);
+    if (!last || last.currentPlayer !== playerState.color) return;
+    const promo = last.isExchange ? typeToUciPromo(last.pieceToExchange) : undefined;
+    sendMove(encodeMove(last.fromCell!, last.toCell!, promo));
+  }, [state.log]);
 
   const handleClick = () => {
     dispatch({
@@ -141,6 +168,7 @@ const Chess: React.FC<ChessProps> = ({
         <Board state={state} dispatch={dispatch} gameType={gameType} />
         <LogBlock
           state={state}
+          gameType={gameType}
           dispatch={dispatch}
           setIsReset={setIsReset}
           setModal={setModal}

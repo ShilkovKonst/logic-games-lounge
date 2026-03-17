@@ -1,5 +1,6 @@
 import { GlobalProvider } from "./GlobalStateContext";
 import { PlayerProvider } from "./PlayerStateContext";
+import { P2PProvider } from "./P2PContext";
 
 export default function AppProviders({
   children,
@@ -8,7 +9,9 @@ export default function AppProviders({
 }) {
   return (
     <GlobalProvider>
-      <PlayerProvider>{children}</PlayerProvider>
+      <PlayerProvider>
+        <P2PProvider>{children}</P2PProvider>
+      </PlayerProvider>
     </GlobalProvider>
   );
 }

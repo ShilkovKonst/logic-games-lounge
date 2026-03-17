@@ -1,5 +1,5 @@
 "use client";
-import { GameState, Modal, TurnDetails } from "@/lib/chess-engine/core/types";
+import { GameState, GameType, Modal, TurnDetails } from "@/lib/chess-engine/core/types";
 import { GameAction } from "@/lib/chess-engine/local/reducer/chessReducer";
 import {
   ActionDispatch,
@@ -14,6 +14,7 @@ import { useGlobalState } from "@/context/GlobalStateContext";
 
 type LogBlockProps = {
   state: GameState;
+  gameType: GameType;
   dispatch: ActionDispatch<[action: GameAction]>;
   setIsReset: Dispatch<SetStateAction<boolean>>;
   setModal: Dispatch<SetStateAction<Modal | null>>;
@@ -21,6 +22,7 @@ type LogBlockProps = {
 
 const LogBlock: React.FC<LogBlockProps> = ({
   state,
+  gameType,
   dispatch,
   setIsReset,
   setModal,
@@ -90,6 +92,7 @@ const LogBlock: React.FC<LogBlockProps> = ({
             <LogRecord
               key={j}
               turn={turn}
+              gameType={gameType}
               handleClick={() => handleModalClick(turn)}
             />
           ))}

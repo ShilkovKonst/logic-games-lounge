@@ -31,7 +31,7 @@ const Piece: React.FC<PieceProps> = ({
 
   const pieceStyle =
     piece.color === currentTurn
-      ? !isExchange
+      ? isCurrentPlayer && !isExchange
         ? "piece"
         : ""
       : isInMoveSet

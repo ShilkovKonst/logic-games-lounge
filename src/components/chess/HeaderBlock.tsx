@@ -2,6 +2,8 @@
 import { GameState, GameType } from "@/lib/chess-engine/core/types";
 import HeaderButton from "./HeaderButton";
 import { useGlobalState } from "@/context/GlobalStateContext";
+import { usePlayerState } from "@/context/PlayerStateContext";
+import HourglassIcon from "@/lib/icons/HourglassIcon";
 
 type HeaderType = {
   state: GameState;
@@ -15,17 +17,32 @@ const HeaderBlock: React.FC<HeaderType> = ({
   gameType,
 }) => {
   const { t } = useGlobalState();
+  const { playerState } = usePlayerState();
+
+  const isMyTurn =
+    gameType === "hotseat" || state.currentTurn === playerState.color;
 
   return (
-    <div className="bg-amber-150 border-amber-950 p-4 backdrop-blur-lg w-[404px] md:w-[708px] lg:w-[804px] border-4 border-b-0">
-      <div className="flex justify-between items-center gap-4 text-sm md:text-base">
-        <div className="flex flex-col justify-center items-start lg:flex-row lg:justify-between lg:items-center gap-2 md:gap-4 lg:gap-6 font-semibold">
+    <div className="bg-amber-150 border-amber-950 p-4 w-[404px] md:w-[708px] lg:w-[804px] border-4 border-b-0">
+      <div className="flex justify-between items-center gap-4 text-sm md:text-base h-full">
+        <div className="flex flex-col justify-between items-start font-semibold h-full">
+          {gameType === "online" && (
+            <p className="font-semibold mb-2">
+              {t("chess.header.playingAs")}
+              <span
+                className={`font-bold uppercase ${
+                  playerState.color === "white"
+                    ? "text-amber-800"
+                    : "text-amber-950"
+                }`}
+              >
+                {t(`chess.glossary.color.${playerState.color}`)}
+              </span>
+            </p>
+          )}
           <p className="text-start capitalize *:pl-1">
             {t("chess.header.turnNo")}:
-            <span className="font-bold">{state.currentTurnNo}</span>
-          </p>
-          <p className="font-semibold *:pl-1 capitalize">
-            {`${t("chess.header.currentTurn")}:`}
+            <span className="font-bold">{state.currentTurnNo}</span> -
             <span
               className={`font-bold ${
                 state.currentTurn === "white"
@@ -41,11 +58,17 @@ const HeaderBlock: React.FC<HeaderType> = ({
                   state.currentStatus.check === "CHECKMATE"
                     ? t("chess.glossary.checkmate")
                     : state.currentStatus.check === "CHECK"
-                    ? t("chess.glossary.check")
-                    : state.currentStatus.draw === "stalemate"
-                    ? t("chess.glossary.draw.stalemate")
-                    : ""
+                      ? t("chess.glossary.check")
+                      : state.currentStatus.draw === "stalemate"
+                        ? t("chess.glossary.draw.stalemate")
+                        : ""
                 }`}
+              </span>
+            )}
+            {!isMyTurn && (
+              <span className="inline-flex items-center gap-1 font-semibold normal-case pl-1">
+                {t("chess.header.waiting")}
+                <HourglassIcon />
               </span>
             )}
           </p>

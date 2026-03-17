@@ -1,4 +1,15 @@
-# Plan: Online Multiplayer (P2P, no backend)
+# Plan: Online Multiplayer
+
+Two online modes are planned:
+
+| Mode | Transport | Auth | Room discovery | Status |
+|---|---|---|---|---|
+| **Quick Play** | WebRTC / PeerJS | anonymous | share code manually | ✅ Implemented |
+| **Play Online** | WebSocket | account required | room list / matchmaking | 🔜 Future |
+
+---
+
+## Mode 1 — Quick Play (P2P, implemented)
 
 Technology: **WebRTC via PeerJS** — PeerJS's free signaling server is used only
 for the handshake (~1 KB, once). After the connection is established all traffic
@@ -7,9 +18,7 @@ goes directly between browsers.
 Message format: **UCI notation** — `"e2e4"`, `"e7e8q"` (promotion), 4–5 chars.
 Decoded using the existing `handlePieceClick` + `produceMove` / `produceExchange`.
 
----
-
-## Step 1 — Install PeerJS
+### Step 1 — Install PeerJS ✅
 
 ```bash
 npm install peerjs
@@ -19,7 +28,7 @@ Types are bundled with the package, no separate `@types` install needed.
 
 ---
 
-## Step 2 — Write the `useP2PGame` hook
+### Step 2 — Write the `useP2PGame` hook ✅
 
 **File:** `src/hooks/useP2PGame.ts`
 
@@ -43,7 +52,7 @@ Internals:
 
 ---
 
-## Step 3 — Write `applyRemoteMove`
+### Step 3 — Write `applyRemoteMove` ✅
 
 **File:** `src/lib/chess-engine/online/applyRemoteMove.ts`
 
@@ -51,14 +60,6 @@ Lives in `online/` — online-mode orchestration. Imports `produceMove`/`produce
 from `local/` because both modes share the same React `dispatch` pipeline.
 
 ```ts
-import { GameState }        from "@/lib/chess-engine/core/types";
-import { getPieceAt }       from "@/lib/chess-engine/core/utils/pieceUtils";
-import { decodeMove }       from "@/lib/chess-engine/core/utils/uciUtil";
-import { handlePieceClick } from "@/lib/chess-engine/local/moveHandler/moveHandler";
-import { produceMove,
-         produceExchange }  from "@/lib/chess-engine/local/moveHandler/produceMoves";
-import { GameAction }       from "@/lib/chess-engine/local/reducer/chessReducer";
-
 export function applyRemoteMove(
   msg: string,
   state: GameState,
@@ -78,124 +79,144 @@ If no matching move is found — ignore the message (invalid input).
 
 **Castling in `applyRemoteMove`:**
 Castling is encoded as a regular king move — `"e1g1"` (kingside) or `"e1c1"`
-(queenside). Neither side adds a special marker. On the receiving end the king's
-`moveSet` already contains both castling moves with `special.type === "castling"`.
-When `applyRemoteMove` finds a move by `toCell === "g1"` or `"c1"` it passes it
-to `produceMove` — which internally calls `handleMoveClick` → `handleCastling`
-to reposition the rook. No extra protocol handling for castling is needed.
+(queenside). On the receiving end the king's `moveSet` already contains both
+castling moves with `special.type === "castling"`. No extra protocol handling needed.
 
 ---
 
-## Step 4 — Write the UCI encoder/decoder
+### Step 4 — Write the UCI encoder/decoder ✅
 
 **File:** `src/lib/chess-engine/core/utils/uciUtil.ts`
 
-Lives in `core/` — pure encoding logic, no side effects, no React.
-
 ```ts
-// Encoder — called after produceMove, before sendMove
 export function encodeMove(fromCell: string, toCell: string, promo?: string): string
-
-// Decoder — called inside applyRemoteMove
 export function decodeMove(msg: string): { fromCell: string; toCell: string; promo: string | null }
 ```
 
-Examples:
-- `encodeMove("e2", "e4")` → `"e2e4"`
-- `encodeMove("e7", "e8", "q")` → `"e7e8q"` (promotion)
-- `encodeMove("e1", "g1")` → `"e1g1"` (kingside castling — king move)
-- `encodeMove("e1", "c1")` → `"e1c1"` (queenside castling — king move)
-- `encodeMove("e5", "d6")` → `"e5d6"` (en passant — regular notation)
+---
 
-Castling and en passant require no special symbol: `move.special` is read
-by the engine inside `produceMove`.
+### Step 5 — Integrate move sending into `Chess.tsx` ✅
+
+`useEffect` on `state.log` — after every `END_TURN` sends UCI to opponent
+if `last.currentPlayer === playerState.color`.
 
 ---
 
-## Step 5 — Integrate move sending into `Chess.tsx`
+### Step 6 — Lobby ✅
 
-Wrap `dispatch` in `Chess.tsx` so that after every move a UCI string is sent
-to the opponent.
+**Files:**
+- `src/context/P2PContext.tsx` — P2P state, `enable` / `connect` / `startGame` / `registerGameHandler`
+- `src/app/[locale]/page.tsx` — landing page (Hotseat / Quick Play)
+- `src/app/[locale]/lobby/page.tsx` — universal P2P lobby (3 screens: select / host / guest)
+- `src/app/[locale]/chess/online/page.tsx` — chess online game page
 
-Concretely: after `END_TURN` read from the updated `state.turnDetails`:
-`fromCell`, `toCell`, and `pieceToExchange` (if promotion) — then call
-`sendMove(encodeMove(...))`.
-
-Implementation options: a `useEffect` on `state.currentTurnNo`, or a
-proxying `dispatch` wrapper inside the `useP2PGame` hook.
-
----
-
-## Step 6 — Create the lobby page
-
-**File:** `src/app/[locale]/chess/online/page.tsx`
-
-Two modes:
-
-**Create a game (host):**
-- Display the room code (peer ID)
-- "Copy code" button
-- Wait for the opponent to connect
-- On connection — navigate to the game screen
-
-**Join a game (guest):**
-- Input field for the room code
-- "Connect" button
-- On connection — navigate to the game screen
+Protocol: host sends `{"type":"init","game":"chess"}` on connect →
+guest receives game type and navigates automatically.
 
 ---
 
-## Step 7 — Pass parameters into `Chess.tsx`
+### Step 7 — Pass parameters into `Chess.tsx` ✅
 
-After a successful connection the lobby knows:
-- `gameType: "online"`
-- `playerState.color` (host = white, guest = black — or by choice)
+`src/app/[locale]/chess/online/page.tsx` passes to `<Chess>`:
+- `gameType="online"`
+- `plState` — derived from `playerColor` (host = white, guest = black)
+- `sendMove` and `registerRemoteHandler` from `P2PContext`
 
-Pass them as props to `<Chess>`. Move restriction by color already works
-in `Piece.tsx:29-30` when `gameType === "online"`.
-
----
-
-## Step 8 — Handle disconnection and reconnect
-
-In `useP2PGame`:
-- `conn.on("close")` → show a modal "Opponent disconnected"
-- "Reconnect" button → retry `peer.connect(remoteId)`
-- On reconnect — sync state by replaying the full move log,
-  or simply start a new game
+Move restriction by color works in `Piece.tsx` when `gameType === "online"`.
 
 ---
 
-## Step 9 — Adapt Undo for online mode
+### Step 8 — Handle disconnection ✅
 
-Currently `LogBlock` renders an undo button for every move.
-In online mode either:
-- Hide it (`gameType === "online"` → don't render undo buttons in `LogRecord`)
-- Or implement as a request: send `"undo"` to the opponent, wait for consent
+**Protocol message:** before closing, the leaving side sends
+`{"type":"disconnect","role":"host"|"guest"}`.
 
-Hiding is sufficient for the first version.
+**Intentional leave (home button):**
+- `TopLevelMenu` detects `/online` route via `usePathname`
+- Shows confirm modal: "Leave game?" with Leave / Stay buttons
+- On confirm: `leaveGame()` in `P2PContext` sends disconnect message,
+  calls `disconnect()`, clears `gameToPlay`, then navigates to home
+
+**Opponent disconnected:**
+- `P2PContext.handleMessage` catches `{"type":"disconnect","role":...}`
+  → sets `opponentLeft: "host" | "guest"`
+- `chess/online/page.tsx` shows modal: "Host/Guest has disconnected."
+  with "Back to menu" button
+
+**Unexpected drop (no protocol message):**
+- `conn.on("close")` sets `status → "waiting"`
+- `chess/online/page.tsx` detects `status !== "connected" && hasConnected && !opponentLeft`
+  → shows "Connection lost." modal
+
+Reconnect after disconnect is not implemented — both sides return to the main menu.
 
 ---
 
-## Files overview
+### Step 9 — Adapt Undo for online mode ✅
+
+`LogRecord` hides the undo button when `gameType === "online"`.
+
+---
+
+### Summary
+
+All planned P2P steps are complete. The Quick Play mode is fully functional:
+share a room code → connect → play → disconnect handled gracefully.
+
+---
+
+### Files overview
 
 | File | Location | Status |
 |---|---|---|
 | `produceMoves.ts` | `chess-engine/local/moveHandler/` | ✅ Done |
 | `chessReducer.ts` | `chess-engine/local/reducer/` | ✅ Done |
 | `useP2PGame.ts` | `src/hooks/` | ✅ Done |
-| `applyRemoteMove.ts` | `chess-engine/online/` | Step 3 |
-| `uciUtil.ts` | `chess-engine/core/utils/` | Step 4 |
-| `page.tsx` (online lobby) | `src/app/[locale]/chess/online/` | Step 6 |
-| `Chess.tsx` (edit) | `src/components/chess/` | Steps 5, 7 |
-| `LogRecord.tsx` (edit) | `src/components/chess/` | Step 9 |
+| `applyRemoteMove.ts` | `chess-engine/online/` | ✅ Done |
+| `uciUtil.ts` | `chess-engine/core/utils/` | ✅ Done |
+| `P2PContext.tsx` | `src/context/` | ✅ Done |
+| `page.tsx` (landing) | `src/app/[locale]/` | ✅ Done |
+| `page.tsx` (lobby) | `src/app/[locale]/lobby/` | ✅ Done |
+| `page.tsx` (chess online) | `src/app/[locale]/chess/online/` | ✅ Done |
+| `Chess.tsx` (edit) | `src/components/chess/` | ✅ Done |
+| `LogRecord.tsx` (edit) | `src/components/chess/` | ✅ Done |
 
 ---
 
-## What does NOT need to be done
+## Mode 2 — Play Online (WebSocket, future)
 
-- Sync the full `boardState` over the network — only the UCI string
-- Change the reducer or engine logic — everything already works
-- Run a server — PeerJS signaling is free and third-party
-- Validate moves separately on the receiving side —
-  if `move` is not found in `moveSet` the message is simply ignored
+Requires a server. Mongoose + JWT stubs already exist in the project (`lib/db.ts`,
+`lib/models/GameSession.ts`) as groundwork.
+
+### Planned features
+
+- **User accounts** — register / login (JWT)
+- **Room list** — server holds all waiting rooms; clients subscribe via WebSocket
+- **Matchmaking** — join a random open room or create a new one
+- **Game history** — sessions stored in MongoDB (`GameSession` model)
+- **Reconnect** — resume an interrupted game from server state
+
+### Architecture outline
+
+```
+Client ──WebSocket──► Node.js server ──► MongoDB
+                          │
+                    Room registry
+                    (in-memory or DB)
+```
+
+### Landing page change
+
+When implemented, the landing page online submenu would become:
+
+```
+Online
+  ├── Quick Play  (P2P — current)
+  └── Play Online (WebSocket — accounts + room list)
+```
+
+### Not planned for now
+
+Implementation is deferred until account system and persistent game history
+are prioritized. P2P Quick Play covers the immediate need for online play
+without infrastructure costs.

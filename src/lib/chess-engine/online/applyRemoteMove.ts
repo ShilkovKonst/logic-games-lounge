@@ -40,7 +40,7 @@ export function applyRemoteMove(
       moveSet: [],
     }));
     const workingPiece = workingBoard.find((p) => p.id === pieceWithMoves.id)!;
-    handleMoveClick(move, workingPiece, workingBoard);
+    const { pieceToTake } = handleMoveClick(move, workingPiece, workingBoard);
     workingPiece.type = uciPromoToType(promo);
 
     const { foeColor, check, checkmate, draw } = calcFoeState(
@@ -53,6 +53,9 @@ export function applyRemoteMove(
       type: "END_TURN",
       payload: {
         turnPatch: {
+          pieceToMove: pieceWithMoves.type + pieceWithMoves.id,
+          fromCell: pieceWithMoves.cell.id,
+          pieceToTake,
           isExchange: true,
           pieceToExchange: workingPiece.type,
           toCell: move.id,
