@@ -4,8 +4,8 @@ import {
   PlayerState,
   GameType,
   PieceType,
-} from "@/lib/chess-engine/types";
-import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
+} from "@/lib/chess-engine/core/types";
+import { populateBoard } from "@/lib/chess-engine/core/utils/populateBoard";
 
 export default async function Home() {
   const gameType: GameType = "hotseat";

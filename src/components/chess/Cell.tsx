@@ -1,9 +1,9 @@
-import { Color, GameType, PieceType } from "@/lib/chess-engine/types";
+import { Color, GameType, PieceType } from "@/lib/chess-engine/core/types";
 import Piece from "./Piece";
 import PiecesToExchange from "./PiecesToExchange";
 import { memo } from "react";
-import { CellHighlightType } from "@/lib/chess-engine/utils/styleUtils";
-import { notToRC } from "@/lib/chess-engine/utils/cellUtil";
+import { CellHighlightType } from "@/lib/chess-engine/core/utils/styleUtils";
+import { notToRC } from "@/lib/chess-engine/core/utils/cellUtil";
 
 type CellProps = {
   cell: string;

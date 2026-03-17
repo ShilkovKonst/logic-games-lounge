@@ -1,5 +1,5 @@
-import { Color, GameType, PieceType } from "@/lib/chess-engine/types";
-import { PieceIcon } from "@/lib/chess-engine/constants/icons";
+import { Color, GameType, PieceType } from "@/lib/chess-engine/core/types";
+import { PieceIcon } from "@/lib/chess-engine/core/constants/icons";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useGlobalState } from "@/context/GlobalStateContext";
 

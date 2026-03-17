@@ -1,5 +1,5 @@
 "use client";
-import { GameState, GameType } from "@/lib/chess-engine/types";
+import { GameState, GameType } from "@/lib/chess-engine/core/types";
 import HeaderButton from "./HeaderButton";
 import { useGlobalState } from "@/context/GlobalStateContext";
 

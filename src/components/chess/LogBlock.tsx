@@ -1,6 +1,6 @@
 "use client";
-import { GameState, Modal, TurnDetails } from "@/lib/chess-engine/types";
-import { GameAction } from "@/lib/chess-engine/reducer/chessReducer";
+import { GameState, Modal, TurnDetails } from "@/lib/chess-engine/core/types";
+import { GameAction } from "@/lib/chess-engine/local/reducer/chessReducer";
 import {
   ActionDispatch,
   Dispatch,
@@ -9,7 +9,7 @@ import {
   useRef,
 } from "react";
 import LogRecord from "./LogRecord";
-import { getAllActiveMoveSets } from "@/lib/chess-engine/moveSets/getAllActiveMoveSets";
+import { getAllActiveMoveSets } from "@/lib/chess-engine/core/moveSets/getAllActiveMoveSets";
 import { useGlobalState } from "@/context/GlobalStateContext";
 
 type LogBlockProps = {

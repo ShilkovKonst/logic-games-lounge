@@ -1,6 +1,6 @@
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { PieceIcon } from "@/lib/chess-engine/constants/icons";
-import { Color, PieceType } from "@/lib/chess-engine/types";
+import { PieceIcon } from "@/lib/chess-engine/core/constants/icons";
+import { Color, PieceType } from "@/lib/chess-engine/core/types";
 
 type PtEProps = {
   currentTurn: Color;

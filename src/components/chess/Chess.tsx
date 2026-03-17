@@ -5,10 +5,10 @@ import {
   Modal,
   PieceType,
   PlayerState,
-} from "@/lib/chess-engine/types";
+} from "@/lib/chess-engine/core/types";
 import { usePlayerState } from "@/context/PlayerStateContext";
 import { useEffect, useReducer, useState } from "react";
-import { populateBoard } from "@/lib/chess-engine/utils/populateBoard";
+import { populateBoard } from "@/lib/chess-engine/core/utils/populateBoard";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import ModalBlock from "./ModalBlock";
 import HeaderBlock from "./HeaderBlock";
@@ -18,7 +18,7 @@ import {
   blankTurn,
   flip,
   gameReducer,
-} from "@/lib/chess-engine/reducer/chessReducer";
+} from "@/lib/chess-engine/local/reducer/chessReducer";
 import { useGlobalState } from "@/context/GlobalStateContext";
 
 type ChessProps = {

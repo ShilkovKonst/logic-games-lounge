@@ -1,6 +1,6 @@
 "use client";
-import { PieceIcon } from "@/lib/chess-engine/constants/icons";
-import { Color, GameState, PieceType } from "@/lib/chess-engine/types";
+import { PieceIcon } from "@/lib/chess-engine/core/constants/icons";
+import { Color, GameState, PieceType } from "@/lib/chess-engine/core/types";
 
 type TakenPiecesBlockProps = {
   state: GameState;

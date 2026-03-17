@@ -1,4 +1,4 @@
-import { TurnDetails } from "@/lib/chess-engine/types";
+import { TurnDetails } from "@/lib/chess-engine/core/types";
 import { Dispatch, MouseEvent, SetStateAction, TouchEvent } from "react";
 import HeaderButton from "./HeaderButton";
 

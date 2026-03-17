@@ -7,7 +7,7 @@ import {
   ReactNode,
   useContext,
 } from "react";
-import { PlayerState } from "@/lib/chess-engine/types";
+import { PlayerState } from "@/lib/chess-engine/core/types";
 
 interface PlayerContextType {
   playerState: PlayerState;

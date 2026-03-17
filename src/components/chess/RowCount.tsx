@@ -1,5 +1,5 @@
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { IncrementProps } from "@/lib/chess-engine/types";
+import { IncrementProps } from "@/lib/chess-engine/core/types";
 
 const RowCount: React.FC<IncrementProps> = ({ increment }) => {
   const { playerState } = usePlayerState();

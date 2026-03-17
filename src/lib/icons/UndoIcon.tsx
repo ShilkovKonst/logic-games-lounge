@@ -1,4 +1,4 @@
-import { Color } from "../chess-engine/types";
+import { Color } from "../chess-engine/core/types";
 
 export type UndoProps = {
   color: Color;

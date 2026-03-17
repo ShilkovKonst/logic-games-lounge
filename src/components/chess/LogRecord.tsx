@@ -1,5 +1,5 @@
-import { getDisambiguation, getSAN } from "@/lib/chess-engine/constants/san";
-import { Pieces, TurnDetails } from "@/lib/chess-engine/types";
+import { getDisambiguation, getSAN } from "@/lib/chess-engine/core/constants/san";
+import { Pieces, TurnDetails } from "@/lib/chess-engine/core/types";
 import UndoIcon from "@/lib/icons/UndoIcon";
 import { useGlobalState } from "@/context/GlobalStateContext";
 
