@@ -4,7 +4,7 @@
     "titleShort": "LGL",
     "description": "Une approche décontractée des jeux de logique classiques — facile à commencer, amusant à jouer."
   },
-  "currentLanguage": "Française",
+  "currentLanguage": "Français",
   "mainMenu": "Menu principal",
   "nav": {
     "home": "Accueil"
@@ -110,6 +110,35 @@
         "message": "Le plateau reviendra à l'état avant ce coup.",
         "confirm": "Revenir en arrière",
         "cancel": "Annuler"
+      }
+    },
+    "resign": {
+      "button": "Abandonner",
+      "confirming": {
+        "title": "Abandonner la partie ?",
+        "restart": "Recommencer la partie",
+        "leave": "Aller au menu principal"
+      },
+      "waiting": {
+        "title": "En attente de l\u2019adversaire\u2026",
+        "message": "Votre adversaire r\u00e9fl\u00e9chit.",
+        "cancel": "Annuler"
+      },
+      "declined": {
+        "title": "Revanche refus\u00e9e",
+        "message": "Votre adversaire a refus\u00e9 la revanche et a quitt\u00e9.",
+        "confirm": "Retour au menu"
+      },
+      "opponentResigned": {
+        "title": "Vous avez gagn\u00e9 !",
+        "message": "Votre adversaire a abandonn\u00e9. Rejouer ?",
+        "accept": "Rejouer",
+        "decline": "Refuser et quitter"
+      },
+      "opponentLeft": {
+        "title": "Vous avez gagn\u00e9 !",
+        "message": "Votre adversaire a abandonn\u00e9 et quitt\u00e9 la partie.",
+        "confirm": "Retour au menu"
       }
     },
     "online": {

@@ -5,7 +5,6 @@ type TopLevelButtonProps = {
   title: string;
   locale?: Locale;
   handleClick: () => void;
-  isMenuButton: boolean;
   withText: boolean;
 };
 
@@ -13,7 +12,6 @@ const TopLevelButton: React.FC<TopLevelButtonProps> = ({
   Icon,
   title,
   handleClick,
-  isMenuButton,
   withText,
 }) => {
   return (
@@ -21,17 +19,17 @@ const TopLevelButton: React.FC<TopLevelButtonProps> = ({
       {withText ? (
         <button
           onClick={handleClick}
-          className={`bg-amber-700 hover:bg-amber-600 text-amber-50 hover:text-amber-950 inset-shadow-log-amberdark
-           h-12 w-12 md:h-8 md:w-32 py-1 px-2 gap-1 flex justify-center items-center rounded-lg cursor-pointer transition duration-200 ease-in-out`}
+          className={`group bg-amber-700 hover:bg-amber-600 text-amber-50 hover:text-amber-950 inset-shadow-log-amberdark
+           h-12 w-12 md:h-8 md:w-10 py-1 px-2 gap-1 flex justify-center items-center rounded-lg cursor-pointer hover:w-12 hover:md:w-32 transition-all duration-100 ease-in-out`}
         >
           <div
-            className={`flex justify-center items-center h-10 w-10 md:w-6 md:h-6 ${
-              isMenuButton ? "md:hidden" : ""
-            }`}
+            className={`flex justify-center items-center h-10 w-10 md:w-6 md:h-6`}
           >
             <Icon />
           </div>
-          <p className="text-sm hidden md:block ">{title}</p>
+          <p className="w-0 text-nowrap overflow-hidden opacity-0 text-sm hidden md:block group-hover:w-auto group-hover:opacity-100 transition-opacity duration-100 ease-in-out">
+            {title}
+          </p>
         </button>
       ) : (
         <button

@@ -38,6 +38,12 @@ const HeaderBlock: React.FC<HeaderType> = ({
               >
                 {t(`chess.glossary.color.${playerState.color}`)}
               </span>
+              {!isMyTurn && (
+                <span className="inline-flex items-center gap-1 font-semibold normal-case pl-1">
+                  {t("chess.header.waiting")}
+                  <HourglassIcon />
+                </span>
+              )}
             </p>
           )}
           <p className="text-start capitalize *:pl-1">
@@ -65,17 +71,15 @@ const HeaderBlock: React.FC<HeaderType> = ({
                 }`}
               </span>
             )}
-            {!isMyTurn && (
-              <span className="inline-flex items-center gap-1 font-semibold normal-case pl-1">
-                {t("chess.header.waiting")}
-                <HourglassIcon />
-              </span>
-            )}
           </p>
         </div>
         <div className="flex flex-col lg:flex-row gap-2">
           <HeaderButton
-            title={t("chess.header.restartButton")}
+            title={
+              gameType === "online"
+                ? t("chess.resign.button")
+                : t("chess.header.restartButton")
+            }
             style="bg-orange-500 hover:bg-orange-700"
             handleClick={handleModalClick}
           />

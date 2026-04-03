@@ -42,8 +42,11 @@ export function P2PProvider({ children }: { children: ReactNode }) {
         setGameToPlay(parsed.game);
         return;
       }
-      if (parsed.type === "disconnect" && parsed.role) {
-        setOpponentLeft(parsed.role as "host" | "guest");
+      if (parsed.type === "disconnect") {
+        const role = parsed.role;
+        if (role === "host" || role === "guest") {
+          setOpponentLeft(role);
+        }
         return;
       }
     } catch {
@@ -60,6 +63,7 @@ export function P2PProvider({ children }: { children: ReactNode }) {
   const connect = useCallback(
     (remoteId: string) => {
       setPlayerColor("black");
+      setOpponentLeft(null);
       rawConnect(remoteId);
     },
     [rawConnect]
@@ -71,6 +75,7 @@ export function P2PProvider({ children }: { children: ReactNode }) {
     (game: string) => {
       setPlayerColor("white");
       setGameToPlay(game);
+      setOpponentLeft(null);
       rawSend(JSON.stringify({ type: "init", game }));
     },
     [rawSend]

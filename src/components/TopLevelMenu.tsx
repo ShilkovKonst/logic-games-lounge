@@ -44,7 +44,7 @@ const TopLevelMenu = () => {
     <>
       {showLeaveConfirm && (
         <div
-          className="fixed inset-0 bg-black/30 z-50 flex items-center justify-center"
+          className="fixed right-0 inset-0 bg-black/30 z-50 flex items-center justify-center"
           onClick={() => setShowLeaveConfirm(false)}
         >
           <div
@@ -54,7 +54,9 @@ const TopLevelMenu = () => {
             <h3 className="text-xl font-semibold text-amber-900 mb-4">
               {t("chess.online.leave.title")}
             </h3>
-            <p className="text-amber-800 mb-6">{t("chess.online.leave.message")}</p>
+            <p className="text-amber-800 mb-6">
+              {t("chess.online.leave.message")}
+            </p>
             <div className="flex gap-4 justify-center">
               <button
                 onClick={handleLeaveConfirm}
@@ -79,7 +81,6 @@ const TopLevelMenu = () => {
             Icon={OpenIcon}
             title={t("mainMenu")}
             handleClick={() => setIsOpen(true)}
-            isMenuButton={true}
             withText={false}
           />
         </div>
@@ -88,12 +89,11 @@ const TopLevelMenu = () => {
             isOpen ? "block" : "hidden"
           } md:block`}
         >
-          <div className="relative flex justify-start items-center gap-2 font-semibold">
+          <div className="relative flex justify-end items-center gap-2 font-semibold md:pr-2">
             <TopLevelButton
               Icon={HomeIcon}
               title={t("nav.home")}
               handleClick={goHome}
-              isMenuButton={true}
               withText
             />
             <LocaleBlock isMenuOpen={isOpen} />
@@ -102,7 +102,6 @@ const TopLevelMenu = () => {
                 Icon={HideIcon}
                 title={t("mainMenu")}
                 handleClick={() => setIsOpen(false)}
-                isMenuButton={true}
                 withText={false}
               />
             </div>

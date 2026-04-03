@@ -21,7 +21,11 @@ import {
 } from "@/lib/chess-engine/local/reducer/chessReducer";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import { applyRemoteMove } from "@/lib/chess-engine/online/applyRemoteMove";
-import { encodeMove, typeToUciPromo } from "@/lib/chess-engine/core/utils/uciUtil";
+import {
+  encodeMove,
+  typeToUciPromo,
+} from "@/lib/chess-engine/core/utils/uciUtil";
+import ResignFlow, { ResignPhase } from "./ResignFlow";
 
 type ChessProps = {
   gameType: GameType;
@@ -31,6 +35,7 @@ type ChessProps = {
   plState: PlayerState | null;
   sendMove?: (msg: string) => void;
   registerRemoteHandler?: (handler: (msg: string) => void) => void;
+  onResignActiveChange?: (active: boolean) => void;
 };
 
 const Chess: React.FC<ChessProps> = ({
@@ -41,11 +46,20 @@ const Chess: React.FC<ChessProps> = ({
   plState,
   sendMove,
   registerRemoteHandler,
+  onResignActiveChange,
 }) => {
   const { t } = useGlobalState();
   const { playerState, setPlayerState } = usePlayerState();
   const [isReset, setIsReset] = useState<boolean>(false);
   const [modal, setModal] = useState<Modal | null>(null);
+  const [resignPhase, setResignPhase] = useState<ResignPhase>(null);
+
+  // Synchronously notify the parent alongside the phase update
+  // to avoid a render gap where resignActive briefly becomes false.
+  const setResignPhaseAndNotify = (phase: ResignPhase) => {
+    setResignPhase(phase);
+    onResignActiveChange?.(phase !== null);
+  };
 
   const [state, dispatch] = useReducer(gameReducer, {
     currentBoardState: pieces,
@@ -63,14 +77,35 @@ const Chess: React.FC<ChessProps> = ({
 
   // Always-fresh state ref — used by the remote handler to avoid stale closures
   const stateRef = useRef(state);
-  useEffect(() => { stateRef.current = state; });
-
-  // Register the incoming-move handler once on mount.
-  // Uses stateRef so the handler always sees the latest state.
   useEffect(() => {
-    registerRemoteHandler?.(
-      (msg) => applyRemoteMove(msg, stateRef.current, dispatch)
-    );
+    stateRef.current = state;
+  });
+
+  // Always-fresh handler ref — updated every render so HMR and new closures
+  // are picked up without re-registering the stable wrapper below.
+  const remoteHandlerRef = useRef<(msg: string) => void>(() => {});
+  remoteHandlerRef.current = (msg: string) => {
+    if (msg === "reset") {
+      setIsReset(false);
+      setModal(null);
+      dispatch({ type: "INIT", payload: { currentTurn: "white", pieces: populateBoard("white") } });
+      return;
+    }
+    if (msg === "resign:restart") { setResignPhaseAndNotify("opponent_resigned"); return; }
+    if (msg === "resign:leave")   { setResignPhaseAndNotify("opponent_left_win"); return; }
+    if (msg === "resign:cancel")  { setResignPhaseAndNotify(null); return; }
+    if (msg === "resign:accept")  {
+      setResignPhaseAndNotify(null);
+      dispatch({ type: "INIT", payload: { currentTurn: "white", pieces: populateBoard("white") } });
+      return;
+    }
+    if (msg === "resign:decline") { setResignPhaseAndNotify("declined"); return; }
+    applyRemoteMove(msg, stateRef.current, dispatch);
+  };
+
+  // Register a stable wrapper once on mount.
+  useEffect(() => {
+    registerRemoteHandler?.((msg) => remoteHandlerRef.current(msg));
   }, [registerRemoteHandler]);
 
   // Send our move to the opponent after every END_TURN
@@ -78,21 +113,28 @@ const Chess: React.FC<ChessProps> = ({
     if (gameType !== "online" || !sendMove) return;
     const last = state.log.at(-1)?.at(-1);
     if (!last || last.currentPlayer !== playerState.color) return;
-    const promo = last.isExchange ? typeToUciPromo(last.pieceToExchange) : undefined;
-    sendMove(encodeMove(last.fromCell!, last.toCell!, promo));
-  }, [state.log]);
+    if (!last.fromCell || !last.toCell) return;
+    const promo = last.isExchange
+      ? typeToUciPromo(last.pieceToExchange)
+      : undefined;
+    sendMove(encodeMove(last.fromCell, last.toCell, promo));
+  }, [state.log, playerState]);
 
   const handleClick = () => {
+    if (gameType === "online" && sendMove) {
+      sendMove("reset");
+    }
     dispatch({
       type: "INIT",
-      payload: {
-        currentTurn: "white",
-        pieces: populateBoard("white"),
-      },
+      payload: { currentTurn: "white", pieces: populateBoard("white") },
     });
   };
 
   const handleModalClick = () => {
+    if (gameType === "online") {
+      setResignPhaseAndNotify("confirming");
+      return;
+    }
     setIsReset(true);
     setModal({
       turn: state.turnDetails,
@@ -143,6 +185,9 @@ const Chess: React.FC<ChessProps> = ({
 
   return (
     <>
+      {gameType === "online" && (
+        <ResignFlow phase={resignPhase} setPhase={setResignPhaseAndNotify} dispatch={dispatch} />
+      )}
       <div className="relative w-full">
         {isReset && modal && (
           <ModalBlock

@@ -38,7 +38,7 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
   };
 
   useEffect(() => {
-    !isMenuOpen && setIsOpen(false);
+    if (!isMenuOpen) setIsOpen(false);
   }, [isMenuOpen]);
 
   return (
@@ -47,7 +47,6 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
         Icon={SwitchLanguageIcon}
         title={t("currentLanguage")}
         handleClick={() => setIsOpen((prev) => !prev)}
-        isMenuButton={false}
         withText
       />
       <div

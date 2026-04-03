@@ -206,6 +206,7 @@ Host browser ──WebRTC──► Guest browser
 - **Host** = white, **Guest** = black
 - Wire format: **UCI notation** — `"e2e4"`, `"e7e8q"` (promotion)
 - Protocol messages (JSON): `{"type":"init","game":"chess"}`, `{"type":"disconnect","role":"host"|"guest"}`
+- Game-event strings (plain): `"reset"`, `"resign:restart"`, `"resign:leave"`, `"resign:accept"`, `"resign:decline"`, `"resign:cancel"`
 
 ### Key Files
 
@@ -217,6 +218,7 @@ Host browser ──WebRTC──► Guest browser
 | `uciUtil.ts` | `encodeMove` / `decodeMove` / `uciPromoToType` / `typeToUciPromo` |
 | `lobby/page.tsx` | 3-screen lobby: select role → host (show code + shareable link) → guest (enter code, auto-connect via `?join=PEER_ID`) |
 | `chess/online/page.tsx` | Renders `<Chess gameType="online">`, shows disconnect modal on drop |
+| `ResignFlow.tsx` | Resign state machine (5 phases); handles initiator + receiver flows, navigation, `leaveGame` |
 
 ### Turn Enforcement
 
@@ -229,6 +231,7 @@ Host browser ──WebRTC──► Guest browser
 - **Intentional leave**: `TopLevelMenu` shows confirm modal on home button in online mode → `leaveGame()` sends `{"type":"disconnect","role":...}` → navigates home
 - **Opponent left**: receiver sees named modal ("Host/Guest has disconnected.")
 - **Unexpected drop**: `conn.on("close")` → status drops → "Connection lost." modal
+- **Resign flow** (`ResignFlow.tsx`): replaces the restart button in online mode; initiator chooses restart-offer or leave; receiver accepts/declines; `opponentLeft` cleared on new `startGame`/`connect` to prevent stale modal on reconnect; page disconnect overlay suppressed while resign flow is active (`onResignActiveChange` prop)
 
 ---
 
@@ -286,6 +289,8 @@ Four layers — no Redux/Zustand:
 - [x] Universal P2P lobby (room code + shareable link)
 - [x] Disconnect handling (intentional + unexpected)
 - [x] Turn enforcement in online mode
+- [x] Resign flow in online mode (resign → restart offer or leave; opponent accepts/declines)
+- [x] Online board reset sync (both players reset on checkmate/draw confirmation)
 
 ## What Is NOT Yet Implemented
 
@@ -318,7 +323,7 @@ Four layers — no Redux/Zustand:
 - **AI opponent** — Stockfish via WebAssembly
 - **Chess clock** — per-turn or per-game timer
 - **Other games** — `app/[locale]/` structure is ready for expansion
-- **Draw offer** — "Request draw" button in online mode is rendered but not wired up
+- **Draw offer** — "Request draw" button in online mode is rendered but not wired up (resign flow pattern in `ResignFlow.tsx` can serve as reference)
 
 ### Code Quality
 - **Immutability in engine** — separate pure layer (returns new state) from effectful layer (React dispatch)

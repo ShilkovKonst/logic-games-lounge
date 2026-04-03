@@ -74,7 +74,7 @@
       "takes": "takes {{pieceToTake}}",
       "promotes": "promotes to {{pieceToExchange}}",
       "checkTo": "check to {{color}}",
-      "checkmateTo": "chekmate to {{color}}",
+      "checkmateTo": "checkmate to {{color}}",
       "draw": "draw by {{draw}}"
     },
     "header": {
@@ -101,7 +101,7 @@
       },
       "draw": {
         "title": "Draw - {{draw}}",
-        "message": "The patry is stalled.",
+        "message": "The game ended in a draw.",
         "confirm": "Restart",
         "cancel": "Return"
       },
@@ -110,6 +110,35 @@
         "message": "The board will revert to the state before this turn.",
         "confirm": "Undo",
         "cancel": "Cancel"
+      }
+    },
+    "resign": {
+      "button": "Resign",
+      "confirming": {
+        "title": "Resign?",
+        "restart": "Restart game",
+        "leave": "Go to main menu"
+      },
+      "waiting": {
+        "title": "Waiting for opponent\u2026",
+        "message": "Your opponent is thinking.",
+        "cancel": "Cancel"
+      },
+      "declined": {
+        "title": "Restart declined",
+        "message": "Your opponent declined the rematch and left.",
+        "confirm": "Back to main menu"
+      },
+      "opponentResigned": {
+        "title": "You won!",
+        "message": "Your opponent resigned. Play again?",
+        "accept": "Play again",
+        "decline": "Decline and leave"
+      },
+      "opponentLeft": {
+        "title": "You won!",
+        "message": "Your opponent resigned and left the game.",
+        "confirm": "Back to main menu"
       }
     },
     "online": {

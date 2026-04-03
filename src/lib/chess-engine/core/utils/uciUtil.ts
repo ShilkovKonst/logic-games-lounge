@@ -30,8 +30,8 @@ const TYPE_TO_UCI_MAP: Partial<Record<Pieces, string>> = {
   knight: "n",
 };
 
-export function uciPromoToType(char: string): Pieces {
-  return UCI_PROMO_MAP[char] ?? "queen";
+export function uciPromoToType(char: string): Pieces | null {
+  return UCI_PROMO_MAP[char] ?? null;
 }
 
 export function typeToUciPromo(type: Pieces | undefined): string | undefined {
