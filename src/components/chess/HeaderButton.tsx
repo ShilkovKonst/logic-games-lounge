@@ -3,6 +3,7 @@ type HeaderButtonProps = {
   style: string;
   handleClick?: () => void;
   id?: string;
+  disabled?: boolean;
 };
 
 const HeaderButton: React.FC<HeaderButtonProps> = ({
@@ -10,13 +11,15 @@ const HeaderButton: React.FC<HeaderButtonProps> = ({
   style,
   handleClick,
   id,
+  disabled,
 }) => {
   return (
     <>
       {handleClick ? (
         <button
           onClick={handleClick}
-          className={`px-2 py-1 cursor-pointer ${style} text-amber-950 hover:text-amber-50 rounded-lg font-medium transform transition-colors duration-300 shadow-md`}
+          disabled={disabled}
+          className={`px-2 py-1 ${style} text-amber-950 hover:text-amber-50 rounded-lg font-medium transform transition-colors duration-300 shadow-md disabled:opacity-40 disabled:cursor-not-allowed cursor-pointer`}
         >
           {title}
         </button>

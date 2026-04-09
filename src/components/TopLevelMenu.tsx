@@ -8,6 +8,7 @@ import HideIcon from "@/lib/icons/HideIcon";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import { useParams, usePathname, useRouter } from "next/navigation";
 import { useP2PContext } from "@/context/P2PContext";
+import TopLevelModal from "./TopLevelModal";
 
 const TopLevelMenu = () => {
   const { t } = useGlobalState();
@@ -26,16 +27,8 @@ const TopLevelMenu = () => {
 
   if (isLanding || isLobby) return null;
 
-  const goHome = () => {
-    if (isOnline) {
-      setShowLeaveConfirm(true);
-    } else {
-      router.push(`/${locale}`);
-    }
-  };
-
   const handleLeaveConfirm = () => {
-    leaveGame();
+    if (isOnline) leaveGame();
     setShowLeaveConfirm(false);
     router.push(`/${locale}`);
   };
@@ -43,36 +36,10 @@ const TopLevelMenu = () => {
   return (
     <>
       {showLeaveConfirm && (
-        <div
-          className="fixed right-0 inset-0 bg-black/30 z-50 flex items-center justify-center"
-          onClick={() => setShowLeaveConfirm(false)}
-        >
-          <div
-            className="bg-amber-50 bg-opacity-95 rounded-3xl p-8 text-center shadow-2xl max-w-md w-11/12 mx-4"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 className="text-xl font-semibold text-amber-900 mb-4">
-              {t("chess.online.leave.title")}
-            </h3>
-            <p className="text-amber-800 mb-6">
-              {t("chess.online.leave.message")}
-            </p>
-            <div className="flex gap-4 justify-center">
-              <button
-                onClick={handleLeaveConfirm}
-                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-amber-950 hover:text-amber-50 rounded-lg font-medium transition-colors duration-300 shadow-md cursor-pointer"
-              >
-                {t("chess.online.leave.confirm")}
-              </button>
-              <button
-                onClick={() => setShowLeaveConfirm(false)}
-                className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-amber-950 hover:text-amber-50 rounded-lg font-medium transition-colors duration-300 shadow-md cursor-pointer"
-              >
-                {t("chess.online.leave.cancel")}
-              </button>
-            </div>
-          </div>
-        </div>
+        <TopLevelModal
+          setShowLeaveConfirm={setShowLeaveConfirm}
+          handleLeaveConfirm={handleLeaveConfirm}
+        />
       )}
 
       <div className={`fixed top-0 right-0 p-2 pr-0 z-10`}>
@@ -89,11 +56,11 @@ const TopLevelMenu = () => {
             isOpen ? "block" : "hidden"
           } md:block`}
         >
-          <div className="relative flex justify-end items-center gap-2 font-semibold md:pr-2">
+          <div className="relative flex flex-row md:flex-col lg:flex-row justify-end items-end gap-2 font-semibold md:pr-2">
             <TopLevelButton
               Icon={HomeIcon}
               title={t("nav.home")}
-              handleClick={goHome}
+              handleClick={() => setShowLeaveConfirm(true)}
               withText
             />
             <LocaleBlock isMenuOpen={isOpen} />

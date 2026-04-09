@@ -10,6 +10,7 @@ type ConfirmationBlockProps = {
   message: string;
   confirmText: string;
   cancelText: string;
+  cancelClick?: () => void;
 };
 
 const ModalBlock: React.FC<ConfirmationBlockProps> = ({
@@ -20,6 +21,7 @@ const ModalBlock: React.FC<ConfirmationBlockProps> = ({
   cancelText,
   setIsReset,
   confirmClick,
+  cancelClick,
 }) => {
   const handleClick = (e: MouseEvent | TouchEvent) => {
     const target = e.target as HTMLElement;
@@ -35,6 +37,7 @@ const ModalBlock: React.FC<ConfirmationBlockProps> = ({
     }
     if (cancel) {
       setIsReset(false);
+      cancelClick?.();
       return;
     }
     if (body) {

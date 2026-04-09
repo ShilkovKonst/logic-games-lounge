@@ -31,7 +31,8 @@ export type GameAction =
         turnNo: number;
         log: TurnDetails[][];
       };
-    };
+    }
+  | { type: "AGREE_DRAW" };
 
 export const flip = (c: Color): Color => (c === "white" ? "black" : "white");
 
@@ -162,6 +163,11 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
       };
     }
 
+    case "AGREE_DRAW":
+      return {
+        ...state,
+        currentStatus: { check: "NORMAL", draw: "agreement" },
+      };
     default:
       return state;
   }

@@ -9,6 +9,7 @@ export type Modal = {
   confirmText: string;
   cancelText: string;
   handleClick: (() => void) | ((turn: TurnDetails) => void);
+  cancelClick?: () => void;
 };
 
 export type Player = "host" | "guest";
@@ -20,7 +21,7 @@ export type Status = {
   draw: Draw;
 };
 
-export type Draw = "stalemate" | "insufficientMaterial" | "repetition" | "none";
+export type Draw = "stalemate" | "insufficientMaterial" | "repetition" | "agreement" | "none";
 
 export type Color = "white" | "black";
 

@@ -52,7 +52,16 @@ export function useP2PGame({ enabled, onRemoteMove }: UseP2PGameOptions): UseP2P
         setPeerId(id);
         setStatus("waiting");
       });
-      peer.on("connection", (conn) => setupConnection(conn));
+      peer.on("connection", (conn) => {
+        if (connRef.current !== null) {
+          conn.on("open", () => {
+            conn.send(JSON.stringify({ type: "busy" }));
+            conn.close();
+          });
+          return;
+        }
+        setupConnection(conn);
+      });
       peer.on("error", () => setStatus("error"));
     });
 

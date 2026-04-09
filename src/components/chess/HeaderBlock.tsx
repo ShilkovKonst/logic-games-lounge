@@ -8,13 +8,19 @@ import HourglassIcon from "@/lib/icons/HourglassIcon";
 type HeaderType = {
   state: GameState;
   handleModalClick: () => void;
+  handleDrawOfferClick: () => void;
   gameType: GameType;
+  isResignActive?: boolean;
+  isDrawActive?: boolean;
 };
 
 const HeaderBlock: React.FC<HeaderType> = ({
   state,
   handleModalClick,
+  handleDrawOfferClick,
   gameType,
+  isResignActive = false,
+  isDrawActive = false,
 }) => {
   const { t } = useGlobalState();
   const { playerState } = usePlayerState();
@@ -41,7 +47,6 @@ const HeaderBlock: React.FC<HeaderType> = ({
               {!isMyTurn && (
                 <span className="inline-flex items-center gap-1 font-semibold normal-case pl-1">
                   {t("chess.header.waiting")}
-                  <HourglassIcon />
                 </span>
               )}
             </p>
@@ -82,12 +87,14 @@ const HeaderBlock: React.FC<HeaderType> = ({
             }
             style="bg-orange-500 hover:bg-orange-700"
             handleClick={handleModalClick}
+            disabled={isResignActive || isDrawActive}
           />
-          {gameType !== "hotseat" && (
+          {gameType === "online" && (
             <HeaderButton
-              title={t("chess.header.drawButton")}
+              title={t("chess.drawOffer.button")}
               style="bg-gray-400 hover:bg-gray-600"
-              handleClick={() => {}}
+              handleClick={handleDrawOfferClick}
+              disabled={isResignActive || isDrawActive}
             />
           )}
         </div>

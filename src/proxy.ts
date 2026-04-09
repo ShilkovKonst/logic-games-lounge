@@ -15,7 +15,7 @@ import { Locale } from "./lib/locales/locale";
   return match(languages, locales, defaultLocale) as Locale;
 }
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
 
   const pathnameHasLocale = locales.some(

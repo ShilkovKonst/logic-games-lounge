@@ -39,6 +39,7 @@
     "waiting": "Waiting for opponent…",
     "connected": "Opponent connected! Starting…",
     "error": "Connection error. Please reload the page.",
+    "hostBusy": "Host is already in a game.",
     "start": "Start"
   },
   "chess": {
@@ -58,7 +59,8 @@
       "draw": {
         "stalemate": "stalemate",
         "insufficientMaterial": "insufficient material",
-        "repetition": "threefold"
+        "repetition": "threefold",
+        "agreement": "mutual agreement"
       },
       "castling": {
         "short": "castling kingside",
@@ -110,6 +112,45 @@
         "message": "The board will revert to the state before this turn.",
         "confirm": "Undo",
         "cancel": "Cancel"
+      }
+    },
+    "drawOffer": {
+      "button": "Offer draw",
+      "waiting": {
+        "title": "Draw offered…",
+        "message": "Waiting for opponent's response.",
+        "cancel": "Cancel"
+      },
+      "opponentOffered": {
+        "title": "Draw offered",
+        "message": "Your opponent is offering a draw.",
+        "accept": "Accept",
+        "decline": "Decline"
+      },
+      "receiverChoose": {
+        "title": "Draw agreed!",
+        "message": "Play again or leave?",
+        "restart": "Play again",
+        "leave": "Leave"
+      },
+      "receiverWaiting": {
+        "title": "Waiting…",
+        "message": "Waiting for opponent's decision."
+      },
+      "initiatorWaiting": {
+        "title": "Draw agreed!",
+        "message": "Waiting for opponent's decision."
+      },
+      "initiatorChoose": {
+        "title": "Play again?",
+        "message": "Your opponent wants to play again.",
+        "restart": "Play again",
+        "leave": "Leave"
+      },
+      "opponentLeft": {
+        "title": "Opponent left",
+        "message": "Your opponent left after agreeing to a draw.",
+        "confirm": "Back to main menu"
       }
     },
     "resign": {

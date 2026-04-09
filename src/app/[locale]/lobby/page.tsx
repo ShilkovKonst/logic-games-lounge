@@ -16,7 +16,7 @@ export default function LobbyPage() {
   const searchParams = useSearchParams();
   const locale = params.locale as string;
 
-  const { peerId, status, gameToPlay, enable, connect, startGame } = useP2PContext();
+  const { peerId, status, gameToPlay, hostBusy, enable, connect, startGame } = useP2PContext();
 
   const [view, setView] = useState<View>("select");
   const [selectedGame, setSelectedGame] = useState<string | null>(null);
@@ -171,7 +171,10 @@ export default function LobbyPage() {
                 {status === "connected" ? t("lobby.connected") : t("lobby.connecting")}
               </p>
             )}
-            {status === "error" && (
+            {hostBusy && (
+              <p className="text-xs text-red-600">{t("lobby.hostBusy")}</p>
+            )}
+            {!hostBusy && status === "error" && (
               <p className="text-xs text-red-600">{t("lobby.error")}</p>
             )}
             <p className="text-xs text-amber-600">{t("lobby.asBlack")}</p>

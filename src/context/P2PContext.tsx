@@ -16,6 +16,7 @@ type P2PContextType = {
   gameToPlay: string | null;
   playerColor: Color | null;
   opponentLeft: "host" | "guest" | null;
+  hostBusy: boolean;
   enable: () => void;
   connect: (remoteId: string) => void;
   disconnect: () => void;
@@ -33,6 +34,7 @@ export function P2PProvider({ children }: { children: ReactNode }) {
   const [gameToPlay, setGameToPlay] = useState<string | null>(null);
   const [playerColor, setPlayerColor] = useState<Color | null>(null);
   const [opponentLeft, setOpponentLeft] = useState<"host" | "guest" | null>(null);
+  const [hostBusy, setHostBusy] = useState(false);
   const gameHandlerRef = useRef<(msg: string) => void>(() => {});
 
   const handleMessage = useCallback((msg: string) => {
@@ -40,6 +42,10 @@ export function P2PProvider({ children }: { children: ReactNode }) {
       const parsed = JSON.parse(msg);
       if (parsed.type === "init" && parsed.game) {
         setGameToPlay(parsed.game);
+        return;
+      }
+      if (parsed.type === "busy") {
+        setHostBusy(true);
         return;
       }
       if (parsed.type === "disconnect") {
@@ -64,6 +70,7 @@ export function P2PProvider({ children }: { children: ReactNode }) {
     (remoteId: string) => {
       setPlayerColor("black");
       setOpponentLeft(null);
+      setHostBusy(false);
       rawConnect(remoteId);
     },
     [rawConnect]
@@ -104,6 +111,7 @@ export function P2PProvider({ children }: { children: ReactNode }) {
         gameToPlay,
         playerColor,
         opponentLeft,
+        hostBusy,
         enable,
         connect,
         disconnect,

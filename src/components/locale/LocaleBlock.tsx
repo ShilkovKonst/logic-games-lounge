@@ -49,11 +49,11 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
         handleClick={() => setIsOpen((prev) => !prev)}
         withText
       />
-      <div
+      <button
         onClick={(e) => handleClick(e)}
         className={`mt-2 py-2 absolute top-full right-0 rounded-l-lg w-12 px-2 ${
           isOpen ? "block" : "hidden"
-        } bg-amber-600 overflow-hidden flex flex-col justify-end items-end gap-4`}
+        } bg-amber-600  inset-shadow-log-amberdark overflow-hidden flex flex-col justify-end items-end gap-4`}
       >
         {["en", "fr", "ru"].map((l) => (
           <div
@@ -66,7 +66,7 @@ const LocaleBlock: React.FC<LocaleProps> = ({ isMenuOpen }) => {
             <LocaleIcon locale={l as Locale} />
           </div>
         ))}
-      </div>
+      </button>
     </>
   );
 };

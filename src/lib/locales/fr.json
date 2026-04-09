@@ -39,6 +39,7 @@
     "waiting": "En attente de l'adversaire…",
     "connected": "Adversaire connecté ! Démarrage…",
     "error": "Erreur de connexion. Veuillez recharger la page.",
+    "hostBusy": "L'hôte est déjà en partie.",
     "start": "Commencer"
   },
   "chess": {
@@ -58,7 +59,8 @@
       "draw": {
         "stalemate": "pat",
         "insufficientMaterial": "matériel insuffisant",
-        "repetition": "triple répétition"
+        "repetition": "triple répétition",
+        "agreement": "accord mutuel"
       },
       "castling": {
         "short": "petit roque",
@@ -110,6 +112,45 @@
         "message": "Le plateau reviendra à l'état avant ce coup.",
         "confirm": "Revenir en arrière",
         "cancel": "Annuler"
+      }
+    },
+    "drawOffer": {
+      "button": "Proposer la nulle",
+      "waiting": {
+        "title": "Nulle proposée…",
+        "message": "En attente de la réponse de l'adversaire.",
+        "cancel": "Annuler"
+      },
+      "opponentOffered": {
+        "title": "Nulle proposée",
+        "message": "Votre adversaire propose la nulle.",
+        "accept": "Accepter",
+        "decline": "Refuser"
+      },
+      "receiverChoose": {
+        "title": "Nulle acceptée !",
+        "message": "Rejouer ou quitter ?",
+        "restart": "Rejouer",
+        "leave": "Quitter"
+      },
+      "receiverWaiting": {
+        "title": "En attente…",
+        "message": "En attente de la décision de l'adversaire."
+      },
+      "initiatorWaiting": {
+        "title": "Nulle acceptée !",
+        "message": "En attente de la décision de l'adversaire."
+      },
+      "initiatorChoose": {
+        "title": "Rejouer ?",
+        "message": "Votre adversaire veut rejouer.",
+        "restart": "Rejouer",
+        "leave": "Quitter"
+      },
+      "opponentLeft": {
+        "title": "L'adversaire est parti",
+        "message": "Votre adversaire a quitté après avoir accepté la nulle.",
+        "confirm": "Retour au menu"
       }
     },
     "resign": {

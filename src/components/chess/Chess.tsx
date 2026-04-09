@@ -7,7 +7,7 @@ import {
   PlayerState,
 } from "@/lib/chess-engine/core/types";
 import { usePlayerState } from "@/context/PlayerStateContext";
-import { useEffect, useReducer, useRef, useState } from "react";
+import { useCallback, useEffect, useReducer, useRef, useState } from "react";
 import { populateBoard } from "@/lib/chess-engine/core/utils/populateBoard";
 import TakenPiecesBlock from "./TakenPiecesBlock";
 import ModalBlock from "./ModalBlock";
@@ -26,6 +26,7 @@ import {
   typeToUciPromo,
 } from "@/lib/chess-engine/core/utils/uciUtil";
 import ResignFlow, { ResignPhase } from "./ResignFlow";
+import DrawOfferFlow, { DrawOfferPhase } from "./DrawOfferFlow";
 
 type ChessProps = {
   gameType: GameType;
@@ -36,6 +37,8 @@ type ChessProps = {
   sendMove?: (msg: string) => void;
   registerRemoteHandler?: (handler: (msg: string) => void) => void;
   onResignActiveChange?: (active: boolean) => void;
+  onDrawActiveChange?: (active: boolean) => void;
+  onLeave?: () => void;
 };
 
 const Chess: React.FC<ChessProps> = ({
@@ -47,18 +50,24 @@ const Chess: React.FC<ChessProps> = ({
   sendMove,
   registerRemoteHandler,
   onResignActiveChange,
+  onDrawActiveChange,
+  onLeave,
 }) => {
   const { t } = useGlobalState();
   const { playerState, setPlayerState } = usePlayerState();
   const [isReset, setIsReset] = useState<boolean>(false);
   const [modal, setModal] = useState<Modal | null>(null);
   const [resignPhase, setResignPhase] = useState<ResignPhase>(null);
+  const [drawPhase, setDrawPhase] = useState<DrawOfferPhase>(null);
 
-  // Synchronously notify the parent alongside the phase update
-  // to avoid a render gap where resignActive briefly becomes false.
   const setResignPhaseAndNotify = (phase: ResignPhase) => {
     setResignPhase(phase);
     onResignActiveChange?.(phase !== null);
+  };
+
+  const setDrawPhaseAndNotify = (phase: DrawOfferPhase) => {
+    setDrawPhase(phase);
+    onDrawActiveChange?.(phase !== null);
   };
 
   const [state, dispatch] = useReducer(gameReducer, {
@@ -77,50 +86,68 @@ const Chess: React.FC<ChessProps> = ({
 
   // Always-fresh state ref — used by the remote handler to avoid stale closures
   const stateRef = useRef(state);
-  useEffect(() => {
-    stateRef.current = state;
-  });
 
   // Always-fresh handler ref — updated every render so HMR and new closures
   // are picked up without re-registering the stable wrapper below.
   const remoteHandlerRef = useRef<(msg: string) => void>(() => {});
   remoteHandlerRef.current = (msg: string) => {
-    if (msg === "reset") {
-      setIsReset(false);
-      setModal(null);
-      dispatch({ type: "INIT", payload: { currentTurn: "white", pieces: populateBoard("white") } });
-      return;
+    switch (msg) {
+      case "reset":
+        setIsReset(false);
+        setModal(null);
+        dispatch({
+          type: "INIT",
+          payload: { currentTurn: "white", pieces: populateBoard("white") },
+        });
+        break;
+      case "resign:restart":
+        setResignPhaseAndNotify("opponent_resigned");
+        break;
+      case "resign:leave":
+        setResignPhaseAndNotify("opponent_left_win");
+        break;
+      case "resign:cancel":
+        setResignPhaseAndNotify(null);
+        break;
+      case "resign:accept":
+        setResignPhaseAndNotify(null);
+        dispatch({
+          type: "INIT",
+          payload: { currentTurn: "white", pieces: populateBoard("white") },
+        });
+        break;
+      case "resign:decline":
+        setResignPhaseAndNotify("declined");
+        break;
+      case "draw_offer":
+        setDrawPhaseAndNotify("opponent_offered");
+        break;
+      case "draw_offer:cancel":
+      case "draw_offer:decline":
+        setDrawPhaseAndNotify(null);
+        break;
+      case "draw_offer:accept":
+        setDrawPhaseAndNotify("initiator_waiting");
+        break;
+      case "draw_offer:restart":
+        setDrawPhaseAndNotify("initiator_choose");
+        break;
+      case "draw_offer:leave":
+        setDrawPhaseAndNotify("opponent_left");
+        break;
+      case "draw_offer:confirm":
+        setDrawPhaseAndNotify(null);
+        dispatch({
+          type: "INIT",
+          payload: { currentTurn: "white", pieces: populateBoard("white") },
+        });
+        break;
+      default:
+        applyRemoteMove(msg, stateRef.current, dispatch);
     }
-    if (msg === "resign:restart") { setResignPhaseAndNotify("opponent_resigned"); return; }
-    if (msg === "resign:leave")   { setResignPhaseAndNotify("opponent_left_win"); return; }
-    if (msg === "resign:cancel")  { setResignPhaseAndNotify(null); return; }
-    if (msg === "resign:accept")  {
-      setResignPhaseAndNotify(null);
-      dispatch({ type: "INIT", payload: { currentTurn: "white", pieces: populateBoard("white") } });
-      return;
-    }
-    if (msg === "resign:decline") { setResignPhaseAndNotify("declined"); return; }
-    applyRemoteMove(msg, stateRef.current, dispatch);
   };
 
-  // Register a stable wrapper once on mount.
-  useEffect(() => {
-    registerRemoteHandler?.((msg) => remoteHandlerRef.current(msg));
-  }, [registerRemoteHandler]);
-
-  // Send our move to the opponent after every END_TURN
-  useEffect(() => {
-    if (gameType !== "online" || !sendMove) return;
-    const last = state.log.at(-1)?.at(-1);
-    if (!last || last.currentPlayer !== playerState.color) return;
-    if (!last.fromCell || !last.toCell) return;
-    const promo = last.isExchange
-      ? typeToUciPromo(last.pieceToExchange)
-      : undefined;
-    sendMove(encodeMove(last.fromCell, last.toCell, promo));
-  }, [state.log, playerState]);
-
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (gameType === "online" && sendMove) {
       sendMove("reset");
     }
@@ -128,6 +155,12 @@ const Chess: React.FC<ChessProps> = ({
       type: "INIT",
       payload: { currentTurn: "white", pieces: populateBoard("white") },
     });
+  }, [gameType, sendMove]);
+
+  const handleDrawOfferClick = () => {
+    if (!sendMove) return;
+    sendMove("draw_offer");
+    setDrawPhaseAndNotify("waiting");
   };
 
   const handleModalClick = () => {
@@ -145,6 +178,27 @@ const Chess: React.FC<ChessProps> = ({
       handleClick,
     });
   };
+
+  useEffect(() => {
+    stateRef.current = state;
+  });
+
+  // Register a stable wrapper once on mount.
+  useEffect(() => {
+    registerRemoteHandler?.((msg) => remoteHandlerRef.current(msg));
+  }, [registerRemoteHandler]);
+
+  // Send our move to the opponent after every END_TURN
+  useEffect(() => {
+    if (gameType !== "online" || !sendMove) return;
+    const last = state.log.at(-1)?.at(-1);
+    if (!last || last.currentPlayer !== playerState.color) return;
+    if (!last.fromCell || !last.toCell) return;
+    const promo = last.isExchange
+      ? typeToUciPromo(last.pieceToExchange)
+      : undefined;
+    sendMove(encodeMove(last.fromCell, last.toCell, promo));
+  }, [state.log, playerState, gameType, sendMove]);
 
   useEffect(() => {
     if (
@@ -171,22 +225,47 @@ const Chess: React.FC<ChessProps> = ({
             ? t("chess.modal.checkmate.confirm")
             : t("chess.modal.draw.confirm"),
         cancelText:
-          state.currentStatus.check === "CHECKMATE"
-            ? t("chess.modal.checkmate.cancel")
-            : t("chess.modal.draw.cancel"),
+          gameType === "online"
+            ? t("chess.online.leave.confirm")
+            : state.currentStatus.check === "CHECKMATE"
+              ? t("chess.modal.checkmate.cancel")
+              : t("chess.modal.draw.cancel"),
         handleClick,
+        cancelClick: gameType === "online" ? onLeave : undefined,
       });
     }
-  }, [state.currentStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    gameType,
+    handleClick,
+    onLeave,
+    state.currentStatus,
+    state.currentTurn,
+    t,
+  ]);
 
   useEffect(() => {
-    plState && setPlayerState(plState);
-  }, []);
+    if (plState) setPlayerState(plState);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [setPlayerState]);
 
   return (
     <>
-      {gameType === "online" && (
-        <ResignFlow phase={resignPhase} setPhase={setResignPhaseAndNotify} dispatch={dispatch} />
+      {gameType === "online" && onLeave && (
+        <ResignFlow
+          phase={resignPhase}
+          setPhase={setResignPhaseAndNotify}
+          dispatch={dispatch}
+          onLeave={onLeave}
+        />
+      )}
+      {gameType === "online" && onLeave && (
+        <DrawOfferFlow
+          phase={drawPhase}
+          setPhase={setDrawPhaseAndNotify}
+          dispatch={dispatch}
+          onLeave={onLeave}
+        />
       )}
       <div className="relative w-full">
         {isReset && modal && (
@@ -198,13 +277,17 @@ const Chess: React.FC<ChessProps> = ({
             message={modal.message}
             confirmText={modal.confirmText}
             cancelText={modal.cancelText}
+            cancelClick={modal.cancelClick}
           />
         )}
       </div>
       <HeaderBlock
         state={state}
         handleModalClick={handleModalClick}
+        handleDrawOfferClick={handleDrawOfferClick}
         gameType={gameType}
+        isResignActive={resignPhase !== null}
+        isDrawActive={drawPhase !== null}
       />
       <div
         className={`flex flex-row flex-wrap w-[404px] md:w-[708px] lg:w-auto lg:flex-nowrap`}

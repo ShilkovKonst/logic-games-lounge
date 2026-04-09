@@ -43,10 +43,13 @@ src/
 │   │   ├── HeaderButton.tsx            # Reusable header button
 │   │   ├── LogBlock.tsx                # Move history (auto-scroll, undo)
 │   │   ├── LogRecord.tsx               # Single move entry; online: color circle instead of undo
-│   │   ├── ModalBlock.tsx              # Generic modal (chess-specific: takes TurnDetails)
+│   │   ├── ModalBlock.tsx              # Generic modal (chess-specific: takes TurnDetails); optional cancelClick
 │   │   ├── TakenPiecesBlock.tsx        # Captured pieces display
 │   │   ├── ColCount.tsx                # Board column labels (a–h)
-│   │   └── RowCount.tsx                # Board row labels (1–8)
+│   │   ├── RowCount.tsx                # Board row labels (1–8)
+│   │   ├── ResignFlow.tsx              # Online resign state machine (5 phases, wire: resign:*)
+│   │   ├── DrawOfferFlow.tsx           # Online draw offer state machine (7 phases, wire: draw_offer:*)
+│   │   └── FlowOverlay.tsx             # Shared overlay wrapper used by ResignFlow + DrawOfferFlow
 │   ├── locale/
 │   │   └── LocaleBlock.tsx             # Language switcher (URL-based navigation)
 │   ├── TopLevelButton.tsx
@@ -291,6 +294,10 @@ Four layers — no Redux/Zustand:
 - [x] Turn enforcement in online mode
 - [x] Resign flow in online mode (resign → restart offer or leave; opponent accepts/declines)
 - [x] Online board reset sync (both players reset on checkmate/draw confirmation)
+- [x] Lobby protection: second guest rejected with "host busy" notification
+- [x] Draw offer flow in online mode (sequential: receiver chooses restart/leave first, then initiator; `opponent_left` modal if either side leaves post-agreement)
+- [x] Game-over modal in online mode: "Leave" cancel button disconnects and returns to landing
+- [x] Shared `FlowOverlay` component; navigation unified via `onLeave` prop on both resign and draw flows
 
 ## What Is NOT Yet Implemented
 
@@ -323,7 +330,7 @@ Four layers — no Redux/Zustand:
 - **AI opponent** — Stockfish via WebAssembly
 - **Chess clock** — per-turn or per-game timer
 - **Other games** — `app/[locale]/` structure is ready for expansion
-- **Draw offer** — "Request draw" button in online mode is rendered but not wired up (resign flow pattern in `ResignFlow.tsx` can serve as reference)
+- **50-move rule draw** — not yet tracked in engine
 
 ### Code Quality
 - **Immutability in engine** — separate pure layer (returns new state) from effectful layer (React dispatch)

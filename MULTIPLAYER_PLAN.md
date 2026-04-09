@@ -165,6 +165,57 @@ share a room code → connect → play → disconnect handled gracefully.
 
 ---
 
+### Post-launch fixes & features (added after initial implementation)
+
+#### Lobby: second guest protection
+- `useP2PGame.ts` — `peer.on("connection")` rejects incoming connections when `connRef.current !== null`: waits for `conn.on("open")`, sends `{"type":"busy"}`, closes the connection
+- `P2PContext.tsx` — `hostBusy: boolean` state; set on `{"type":"busy"}` message, cleared on next `connect()` call
+- `lobby/page.tsx` — shows `lobby.hostBusy` error string instead of generic error
+- Locales — `lobby.hostBusy` added to en/ru/fr
+
+#### Resign flow (`ResignFlow.tsx`)
+Full resign state machine for online mode. Wire messages:
+`resign:restart` | `resign:leave` | `resign:cancel` | `resign:accept` | `resign:decline`
+
+Initiator phases: `confirming` → `waiting` → `declined`
+Receiver phases: `opponent_resigned` | `opponent_left_win`
+
+- `resign:accept` → both `dispatch(INIT)` — board resets for both players
+- `resign:leave` / `resign:decline` → initiator calls `leaveGame()` + navigates home
+- `onResignActiveChange` prop on `Chess.tsx` → `online/page.tsx` suppresses disconnect overlay while resign is active
+
+#### Draw offer flow (`DrawOfferFlow.tsx`)
+Sequential decision flow — receiver decides first, then initiator. Wire messages:
+`draw_offer` | `draw_offer:cancel` | `draw_offer:decline` | `draw_offer:accept` | `draw_offer:restart` | `draw_offer:leave` | `draw_offer:confirm`
+
+Initiator phases: `waiting` → `initiator_waiting` → `initiator_choose`
+Receiver phases: `opponent_offered` → `receiver_choose` → `receiver_waiting`
+Shared phase: `opponent_left` — shown to whichever side receives `draw_offer:leave`
+
+- `draw_offer:decline` → both back to game (no modal)
+- `draw_offer:leave` (sender) → `leave(msg)` in DrawOfferFlow: sends wire msg + calls `onLeave()`
+- `draw_offer:leave` (receiver) → phase `"opponent_left"`: info modal "Opponent left after agreeing to a draw" + single "Back to menu" button → `onLeave()`
+- `draw_offer:confirm` (initiator chose restart) → both `dispatch(INIT)`
+- `onDrawActiveChange` prop on `Chess.tsx` → suppresses disconnect overlay (same pattern as resign)
+- Both resign and draw buttons in `HeaderBlock` are disabled while either flow is active
+
+#### Shared component & navigation unification
+- `FlowOverlay.tsx` — extracted shared overlay used by both `ResignFlow` and `DrawOfferFlow`
+- Navigation unified via `onLeave` prop on both flows (previously `ResignFlow` had its own `navigateHome` with internal `useRouter`/`useParams`/`leaveGame`); now both receive `onLeave = handleLeave` from `online/page.tsx`
+
+#### Game-over modal improvements (online mode)
+- `Modal` type gains optional `cancelClick?: () => void`
+- `ModalBlock.tsx` — calls `cancelClick?.()` alongside `setIsReset(false)` on cancel
+- `Chess.tsx` — `onLeave?` prop; checkmate/draw game-over modal in online mode uses "Leave" as cancel text and `cancelClick = onLeave`
+- `online/page.tsx` — `handleLeave = leaveGame() + router.push(home)` passed as `onLeave`
+
+#### Supporting changes
+- `HeaderButton.tsx` — `disabled` prop: `opacity-40 cursor-not-allowed`
+- `types.ts` — `Draw` union includes `"agreement"`; `Modal` has `cancelClick?`
+- `chessReducer.ts` — `AGREE_DRAW` action (sets `currentStatus.draw = "agreement"`)
+
+---
+
 ### Files overview
 
 | File | Location | Status |

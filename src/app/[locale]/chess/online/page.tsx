@@ -20,10 +20,12 @@ export default function ChessOnlinePage() {
     registerGameHandler,
     opponentLeft,
     clearOpponentLeft,
+    leaveGame,
   } = useP2PContext();
 
   const [hasConnected, setHasConnected] = useState(false);
   const [resignActive, setResignActive] = useState(false);
+  const [drawActive, setDrawActive] = useState(false);
 
   // Track first successful connection
   useEffect(() => {
@@ -37,7 +39,7 @@ export default function ChessOnlinePage() {
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const disconnectMessage = resignActive
+  const disconnectMessage = (resignActive || drawActive)
     ? null
     : opponentLeft
     ? t(`chess.online.disconnected.${opponentLeft}`)
@@ -47,6 +49,11 @@ export default function ChessOnlinePage() {
 
   const handleBackToMenu = () => {
     clearOpponentLeft();
+    router.push(`/${locale}`);
+  };
+
+  const handleLeave = () => {
+    leaveGame();
     router.push(`/${locale}`);
   };
 
@@ -85,6 +92,8 @@ export default function ChessOnlinePage() {
           sendMove={sendMove}
           registerRemoteHandler={registerGameHandler}
           onResignActiveChange={setResignActive}
+          onDrawActiveChange={setDrawActive}
+          onLeave={handleLeave}
         />
       </div>
     </main>
