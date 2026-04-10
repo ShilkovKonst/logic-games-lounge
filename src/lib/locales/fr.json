@@ -77,7 +77,7 @@
       "turnNo": "tour №",
       "restartButton": "Recommencer",
       "drawButton": "Proposer la nulle",
-      "playingAs": "Vous jouez avec les {{color}}s",
+      "playingAs": "Vous jouez en tant que {{color}}",
       "waiting": "(en attente)"
     },
     "log": {

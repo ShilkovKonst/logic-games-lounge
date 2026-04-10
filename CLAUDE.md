@@ -193,6 +193,7 @@ Creates a copy of the piece with cleared threats before calling `checkMoveSetFor
 | `END_EXCHANGE` | (unused — `END_TURN` resets `isExchange`) |
 | `END_TURN` | Finalize move, deep-copy board snapshot for log, advance turn, update status |
 | `RESET` | Restore to a past position from log, or start fresh |
+| `SYNC` | Load a fully precomputed `GameState` in one dispatch (used for reconnect sync) |
 
 ---
 
@@ -208,7 +209,7 @@ Host browser ──WebRTC──► Guest browser
 
 - **Host** = white, **Guest** = black
 - Wire format: **UCI notation** — `"e2e4"`, `"e7e8q"` (promotion)
-- Protocol messages (JSON): `{"type":"init","game":"chess"}`, `{"type":"disconnect","role":"host"|"guest"}`
+- Protocol messages (JSON): `{"type":"init","game":"chess"}`, `{"type":"disconnect","role":"host"|"guest"}`, `{"type":"sync","moves":[...]}`, `{"type":"busy"}`
 - Game-event strings (plain): `"reset"`, `"resign:restart"`, `"resign:leave"`, `"resign:accept"`, `"resign:decline"`, `"resign:cancel"`
 
 ### Key Files
@@ -216,8 +217,9 @@ Host browser ──WebRTC──► Guest browser
 | File | Role |
 |---|---|
 | `useP2PGame.ts` | PeerJS hook: `peerId`, `status`, `connect`, `sendMove`, `disconnect` |
-| `P2PContext.tsx` | React context wrapping the hook; adds `startGame`, `leaveGame`, `opponentLeft`, `registerGameHandler` |
+| `P2PContext.tsx` | React context wrapping the hook; adds `startGame`, `leaveGame`, `opponentLeft`, `registerGameHandler`, `registerSyncProvider`, `registerSyncHandler` |
 | `applyRemoteMove.ts` | Decode UCI → find piece → find move → dispatch END_TURN |
+| `applyMovePure.ts` | Pure version of applyRemoteMove — returns new `GameState` (no dispatch); used for synchronous move replay on reconnect |
 | `uciUtil.ts` | `encodeMove` / `decodeMove` / `uciPromoToType` / `typeToUciPromo` |
 | `lobby/page.tsx` | 3-screen lobby: select role → host (show code + shareable link) → guest (enter code, auto-connect via `?join=PEER_ID`) |
 | `chess/online/page.tsx` | Renders `<Chess gameType="online">`, shows disconnect modal on drop |
@@ -234,6 +236,7 @@ Host browser ──WebRTC──► Guest browser
 - **Intentional leave**: `TopLevelMenu` shows confirm modal on home button in online mode → `leaveGame()` sends `{"type":"disconnect","role":...}` → navigates home
 - **Opponent left**: receiver sees named modal ("Host/Guest has disconnected.")
 - **Unexpected drop**: `conn.on("close")` → status drops → "Connection lost." modal
+- **Reconnect**: guest can re-enter the host code from the lobby after a drop; host detects reconnect via `prevStatusRef` (status transition to `"connected"` with `gameToPlay` already set) → re-sends `init` + `sync`; guest receives sync, buffers it in `pendingSyncRef` if Chess not yet mounted, flushes on `registerSyncHandler` registration → dispatches `SYNC` to restore game state
 - **Resign flow** (`ResignFlow.tsx`): replaces the restart button in online mode; initiator chooses restart-offer or leave; receiver accepts/declines; `opponentLeft` cleared on new `startGame`/`connect` to prevent stale modal on reconnect; page disconnect overlay suppressed while resign flow is active (`onResignActiveChange` prop)
 
 ---
@@ -298,6 +301,7 @@ Four layers — no Redux/Zustand:
 - [x] Draw offer flow in online mode (sequential: receiver chooses restart/leave first, then initiator; `opponent_left` modal if either side leaves post-agreement)
 - [x] Game-over modal in online mode: "Leave" cancel button disconnects and returns to landing
 - [x] Shared `FlowOverlay` component; navigation unified via `onLeave` prop on both resign and draw flows
+- [x] Guest reconnect after unexpected drop: re-enter host code → game state synced via UCI move replay (`SYNC` action)
 
 ## What Is NOT Yet Implemented
 

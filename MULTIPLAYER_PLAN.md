@@ -148,7 +148,13 @@ Move restriction by color works in `Piece.tsx` when `gameType === "online"`.
 - `chess/online/page.tsx` detects `status !== "connected" && hasConnected && !opponentLeft`
   → shows "Connection lost." modal
 
-Reconnect after disconnect is not implemented — both sides return to the main menu.
+**Reconnect (unexpected drop):**
+Guest can return to the lobby and re-enter the host code. The host's PeerJS peer remains alive after a drop (`connRef` is nulled but `peerRef` stays). On reconnect:
+- Host detects reconnect in `P2PContext` via `prevStatusRef` (status `"waiting"` → `"connected"` while `gameToPlay` is set and `playerColor === "white"`)
+- Host re-sends `{"type":"init","game":"chess"}` so guest navigates to the chess page
+- Host immediately sends `{"type":"sync","moves":["e2e4","d7d5",...]}` — full UCI move history from `state.log` (via `syncProviderRef` registered by `Chess.tsx`)
+- Guest's P2PContext buffers sync in `pendingSyncRef` if Chess is not yet mounted; flushes on `registerSyncHandler` call
+- Chess replays all moves via `applyMovePure` (pure version of `applyRemoteMove`, returns `GameState` without dispatching) then dispatches `SYNC` action to load the final state in one step
 
 ---
 
@@ -209,6 +215,15 @@ Shared phase: `opponent_left` — shown to whichever side receives `draw_offer:l
 - `Chess.tsx` — `onLeave?` prop; checkmate/draw game-over modal in online mode uses "Leave" as cancel text and `cancelClick = onLeave`
 - `online/page.tsx` — `handleLeave = leaveGame() + router.push(home)` passed as `onLeave`
 
+#### Guest reconnect + game state sync
+- `P2PContext.tsx` — `prevStatusRef` tracks status transitions; when host's status goes from non-`"connected"` → `"connected"` with `gameToPlay` set and `playerColor === "white"`, re-sends `init` + `sync`
+- `P2PContext.tsx` — `syncProviderRef`: host-side callback (registered by `Chess.tsx`) that returns `{"type":"sync","moves":[...]}` built from `stateRef.current.log`
+- `P2PContext.tsx` — `syncHandlerRef` + `pendingSyncRef`: guest-side; if sync arrives before Chess mounts, buffered in `pendingSyncRef`; flushed immediately when `registerSyncHandler` is called; cleared on `connect()` to prevent stale data
+- `P2PContext.tsx` — `handleMessage` intercepts `{"type":"sync"}` alongside other protocol messages (no JSON parsing in Chess)
+- `applyMovePure.ts` — new file: pure version of `applyRemoteMove`; same logic but calls `gameReducer` directly and returns the new `GameState`
+- `chessReducer.ts` — new `SYNC` action: loads a precomputed `GameState` (`{ ...payload, selectedPiece: undefined, isExchange: false }`); preserves `currentStatus` (check/draw) from the replayed state
+- `Chess.tsx` — two new `useEffect`s: one registers `syncProvider` (host), one registers `syncHandler` (guest); no JSON parsing in the switch
+
 #### Supporting changes
 - `HeaderButton.tsx` — `disabled` prop: `opacity-40 cursor-not-allowed`
 - `types.ts` — `Draw` union includes `"agreement"`; `Modal` has `cancelClick?`
@@ -224,6 +239,7 @@ Shared phase: `opponent_left` — shown to whichever side receives `draw_offer:l
 | `chessReducer.ts` | `chess-engine/local/reducer/` | ✅ Done |
 | `useP2PGame.ts` | `src/hooks/` | ✅ Done |
 | `applyRemoteMove.ts` | `chess-engine/online/` | ✅ Done |
+| `applyMovePure.ts` | `chess-engine/online/` | ✅ Done |
 | `uciUtil.ts` | `chess-engine/core/utils/` | ✅ Done |
 | `P2PContext.tsx` | `src/context/` | ✅ Done |
 | `page.tsx` (landing) | `src/app/[locale]/` | ✅ Done |

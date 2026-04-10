@@ -1,4 +1,4 @@
-/* @import "../styles/shadows.css"; */
+@import "../styles/shadows.css";
 @import "../styles/scrollbars.css";
 @import "tailwindcss";
 
@@ -14,8 +14,6 @@
 }
 @media (max-width: 767px) {
   :root {
-    --background: #ffffff;
-    --foreground: #171717;
     --blur-radius: 1px;
     --blur-radius-cell: 3px;
     --offset-x-pos: 3px;
@@ -32,72 +30,12 @@
   --spacing-18: 4.5rem;
   --spacing-70: 17.5rem;
 
-  --inset-shadow-cell-amberdark: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius-cell) var(--color-amber-700),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
-      var(--color-amber-700);
-  --inset-shadow-cell-ambermedium: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius-cell) var(--color-amber-400),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
-      var(--color-amber-400);
-  --inset-shadow-cell-amberlight: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius-cell) var(--color-amber-200),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
-      var(--color-amber-200);
-
-  --inset-shadow-log-amberdark: inset 2px 2px 2px var(--color-amber-800),
-    inset -2px -2px 2px var(--color-amber-800);
-  --inset-shadow-log-ambermedium: inset 2px 2px 2px var(--color-amber-400),
-    inset -2px -2px 2px var(--color-amber-400);
-  --inset-shadow-log-amberlight: inset 2px 2px 2px var(--color-amber-150),
-    inset -2px -2px 2px var(--color-amber-150);
-
-  --inset-shadow-select-safe: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-amber-400),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      var(--color-amber-400);
-  --inset-shadow-select-danger: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-red-500),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      var(--color-red-500);
-  --inset-shadow-select-hover: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-gray-400),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      var(--color-gray-400);
-
-  --inset-shadow-move-safe: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius)
-      color-mix(in oklab, var(--color-green-700) 80%, transparent),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      color-mix(in oklab, var(--color-green-700) 80%, transparent);
-  --inset-shadow-move-danger: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius)
-      color-mix(in oklab, var(--color-red-700) 80%, transparent),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      color-mix(in oklab, var(--color-red-700) 80%, transparent);
-
-  --inset-shadow-piece-ep: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-rose-400),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      var(--color-rose-400);
-  --inset-shadow-piece-castling: inset var(--offset-x-pos) var(--offset-y-pos)
-      var(--blur-radius) var(--color-lime-400),
-    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
-      var(--color-lime-400);
-
   --animate-hourglass: hourglass-flip 1.5s ease-in-out infinite alternate;
 }
 
 @keyframes hourglass-flip {
   0%, 35%  { transform: rotate(0deg); }
   65%, 100% { transform: rotate(180deg); }
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
 }
 
 body {
@@ -138,7 +76,7 @@ body {
     );
 }
 
-.bg-squares-small {
+/* .bg-squares-small {
   background: radial-gradient(
       circle at 20% 80%,
       rgba(212, 175, 55, 0.2) 0%,
@@ -169,9 +107,9 @@ body {
       rgba(254, 230, 133, 0.05) 30px
     ),
     linear-gradient(135deg, #e3b35d 0%, #e3b35d 100%);
-}
+} */
 
-.bg-squares-medium {
+/* .bg-squares-medium {
   background: radial-gradient(
       circle at 20% 80%,
       rgba(212, 175, 55, 0.2) 0%,
@@ -202,9 +140,9 @@ body {
       rgba(254, 230, 133, 0.05) 40px
     ),
     linear-gradient(135deg, #e3b35d 0%, #e3b35d 100%);
-}
+} */
 
-.bg-circles {
+/* .bg-circles {
   background: radial-gradient(
       circle at 15% 25%,
       rgba(212, 175, 55, 0.2) 0%,
@@ -238,4 +176,4 @@ body {
       transparent 100px
     ),
     linear-gradient(135deg, #f4e4bc 0%, #8b4513 100%);
-}
+} */

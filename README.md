@@ -1,36 +1,96 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Logic Games Lounge
+
+A collection of browser-based board games. Currently features a fully playable chess implementation with **local hotseat** and **online P2P multiplayer** — no server required.
+
+---
+
+## Features
+
+### Chess
+- Full chess rules: all piece movements, castling, en passant, pawn promotion
+- Check, checkmate, and stalemate detection
+- Pin detection and legal move filtering
+- Draw conditions: stalemate, insufficient material, threefold repetition
+- Move log with Standard Algebraic Notation
+- Captured pieces display
+- Unlimited undo (hotseat mode)
+
+### Online Multiplayer (P2P / Quick Play)
+- No account or server needed — connect directly via WebRTC (PeerJS)
+- Share a room code or a link to invite your opponent
+- Turn enforcement by color
+- Resign flow with restart or leave options
+- Draw offer flow with sequential accept/decline
+- Disconnect detection (intentional leave + unexpected drop)
+- Reconnect support: re-enter the room code to resume the game in progress
+
+### General
+- Localized in **English**, **Russian**, and **French**
+- Responsive layout — works on mobile, tablet, and desktop
+- No external state management — pure React (`useReducer` + Context)
+
+---
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 15 (App Router) |
+| UI | React 19 |
+| Language | TypeScript 5 (strict) |
+| Styling | TailwindCSS 4 |
+| P2P networking | PeerJS (WebRTC) |
+| Localization | Custom (JSON + middleware) |
+| Bundler | Turbopack (dev) |
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## How Online Play Works
 
-## Learn More
+Online multiplayer uses **WebRTC via PeerJS**. The PeerJS signaling server is only used for the initial handshake (~1 KB). All game data travels directly between the two browsers.
 
-To learn more about Next.js, take a look at the following resources:
+1. One player creates a game and shares their **room code** (or a direct link)
+2. The other player enters the code and joins
+3. Host plays as **White**, guest plays as **Black**
+4. Moves are transmitted as **UCI notation** (`"e2e4"`, `"e7e8q"`)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+No account, no backend, no cost.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Project Structure
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```
+src/
+├── app/[locale]/          # Pages: landing, lobby, chess (hotseat + online)
+├── components/chess/      # All chess UI components
+├── context/               # GlobalState, PlayerState, P2PContext
+├── hooks/                 # useP2PGame (PeerJS)
+├── lib/
+│   ├── chess-engine/      # Pure game logic (core/) + local/ + online/
+│   ├── locales/           # en.json, ru.json, fr.json
+│   └── icons/             # SVG icon components
+└── styles/                # scrollbars.css, shadows.css
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Roadmap
+
+- [ ] Other board games (tic-tac-toe, etc.)
+- [ ] Chess clock / time controls
+- [ ] Computer opponent (Stockfish via WASM)
+- [ ] Game save / load (PGN export)
+- [ ] 50-move rule draw
+- [ ] WebSocket mode with accounts and room list

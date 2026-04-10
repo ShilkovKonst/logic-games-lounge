@@ -21,10 +21,12 @@ import {
 } from "@/lib/chess-engine/local/reducer/chessReducer";
 import { useGlobalState } from "@/context/GlobalStateContext";
 import { applyRemoteMove } from "@/lib/chess-engine/online/applyRemoteMove";
+import { applyMovePure } from "@/lib/chess-engine/online/applyMovePure";
 import {
   encodeMove,
   typeToUciPromo,
 } from "@/lib/chess-engine/core/utils/uciUtil";
+import { createInitialState } from "@/lib/chess-engine/local/reducer/chessReducer";
 import ResignFlow, { ResignPhase } from "./ResignFlow";
 import DrawOfferFlow, { DrawOfferPhase } from "./DrawOfferFlow";
 
@@ -36,6 +38,8 @@ type ChessProps = {
   plState: PlayerState | null;
   sendMove?: (msg: string) => void;
   registerRemoteHandler?: (handler: (msg: string) => void) => void;
+  registerSyncProvider?: (fn: () => string) => void;
+  registerSyncHandler?: (fn: (moves: string[]) => void) => void;
   onResignActiveChange?: (active: boolean) => void;
   onDrawActiveChange?: (active: boolean) => void;
   onLeave?: () => void;
@@ -49,6 +53,8 @@ const Chess: React.FC<ChessProps> = ({
   plState,
   sendMove,
   registerRemoteHandler,
+  registerSyncProvider,
+  registerSyncHandler,
   onResignActiveChange,
   onDrawActiveChange,
   onLeave,
@@ -187,6 +193,35 @@ const Chess: React.FC<ChessProps> = ({
   useEffect(() => {
     registerRemoteHandler?.((msg) => remoteHandlerRef.current(msg));
   }, [registerRemoteHandler]);
+
+  // Host: provide the current move log for sync on reconnect (reads stateRef — always fresh).
+  useEffect(() => {
+    if (gameType !== "online") return;
+    registerSyncProvider?.(() => {
+      const moves: string[] = [];
+      for (const turnPair of stateRef.current.log) {
+        for (const turn of turnPair) {
+          if (turn.fromCell && turn.toCell) {
+            const promo = turn.isExchange ? typeToUciPromo(turn.pieceToExchange) : undefined;
+            moves.push(encodeMove(turn.fromCell, turn.toCell, promo));
+          }
+        }
+      }
+      return JSON.stringify({ type: "sync", moves });
+    });
+  }, [gameType, registerSyncProvider]);
+
+  // Guest: replay all moves from sync and load the resulting state in one dispatch.
+  useEffect(() => {
+    if (gameType !== "online") return;
+    registerSyncHandler?.((moves) => {
+      let syncState = createInitialState(populateBoard("white"), "white", 1, []);
+      for (const uci of moves) {
+        syncState = applyMovePure(uci, syncState);
+      }
+      dispatch({ type: "SYNC", payload: syncState });
+    });
+  }, [gameType, registerSyncHandler]);
 
   // Send our move to the opponent after every END_TURN
   useEffect(() => {

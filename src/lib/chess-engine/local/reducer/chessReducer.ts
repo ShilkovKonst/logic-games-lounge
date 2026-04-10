@@ -32,7 +32,8 @@ export type GameAction =
         log: TurnDetails[][];
       };
     }
-  | { type: "AGREE_DRAW" };
+  | { type: "AGREE_DRAW" }
+  | { type: "SYNC"; payload: GameState };
 
 export const flip = (c: Color): Color => (c === "white" ? "black" : "white");
 
@@ -168,6 +169,8 @@ export function gameReducer(state: GameState, action: GameAction): GameState {
         ...state,
         currentStatus: { check: "NORMAL", draw: "agreement" },
       };
+    case "SYNC":
+      return { ...action.payload, selectedPiece: undefined, isExchange: false };
     default:
       return state;
   }

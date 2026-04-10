@@ -18,6 +18,8 @@ export default function ChessOnlinePage() {
     playerColor,
     sendMove,
     registerGameHandler,
+    registerSyncProvider,
+    registerSyncHandler,
     opponentLeft,
     clearOpponentLeft,
     leaveGame,
@@ -91,6 +93,8 @@ export default function ChessOnlinePage() {
           plState={playerState}
           sendMove={sendMove}
           registerRemoteHandler={registerGameHandler}
+          registerSyncProvider={registerSyncProvider}
+          registerSyncHandler={registerSyncHandler}
           onResignActiveChange={setResignActive}
           onDrawActiveChange={setDrawActive}
           onLeave={handleLeave}

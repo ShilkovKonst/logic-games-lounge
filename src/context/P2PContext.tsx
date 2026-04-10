@@ -3,6 +3,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useRef,
   useState,
   ReactNode,
@@ -25,6 +26,8 @@ type P2PContextType = {
   leaveGame: () => void;
   clearOpponentLeft: () => void;
   registerGameHandler: (fn: (uci: string) => void) => void;
+  registerSyncProvider: (fn: () => string) => void;
+  registerSyncHandler: (fn: (moves: string[]) => void) => void;
 };
 
 const P2PContext = createContext<P2PContextType | null>(null);
@@ -36,6 +39,10 @@ export function P2PProvider({ children }: { children: ReactNode }) {
   const [opponentLeft, setOpponentLeft] = useState<"host" | "guest" | null>(null);
   const [hostBusy, setHostBusy] = useState(false);
   const gameHandlerRef = useRef<(msg: string) => void>(() => {});
+  const syncProviderRef = useRef<(() => string) | null>(null);
+  const syncHandlerRef = useRef<((moves: string[]) => void) | null>(null);
+  const pendingSyncRef = useRef<string[] | null>(null);
+  const prevStatusRef = useRef<P2PStatus>("idle");
 
   const handleMessage = useCallback((msg: string) => {
     try {
@@ -55,6 +62,15 @@ export function P2PProvider({ children }: { children: ReactNode }) {
         }
         return;
       }
+      if (parsed.type === "sync" && Array.isArray(parsed.moves)) {
+        const moves = parsed.moves as string[];
+        if (syncHandlerRef.current) {
+          syncHandlerRef.current(moves);
+        } else {
+          pendingSyncRef.current = moves; // Chess not mounted yet — buffer for later
+        }
+        return;
+      }
     } catch {
       // not a protocol message — treat as game move
     }
@@ -64,6 +80,16 @@ export function P2PProvider({ children }: { children: ReactNode }) {
   const { peerId, status, connect: rawConnect, sendMove: rawSend, disconnect } =
     useP2PGame({ enabled, onRemoteMove: handleMessage });
 
+  // Re-send init + sync when host reconnects with a game already in progress
+  useEffect(() => {
+    if (prevStatusRef.current !== "connected" && status === "connected" && gameToPlay && playerColor === "white") {
+      rawSend(JSON.stringify({ type: "init", game: gameToPlay }));
+      const syncMsg = syncProviderRef.current?.();
+      if (syncMsg) rawSend(syncMsg);
+    }
+    prevStatusRef.current = status;
+  }, [status, gameToPlay, playerColor, rawSend]);
+
   const enable = useCallback(() => setEnabled(true), []);
 
   const connect = useCallback(
@@ -71,6 +97,8 @@ export function P2PProvider({ children }: { children: ReactNode }) {
       setPlayerColor("black");
       setOpponentLeft(null);
       setHostBusy(false);
+      pendingSyncRef.current = null;
+      syncHandlerRef.current = null;
       rawConnect(remoteId);
     },
     [rawConnect]
@@ -103,6 +131,18 @@ export function P2PProvider({ children }: { children: ReactNode }) {
     gameHandlerRef.current = fn;
   }, []);
 
+  const registerSyncProvider = useCallback((fn: () => string) => {
+    syncProviderRef.current = fn;
+  }, []);
+
+  const registerSyncHandler = useCallback((fn: (moves: string[]) => void) => {
+    syncHandlerRef.current = fn;
+    if (pendingSyncRef.current !== null) {
+      fn(pendingSyncRef.current);
+      pendingSyncRef.current = null;
+    }
+  }, []);
+
   return (
     <P2PContext.Provider
       value={{
@@ -120,6 +160,8 @@ export function P2PProvider({ children }: { children: ReactNode }) {
         leaveGame,
         clearOpponentLeft,
         registerGameHandler,
+        registerSyncProvider,
+        registerSyncHandler,
       }}
     >
       {children}

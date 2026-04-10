@@ -1,46 +1,54 @@
-.inset-shadow-cell-amberdark {
-  box-shadow: 4px 4px 4px #973c00 inset, -4px -4px 4px #973c00 inset;
-}
-.inset-shadow-cell-amberlight {
-  box-shadow: 4px 4px 4px #fef3c6 inset, -4px -4px 4px #fef3c6 inset;
-}
-.inset-shadow-cell-ambermedium {
-  box-shadow: 4px 4px 4px #ffd230 inset, -4px -4px 4px #ffd230 inset;
-}
+@theme {
+  --inset-shadow-cell-amberdark: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-700),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-700);
+  --inset-shadow-cell-ambermedium: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-400);
+  --inset-shadow-cell-amberlight: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius-cell) var(--color-amber-200),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius-cell)
+      var(--color-amber-200);
 
-.inset-shadow-log-amberdark {
-  box-shadow: 2px 2px 2px #973c00 inset, -2px -2px 2px #973c00 inset;
-}
-.inset-shadow-log-amberlight {
-  box-shadow: 2px 2px 2px #fef3c6 inset, -2px -2px 2px #fef3c6 inset;
-}
-.inset-shadow-log-ambermedium {
-  box-shadow: 2px 2px 2px #ffd230 inset, -2px -2px 2px #ffd230 inset;
-}
+  --inset-shadow-log-amberdark: inset 2px 2px 2px var(--color-amber-800),
+    inset -2px -2px 2px var(--color-amber-800);
+  /* --inset-shadow-log-ambermedium: inset 2px 2px 2px var(--color-amber-400),
+    inset -2px -2px 2px var(--color-amber-400); */
+  /* --inset-shadow-log-amberlight: inset 2px 2px 2px var(--color-amber-150),
+    inset -2px -2px 2px var(--color-amber-150); */
 
-.inset-shadow-select-safe {
-  box-shadow: 4px 4px 1px #ffb900 inset, -4px -4px 1px #ffb900 inset;
-}
-.inset-shadow-select-danger {
-  box-shadow: 4px 4px 1px #fb2c36bf inset, -4px -4px 1px #fb2c36bf inset;
-}
-.inset-shadow-move-safe {
-  box-shadow: 4px 4px 1px #00c950bf inset, -4px -4px 1px #00c950bf inset;
-}
-.inset-shadow-move-danger {
-  box-shadow: 4px 4px 1px #c10007bf inset, -4px -4px 1px #c10007bf inset;
-}
-.inset-shadow-move-ep {
-  box-shadow: 4px 4px 1px #c6005bbf inset, -4px -4px 1px #c6005bbf inset;
-}
+  --inset-shadow-select-safe: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-amber-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-amber-400);
+  --inset-shadow-select-danger: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-red-500),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-red-500);
+  --inset-shadow-select-hover: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-gray-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-gray-400);
 
+  --inset-shadow-move-safe: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius)
+      color-mix(in oklab, var(--color-green-700) 80%, transparent),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      color-mix(in oklab, var(--color-green-700) 80%, transparent);
+  --inset-shadow-move-danger: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius)
+      color-mix(in oklab, var(--color-red-700) 80%, transparent),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      color-mix(in oklab, var(--color-red-700) 80%, transparent);
 
-.inset-shadow-move-lightgreen {
-  box-shadow: 4px 4px 1px #7bf1a8 inset, -4px -4px 1px #7bf1a8 inset;
-}
-.inset-shadow-move-lime {
-  box-shadow: 4px 4px 1px #7ccf00 inset, -4px -4px 1px #7ccf00 inset;
-}
-.inset-shadow-move-gray {
-  box-shadow: 4px 4px 1px #99a1af inset, -4px -4px 1px #99a1af inset;
+  --inset-shadow-piece-ep: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-rose-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-rose-400);
+  --inset-shadow-piece-castling: inset var(--offset-x-pos) var(--offset-y-pos)
+      var(--blur-radius) var(--color-lime-400),
+    inset var(--offset-x-neg) var(--offset-y-neg) var(--blur-radius)
+      var(--color-lime-400);
 }
