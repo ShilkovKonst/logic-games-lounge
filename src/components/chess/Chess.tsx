@@ -261,7 +261,7 @@ const Chess: React.FC<ChessProps> = ({
             : t("chess.modal.draw.confirm"),
         cancelText:
           gameType === "online"
-            ? t("chess.online.leave.confirm")
+            ? t("chess.modal.leave.confirm")
             : state.currentStatus.check === "CHECKMATE"
               ? t("chess.modal.checkmate.cancel")
               : t("chess.modal.draw.cancel"),

@@ -1,4 +1,5 @@
 import { useGlobalState } from "@/context/GlobalStateContext";
+import { usePathname } from "next/navigation";
 import { Dispatch, SetStateAction } from "react";
 
 type TopLevelModalProps = {
@@ -11,6 +12,7 @@ const TopLevelModal = ({
   handleLeaveConfirm,
 }: TopLevelModalProps) => {
   const { t } = useGlobalState();
+  const pathname = usePathname();
 
   return (
     <div
@@ -22,21 +24,25 @@ const TopLevelModal = ({
         onClick={(e) => e.stopPropagation()}
       >
         <h3 className="text-xl font-semibold text-amber-900 mb-4">
-          {t("chess.online.leave.title")}
+          {t("chess.modal.leave.title")}
         </h3>
-        <p className="text-amber-800 mb-6">{t("chess.online.leave.message")}</p>
+        <p className="text-amber-800 mb-6">
+          {pathname.includes("online")
+            ? t("chess.modal.leave.message.online")
+            : t("chess.modal.leave.message.offline")}
+        </p>
         <div className="flex gap-4 justify-center">
           <button
             onClick={handleLeaveConfirm}
             className="px-4 py-2 bg-red-500 hover:bg-red-600 text-amber-950 hover:text-amber-50 rounded-lg font-medium transition-colors duration-300 shadow-md cursor-pointer"
           >
-            {t("chess.online.leave.confirm")}
+            {t("chess.modal.leave.confirm")}
           </button>
           <button
             onClick={() => setShowLeaveConfirm(false)}
             className="px-4 py-2 bg-gray-500 hover:bg-gray-600 text-amber-950 hover:text-amber-50 rounded-lg font-medium transition-colors duration-300 shadow-md cursor-pointer"
           >
-            {t("chess.online.leave.cancel")}
+            {t("chess.modal.leave.cancel")}
           </button>
         </div>
       </div>

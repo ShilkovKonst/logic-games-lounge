@@ -95,6 +95,15 @@
         "confirm": "Réinitialiser",
         "cancel": "Annuler"
       },
+      "leave": {
+        "title": "Quitter la partie ?",
+        "message": {
+          "online": "Votre adversaire sera notifié et la partie se terminera.",
+          "offline": "Les progrès du jeu seront annulé."
+        },
+        "confirm": "Quitter",
+        "cancel": "Rester"
+      },
       "checkmate": {
         "title": "{{player}} a gagné la partie, recommencer une nouvelle partie ?",
         "message": "",
@@ -183,12 +192,6 @@
       }
     },
     "online": {
-      "leave": {
-        "title": "Quitter la partie ?",
-        "message": "Votre adversaire sera notifié et la partie se terminera.",
-        "confirm": "Quitter",
-        "cancel": "Rester"
-      },
       "disconnected": {
         "host": "L'hôte s'est déconnecté.",
         "guest": "L'invité s'est déconnecté.",

@@ -95,6 +95,15 @@
         "confirm": "Restart",
         "cancel": "Cancel"
       },
+      "leave": {
+        "title": "Leave game?",
+        "message": {
+          "online": "Your opponent will be notified and the game will end.",
+          "offline": "Game progress will be lost."
+        },
+        "confirm": "Leave",
+        "cancel": "Stay"
+      },
       "checkmate": {
         "title": "{{player}} win the game, restart new game?",
         "message": "",
@@ -183,12 +192,6 @@
       }
     },
     "online": {
-      "leave": {
-        "title": "Leave game?",
-        "message": "Your opponent will be notified and the game will end.",
-        "confirm": "Leave",
-        "cancel": "Stay"
-      },
       "disconnected": {
         "host": "Host has disconnected.",
         "guest": "Guest has disconnected.",
