@@ -31,8 +31,19 @@ src/
 │       ├── chess/
 │       │   ├── page.tsx                # Chess hotseat page
 │       │   └── online/page.tsx         # Chess online page (P2P)
-│       └── lobby/page.tsx              # Universal P2P lobby (3 screens: select/host/guest)
+│       └── lobby/page.tsx              # Wraps LobbyBlock in <Suspense> (required for useSearchParams in Next.js 15)
 ├── components/
+│   ├── landing/                        # Landing page sub-components
+│   │   ├── LandingBlock.tsx            # Root: view state (game-select | mode-select), selectedGame
+│   │   ├── GameBlock.tsx               # Screen 1: game buttons + "Join online" → /lobby?guest
+│   │   ├── ModeBlock.tsx               # Screen 2: Hotseat → game, Online → /lobby?host&game=X
+│   │   ├── MenuButton.tsx              # Shared filled button (amber)
+│   │   └── DividerBlock.tsx            # "or" divider
+│   ├── lobby/                          # Lobby sub-components
+│   │   ├── LobbyBlock.tsx              # Orchestrator: reads ?host/?guest/?join params, P2P effects
+│   │   ├── HostLobbyBlock.tsx          # Host view: room code + copy link + status
+│   │   ├── GuestLobbyBlock.tsx         # Guest view: enter code, auto-connect via ?join=
+│   │   └── CopyButton.tsx             # Copy button (outlined style)
 │   ├── chess/                          # All chess UI components
 │   │   ├── Chess.tsx                   # Root orchestrator (useReducer, modals)
 │   │   ├── Board.tsx                   # 8x8 grid, click handling, move calculation
@@ -221,7 +232,7 @@ Host browser ──WebRTC──► Guest browser
 | `applyRemoteMove.ts` | Decode UCI → find piece → find move → dispatch END_TURN |
 | `applyMovePure.ts` | Pure version of applyRemoteMove — returns new `GameState` (no dispatch); used for synchronous move replay on reconnect |
 | `uciUtil.ts` | `encodeMove` / `decodeMove` / `uciPromoToType` / `typeToUciPromo` |
-| `lobby/page.tsx` | 3-screen lobby: select role → host (show code + shareable link) → guest (enter code, auto-connect via `?join=PEER_ID`) |
+| `lobby/page.tsx` + `LobbyBlock.tsx` | URL-driven lobby: `?host&game=X` → host view, `?guest[&join=CODE]` → guest view; invalid params show error fallback |
 | `chess/online/page.tsx` | Renders `<Chess gameType="online">`, shows disconnect modal on drop |
 | `ResignFlow.tsx` | Resign state machine (5 phases); handles initiator + receiver flows, navigation, `leaveGame` |
 
@@ -291,8 +302,8 @@ Four layers — no Redux/Zustand:
 - [x] Localization (EN / RU / FR)
 - [x] Responsive layout (mobile, tablet, desktop)
 - [x] Online multiplayer — P2P Quick Play (PeerJS, no server)
-- [x] Landing page with mode/game selection
-- [x] Universal P2P lobby (room code + shareable link)
+- [x] Landing page: pick game → pick mode (hotseat/online); "Join online" goes directly to lobby
+- [x] Universal P2P lobby (room code + shareable link); URL-param driven; Suspense wrapper
 - [x] Disconnect handling (intentional + unexpected)
 - [x] Turn enforcement in online mode
 - [x] Resign flow in online mode (resign → restart offer or leave; opponent accepts/declines)
@@ -305,7 +316,7 @@ Four layers — no Redux/Zustand:
 
 ## What Is NOT Yet Implemented
 
-- [ ] Online multiplayer — Mode 2: WebSocket + server + room list + accounts (stubs removed; see MULTIPLAYER_PLAN.md)
+- [ ] Online multiplayer — Mode 2: WebSocket + server + room list + accounts (stubs removed; see details below)
 - [ ] Other board games (tic-tac-toe, etc.)
 - [ ] 50-move rule draw
 - [ ] Time controls / chess clock
@@ -329,7 +340,7 @@ Four layers — no Redux/Zustand:
 - **E2E (Playwright)** — full game flow, locale switching, undo, online lobby
 
 ### New Functionality
-- **Online Mode 2** — WebSocket + room list + accounts (see MULTIPLAYER_PLAN.md)
+- **Online Mode 2** — WebSocket + room list + accounts. Architecture: `Client ──WebSocket──► Node.js ──► MongoDB`. Features: user accounts (JWT), room list, matchmaking, game history, server-side reconnect. Landing "Online" would split into "Quick Play" (P2P) and "Play Online" (accounts). Deferred until accounts/persistence are prioritised.
 - **Game save/load** — PGN export/import (SAN notation already in `LogRecord`)
 - **AI opponent** — Stockfish via WebAssembly
 - **Chess clock** — per-turn or per-game timer

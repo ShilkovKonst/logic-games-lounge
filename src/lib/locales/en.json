@@ -17,12 +17,14 @@
     "hotseatDesc": "Pass & play on the same device",
     "chooseGame": "Choose a game",
     "chess": "Chess",
-    "back": "Back"
+    "back": "Back",
+    "joinOnline": "Join online game",
+    "or": "or"
   },
   "lobby": {
     "title": "Online Lobby",
     "selectGame": "Select a game to host",
-    "yourCode": "Your room code",
+    "yourCode": "You've created a game. Send your room code to a friend to begin a game.",
     "copy": "Copy",
     "copied": "Copied!",
     "copyLink": "Copy link",
@@ -40,7 +42,8 @@
     "connected": "Opponent connected! Starting…",
     "error": "Connection error. Please reload the page.",
     "hostBusy": "Host is already in a game.",
-    "start": "Start"
+    "start": "Start",
+    "invalidAccess": "The lobby requires valid parameters to work. Please return to the main menu."
   },
   "chess": {
     "glossary": {

@@ -17,12 +17,14 @@
     "hotseatDesc": "Jouez à tour de rôle sur le même appareil",
     "chooseGame": "Choisissez un jeu",
     "chess": "Échecs",
-    "back": "Retour"
+    "back": "Retour",
+    "joinOnline": "Rejoindre une partie en ligne",
+    "or": "ou"
   },
   "lobby": {
     "title": "Lobby en ligne",
     "selectGame": "Sélectionnez un jeu",
-    "yourCode": "Code de votre salle",
+    "yourCode": "Vous avez créé une partie. Envoyez le code de votre salle à un ami pour commencer la partie.",
     "copy": "Copier",
     "copied": "Copié !",
     "copyLink": "Copier le lien",
@@ -40,7 +42,8 @@
     "connected": "Adversaire connecté ! Démarrage…",
     "error": "Erreur de connexion. Veuillez recharger la page.",
     "hostBusy": "L'hôte est déjà en partie.",
-    "start": "Commencer"
+    "start": "Commencer",
+    "invalidAccess": "Le lobby nécessite des paramètres valides. Veuillez retourner au menu principal."
   },
   "chess": {
     "glossary": {

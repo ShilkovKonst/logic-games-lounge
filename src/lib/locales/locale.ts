@@ -13,7 +13,7 @@ export function t(
 ): string {
   const keys = path.split(".");
   let value: unknown = translations[locale];
-  console.log(locale);
+  
   for (const key of keys) {
     if (typeof value === "object" && value !== null) {
       value = (value as Record<string, unknown>)[key];
